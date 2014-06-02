@@ -1,0 +1,341 @@
+00000000 W __heap_end
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 a __tmp_reg__
+00000000 W __vector_default
+00000000 T __vectors
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000001 a __zero_reg__
+00000034 a __CCP__
+00000034 a __CCP__
+00000034 a __CCP__
+00000034 a __CCP__
+00000034 a __CCP__
+00000034 a __CCP__
+00000034 a __CCP__
+00000034 a __CCP__
+00000034 a __CCP__
+00000034 a __CCP__
+00000034 a __CCP__
+00000034 a __CCP__
+00000034 a __CCP__
+00000034 a __CCP__
+00000034 a __CCP__
+00000034 a __CCP__
+00000034 a __CCP__
+00000034 a __CCP__
+00000034 a __CCP__
+00000034 a __CCP__
+00000034 a __CCP__
+00000034 a __CCP__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003d a __SP_L__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003e a __SP_H__
+0000003f a __SREG__
+0000003f a __SREG__
+0000003f a __SREG__
+0000003f a __SREG__
+0000003f a __SREG__
+0000003f a __SREG__
+0000003f a __SREG__
+0000003f a __SREG__
+0000003f a __SREG__
+0000003f a __SREG__
+0000003f a __SREG__
+0000003f a __SREG__
+0000003f a __SREG__
+0000003f a __SREG__
+0000003f a __SREG__
+0000003f a __SREG__
+0000003f a __SREG__
+0000003f a __SREG__
+0000003f a __SREG__
+0000003f a __SREG__
+0000003f a __SREG__
+0000003f a __SREG__
+00000068 t SdFile::make83Name(char const*, unsigned char*)::__c
+00000078 T port_to_mode_PGM
+00000082 T port_to_output_PGM
+0000008c T port_to_input_PGM
+00000096 T digital_pin_to_port_PGM
+000000aa T digital_pin_to_bit_mask_PGM
+000000be T digital_pin_to_timer_PGM
+000000d2 T __ctors_start
+000000d2 T __trampolines_end
+000000d2 T __trampolines_start
+000000d8 T __ctors_end
+000000d8 T __dtors_start
+000000da T __dtors_end
+000000da W __init
+000000e6 T __do_copy_data
+000000f2 t .do_copy_data_loop
+000000f6 t .do_copy_data_start
+000000fc T __do_clear_bss
+00000104 t .do_clear_bss_loop
+00000106 t .do_clear_bss_start
+0000010c T __do_global_ctors
+00000114 t .do_global_ctors_loop
+0000011c t .do_global_ctors_start
+0000012a T __bad_interrupt
+0000012a W __vector_1
+0000012a W __vector_10
+0000012a W __vector_11
+0000012a W __vector_12
+0000012a W __vector_13
+0000012a W __vector_14
+0000012a W __vector_15
+0000012a W __vector_17
+0000012a W __vector_2
+0000012a W __vector_20
+0000012a W __vector_21
+0000012a W __vector_22
+0000012a W __vector_23
+0000012a W __vector_24
+0000012a W __vector_25
+0000012a W __vector_3
+0000012a W __vector_4
+0000012a W __vector_5
+0000012a W __vector_7
+0000012a W __vector_8
+0000012a W __vector_9
+0000012c T memcmp
+00000146 T strchr
+0000015c T strcpy
+0000016a T strncpy
+00000188 T sprintf
+000001ce T vfprintf
+0000056e T strnlen_P
+00000584 T strnlen
+0000059a T fputc
+000005f2 T __ultoa_invert
+000006ae t __static_initialization_and_destruction_0(int, int)
+000006d6 t global destructors keyed to logFile
+000006e0 t global constructors keyed to logFile
+000006ea t printTime()
+000007aa t openValve()
+0000080e t closeValve()
+00000872 t reportLeak()
+000008b8 t clearLog()
+000008ff W __stack
+0000097c t resetSystem()
+000009d6 T loop
+00000ad0 T setup
+00000b54 T __vector_6
+00000b7c T DS3234_get(unsigned char, ts*)
+00000c80 T DS3234_end()
+00000c96 T DS3234_init(unsigned char)
+00000cb8 T Sd2Card::setSckRate(unsigned char)
+00000d02 T Sd2Card::waitNotBusy(unsigned int)
+00000d46 T Sd2Card::chipSelectLow()
+00000d50 T Sd2Card::chipSelectHigh()
+00000d5a T Sd2Card::writeData(unsigned char, unsigned char const*)
+00000dcc T Sd2Card::waitStartBlock()
+00000e24 T Sd2Card::readEnd()
+00000e68 T Sd2Card::cardCommand(unsigned char, unsigned long)
+00000f08 T Sd2Card::writeBlock(unsigned long, unsigned char const*)
+00000fb6 T Sd2Card::readData(unsigned long, unsigned int, unsigned int, unsigned char*)
+000010e8 T Sd2Card::readBlock(unsigned long, unsigned char*)
+00001106 T Sd2Card::init(unsigned char, unsigned char)
+00001298 T SdFile::make83Name(char const*, unsigned char*)
+0000131a T SdFile::seekSet(unsigned long)
+0000146c T SdFile::cacheDirEntry(unsigned char)
+000014a4 T SdFile::sync()
+00001534 T SdFile::close()
+0000154a T SdFile::truncate(unsigned long)
+000016d8 T SdFile::read(void*, unsigned int)
+000018fc T SdFile::readDirCache()
+0000198e T SdFile::openRoot(SdVolume*)
+00001a2e T SdFile::openCachedEntry(unsigned char, unsigned char)
+00001b06 T SdFile::addCluster()
+00001b52 T SdFile::write(void const*, unsigned int)
+00001eb4 T SdFile::write(unsigned char)
+00001ed4 T SdFile::addDirCluster()
+00001f98 T SdFile::open(SdFile*, char const*, unsigned char)
+0000219a T SdVolume::cacheFlush()
+00002210 T SdVolume::cacheZeroBlock(unsigned long)
+00002256 T SdVolume::cacheRawBlock(unsigned long, unsigned char)
+000022ca T SdVolume::init(Sd2Card*, unsigned char)
+00002550 T SdVolume::fatPut(unsigned long, unsigned long)
+00002686 T SdVolume::fatGet(unsigned long, unsigned long*) const
+0000276a T SdVolume::freeChain(unsigned long)
+00002818 T SdVolume::chainSize(unsigned long, unsigned long*) const
+000028f4 T SdVolume::allocContiguous(unsigned long, unsigned long*)
+00002b0a T EEPROMClass::read(int)
+00002b18 T EEPROMClass::write(int, unsigned char)
+00002b30 T File::File()
+00002b56 T File::~File()
+00002b62 T File::write(unsigned char)
+00002b92 T File::available()
+00002bda T File::operator bool()
+00002bf4 T File::close()
+00002c16 T File::flush()
+00002c26 T File::read()
+00002c62 T File::peek()
+00002cda T File::write(unsigned char const*, unsigned int)
+00002d14 T File::File(SdFile, char const*)
+00002d84 t global constructors keyed to _Z20getNextPathComponentPcPjS_
+00002dca T SDClass::getParentDir(char const*, int*)
+00003002 T SDClass::open(char const*, unsigned char)
+00003246 T SDClass::begin(unsigned char)
+000032b2 T SPIClass::end()
+000032ba T SPIClass::setBitOrder(unsigned char)
+000032cc T SPIClass::setDataMode(unsigned char)
+000032d6 T SPIClass::begin()
+000032fa T malloc
+00003434 T free
+00003564 W serialEvent()
+00003566 T __vector_18
+000035dc W serialEventRun()
+00003600 T __vector_19
+00003676 T HardwareSerial::begin(unsigned long, unsigned char)
+0000378c T HardwareSerial::available()
+000037ae T HardwareSerial::peek()
+000037ee T HardwareSerial::read()
+00003840 T HardwareSerial::flush()
+00003860 T HardwareSerial::write(unsigned char)
+000038e0 T HardwareSerial::operator bool()
+000038e4 t global constructors keyed to rx_buffer
+00003990 T Print::write(unsigned char const*, unsigned int)
+000039e4 T Print::println()
+00003a24 W Print::write(char const*)
+00003a5c T Print::print(char const*)
+00003a60 T Print::println(char const*)
+00003a82 T main
+00003a9c T __vector_16
+00003b2c T millis
+00003b48 T delay
+00003bfa T init
+00003c70 T pinMode
+00003cee T digitalWrite
+00003d96 T digitalRead
+00003e3c T __mulsi3
+00003e7a T __udivmodsi4
+00003e86 t __udivmodsi4_loop
+00003ea0 t __udivmodsi4_ep
+00003ebe T __prologue_saves__
+00003ef6 T __epilogue_restores__
+00003f2c T __tablejump2__
+00003f30 T __tablejump__
+00003f38 T __do_global_dtors
+00003f38 T _exit
+00003f38 W exit
+00003f40 t .do_global_dtors_loop
+00003f46 t .do_global_dtors_start
+00003f4e t __stop_program
+00003f50 A __data_load_start
+00003f50 T _etext
+000040aa A __data_load_end
+00800100 D __data_start
+00800228 D SdVolume::cacheBlockNumber_
+0080022c D __malloc_margin
+0080022e D __malloc_heap_start
+00800230 D __malloc_heap_end
+00800232 V vtable for SdFile
+0080023a V vtable for File
+0080024a V vtable for HardwareSerial
+0080025a B __bss_start
+0080025a D __data_end
+0080025a D _edata
+0080025a B logFile
+00800275 B leak
+00800276 B SPIFunc
+00800277 b MessageBuffer
+00800377 B SdFile::dateTime_
+00800379 B SdVolume::cacheBuffer_
+00800579 B SdVolume::sdCard_
+0080057b B SdVolume::cacheDirty_
+0080057c B SdVolume::cacheMirrorBlock_
+00800580 B EEPROM
+00800581 B SD
+008005ca B rx_buffer
+0080060e B tx_buffer
+00800652 B Serial
+00800674 B timer0_overflow_count
+00800678 B timer0_millis
+0080067c b timer0_fract
+0080067d B __brkval
+0080067f B __flp
+00800681 B __bss_end
+00800681 N __heap_start
+00800681 N _end
+00810000 N __eeprom_end
