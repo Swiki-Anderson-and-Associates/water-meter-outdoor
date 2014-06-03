@@ -257,7 +257,7 @@ static void shutdown()
 	interruptNo = 0;
 	sleep_enable();
 	attachInterrupt(0,radioInterrupt,LOW);
-	attachInterrupt(1,meterInterrupt,FALLING);
+	attachInterrupt(1,meterInterrupt,FALLING);						//	TODO: cant use falling interrupt need to use level change
 	LowPower.powerDown(SLEEP_FOREVER,ADC_OFF,BOD_OFF);
 }
 
