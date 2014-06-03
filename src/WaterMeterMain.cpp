@@ -483,7 +483,6 @@ void loop()
 		reportLog();
 		reportLeak();
 		clearLog();
-		// niggerfaggot
 	}
 
 	else if (digitalRead(METER_PIN))
