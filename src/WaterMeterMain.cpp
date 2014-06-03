@@ -416,6 +416,7 @@ static void checkRadioCommands()
 	while(Serial.available())
 	{
 		processRadio(Serial.read());
+
 	}
 }
 
