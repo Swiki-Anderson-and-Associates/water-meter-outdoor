@@ -6,6 +6,8 @@
 #include "ds3234.h"
 #include "LowPower.h"
 
+// new branch test
+
 // Define Constants
 #define DS3234_CREG_BYTE 0x00		// Byte to set the control register of the DS3234
 #define DS3234_SREG_BYTE 0x10		// Byte to set the SREG of the DS3234
