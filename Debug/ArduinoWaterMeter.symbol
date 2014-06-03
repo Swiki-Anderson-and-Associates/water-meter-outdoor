@@ -203,114 +203,122 @@
 00000872 t reportLeak()
 000008b8 t clearLog()
 000008ff W __stack
-0000097c t resetSystem()
-000009d6 T loop
-00000ad0 T setup
-00000b68 T __vector_6
-00000b90 T DS3234_get(unsigned char, ts*)
-00000c94 T DS3234_end()
-00000caa T DS3234_init(unsigned char)
-00000ccc T Sd2Card::setSckRate(unsigned char)
-00000d16 T Sd2Card::waitNotBusy(unsigned int)
-00000d5a T Sd2Card::chipSelectLow()
-00000d64 T Sd2Card::chipSelectHigh()
-00000d6e T Sd2Card::writeData(unsigned char, unsigned char const*)
-00000de0 T Sd2Card::waitStartBlock()
-00000e38 T Sd2Card::readEnd()
-00000e7c T Sd2Card::cardCommand(unsigned char, unsigned long)
-00000f1c T Sd2Card::writeBlock(unsigned long, unsigned char const*)
-00000fca T Sd2Card::readData(unsigned long, unsigned int, unsigned int, unsigned char*)
-000010fc T Sd2Card::readBlock(unsigned long, unsigned char*)
-0000111a T Sd2Card::init(unsigned char, unsigned char)
-000012ac T SdFile::make83Name(char const*, unsigned char*)
-0000132e T SdFile::seekSet(unsigned long)
-00001480 T SdFile::cacheDirEntry(unsigned char)
-000014b8 T SdFile::sync()
-00001548 T SdFile::close()
-0000155e T SdFile::truncate(unsigned long)
-000016ec T SdFile::read(void*, unsigned int)
-00001910 T SdFile::readDirCache()
-000019a2 T SdFile::openRoot(SdVolume*)
-00001a42 T SdFile::openCachedEntry(unsigned char, unsigned char)
-00001b1a T SdFile::addCluster()
-00001b66 T SdFile::write(void const*, unsigned int)
-00001ec8 T SdFile::write(unsigned char)
-00001ee8 T SdFile::addDirCluster()
-00001fac T SdFile::open(SdFile*, char const*, unsigned char)
-000021ae T SdVolume::cacheFlush()
-00002224 T SdVolume::cacheZeroBlock(unsigned long)
-0000226a T SdVolume::cacheRawBlock(unsigned long, unsigned char)
-000022de T SdVolume::init(Sd2Card*, unsigned char)
-00002564 T SdVolume::fatPut(unsigned long, unsigned long)
-0000269a T SdVolume::fatGet(unsigned long, unsigned long*) const
-0000277e T SdVolume::freeChain(unsigned long)
-0000282c T SdVolume::chainSize(unsigned long, unsigned long*) const
-00002908 T SdVolume::allocContiguous(unsigned long, unsigned long*)
-00002b1e T EEPROMClass::read(int)
-00002b2c T EEPROMClass::write(int, unsigned char)
-00002b44 T File::File()
-00002b6a T File::~File()
-00002b76 T File::write(unsigned char)
-00002ba6 T File::available()
-00002bee T File::operator bool()
-00002c08 T File::close()
-00002c2a T File::flush()
-00002c3a T File::read()
-00002c76 T File::peek()
-00002cee T File::write(unsigned char const*, unsigned int)
-00002d28 T File::File(SdFile, char const*)
-00002d98 t global constructors keyed to _Z20getNextPathComponentPcPjS_
-00002dde T SDClass::getParentDir(char const*, int*)
-00003016 T SDClass::open(char const*, unsigned char)
-0000325a T SDClass::begin(unsigned char)
-000032c6 T SPIClass::end()
-000032ce T SPIClass::setBitOrder(unsigned char)
-000032e0 T SPIClass::setDataMode(unsigned char)
-000032ea T SPIClass::begin()
-0000330e T malloc
-00003448 T free
-00003578 W serialEvent()
-0000357a T __vector_18
-000035f0 W serialEventRun()
-00003614 T __vector_19
-0000368a T HardwareSerial::begin(unsigned long, unsigned char)
-000037a0 T HardwareSerial::available()
-000037c2 T HardwareSerial::peek()
-00003802 T HardwareSerial::read()
-00003854 T HardwareSerial::flush()
-00003874 T HardwareSerial::write(unsigned char)
-000038f4 T HardwareSerial::operator bool()
-000038f8 t global constructors keyed to rx_buffer
-000039a4 T Print::write(unsigned char const*, unsigned int)
-000039f8 T Print::println()
-00003a38 W Print::write(char const*)
-00003a70 T Print::print(char const*)
-00003a74 T Print::println(char const*)
-00003a96 T main
-00003ab0 T __vector_16
-00003b40 T millis
-00003b5c T delay
-00003c0e T init
-00003c84 T pinMode
-00003d02 T digitalWrite
-00003daa T digitalRead
-00003e50 T __mulsi3
-00003e8e T __udivmodsi4
-00003e9a t __udivmodsi4_loop
-00003eb4 t __udivmodsi4_ep
-00003ed2 T __prologue_saves__
-00003f0a T __epilogue_restores__
-00003f40 T __tablejump2__
-00003f44 T __tablejump__
-00003f4c T __do_global_dtors
-00003f4c T _exit
-00003f4c W exit
-00003f54 t .do_global_dtors_loop
-00003f5a t .do_global_dtors_start
-00003f62 t __stop_program
-00003f64 A __data_load_start
-00003f64 T _etext
-000040be A __data_load_end
+000009a0 t resetSystem()
+000009fa T loop
+00000af4 T setup
+00000b8c T __vector_6
+00000bb4 T DS3234_get(unsigned char, ts*)
+00000cb8 T DS3234_end()
+00000cce T DS3234_init(unsigned char)
+00000cf0 T Sd2Card::setSckRate(unsigned char)
+00000d3a T Sd2Card::waitNotBusy(unsigned int)
+00000d7e T Sd2Card::chipSelectLow()
+00000d88 T Sd2Card::chipSelectHigh()
+00000d92 T Sd2Card::writeData(unsigned char, unsigned char const*)
+00000e04 T Sd2Card::waitStartBlock()
+00000e5c T Sd2Card::readEnd()
+00000ea0 T Sd2Card::cardCommand(unsigned char, unsigned long)
+00000f40 T Sd2Card::writeBlock(unsigned long, unsigned char const*)
+00000fee T Sd2Card::readData(unsigned long, unsigned int, unsigned int, unsigned char*)
+00001120 T Sd2Card::readBlock(unsigned long, unsigned char*)
+0000113e T Sd2Card::init(unsigned char, unsigned char)
+000012d0 T SdFile::make83Name(char const*, unsigned char*)
+00001352 T SdFile::seekSet(unsigned long)
+000014a4 T SdFile::cacheDirEntry(unsigned char)
+000014dc T SdFile::sync()
+0000156c T SdFile::close()
+00001582 T SdFile::truncate(unsigned long)
+00001710 T SdFile::remove()
+00001742 T SdFile::read(void*, unsigned int)
+00001966 T SdFile::readDirCache()
+000019f8 T SdFile::openRoot(SdVolume*)
+00001a98 T SdFile::openCachedEntry(unsigned char, unsigned char)
+00001b70 T SdFile::addCluster()
+00001bbc T SdFile::write(void const*, unsigned int)
+00001f1e T SdFile::write(unsigned char)
+00001f3e T SdFile::addDirCluster()
+00002002 T SdFile::open(SdFile*, char const*, unsigned char)
+00002204 T SdFile::remove(SdFile*, char const*)
+0000225a T SdVolume::cacheFlush()
+000022d0 T SdVolume::cacheZeroBlock(unsigned long)
+00002316 T SdVolume::cacheRawBlock(unsigned long, unsigned char)
+0000238a T SdVolume::init(Sd2Card*, unsigned char)
+00002610 T SdVolume::fatPut(unsigned long, unsigned long)
+00002746 T SdVolume::fatGet(unsigned long, unsigned long*) const
+0000282a T SdVolume::freeChain(unsigned long)
+000028d8 T SdVolume::chainSize(unsigned long, unsigned long*) const
+000029b4 T SdVolume::allocContiguous(unsigned long, unsigned long*)
+00002bca T EEPROMClass::read(int)
+00002bd8 T EEPROMClass::write(int, unsigned char)
+00002bf0 T File::File()
+00002c16 T File::~File()
+00002c22 T File::write(unsigned char)
+00002c52 T File::available()
+00002c9a T File::operator bool()
+00002cb4 T File::close()
+00002cd6 T File::flush()
+00002ce6 T File::read()
+00002d22 T File::peek()
+00002d9a T File::write(unsigned char const*, unsigned int)
+00002dd4 T File::File(SdFile, char const*)
+00002e44 T getNextPathComponent(char*, unsigned int*, char*)
+00002ebe t global constructors keyed to _Z20getNextPathComponentPcPjS_
+00002f04 T callback_pathExists(SdFile&, char*, unsigned char, void*)
+00002f66 T walkPath(char*, SdFile&, unsigned char (*)(SdFile&, char*, unsigned char, void*), void*)
+00003080 T SDClass::remove(char*)
+00003094 T SDClass::exists(char*)
+000030a8 T SDClass::getParentDir(char const*, int*)
+000032e2 T SDClass::open(char const*, unsigned char)
+00003526 T SDClass::begin(unsigned char)
+00003596 T callback_remove(SdFile&, char*, unsigned char, void*)
+000035a2 T SPIClass::end()
+000035aa T SPIClass::setBitOrder(unsigned char)
+000035bc T SPIClass::setDataMode(unsigned char)
+000035c6 T SPIClass::begin()
+000035ea T malloc
+00003724 T free
+00003854 W serialEvent()
+00003856 T __vector_18
+000038cc W serialEventRun()
+000038f0 T __vector_19
+00003966 T HardwareSerial::begin(unsigned long, unsigned char)
+00003a7c T HardwareSerial::available()
+00003a9e T HardwareSerial::peek()
+00003ade T HardwareSerial::read()
+00003b30 T HardwareSerial::flush()
+00003b50 T HardwareSerial::write(unsigned char)
+00003bd0 T HardwareSerial::operator bool()
+00003bd4 t global constructors keyed to rx_buffer
+00003c80 T Print::write(unsigned char const*, unsigned int)
+00003cd4 T Print::println()
+00003d14 W Print::write(char const*)
+00003d4c T Print::print(char const*)
+00003d50 T Print::println(char const*)
+00003d72 T main
+00003d8c T __vector_16
+00003e1c T millis
+00003e38 T delay
+00003eea T init
+00003f60 T pinMode
+00003fde T digitalWrite
+00004086 T digitalRead
+0000412c T __mulsi3
+0000416a T __udivmodsi4
+00004176 t __udivmodsi4_loop
+00004190 t __udivmodsi4_ep
+000041ae T __prologue_saves__
+000041e6 T __epilogue_restores__
+0000421c T __tablejump2__
+00004220 T __tablejump__
+00004228 T __do_global_dtors
+00004228 T _exit
+00004228 W exit
+00004230 t .do_global_dtors_loop
+00004236 t .do_global_dtors_start
+0000423e t __stop_program
+00004240 A __data_load_start
+00004240 T _etext
+0000439a A __data_load_end
 00800100 D __data_start
 00800228 D SdVolume::cacheBlockNumber_
 0080022c D __malloc_margin
@@ -327,22 +335,22 @@
 00800276 B SPIFunc
 00800277 B interruptNo
 00800278 b MessageBuffer
-00800378 B SdFile::dateTime_
-0080037a B SdVolume::cacheBuffer_
-0080057a B SdVolume::sdCard_
-0080057c B SdVolume::cacheDirty_
-0080057d B SdVolume::cacheMirrorBlock_
-00800581 B EEPROM
-00800582 B SD
-008005cb B rx_buffer
-0080060f B tx_buffer
-00800653 B Serial
-00800675 B timer0_overflow_count
-00800679 B timer0_millis
-0080067d b timer0_fract
-0080067e B __brkval
-00800680 B __flp
-00800682 B __bss_end
-00800682 N __heap_start
-00800682 N _end
+00800280 B SdFile::dateTime_
+00800282 B SdVolume::cacheBuffer_
+00800482 B SdVolume::sdCard_
+00800484 B SdVolume::cacheDirty_
+00800485 B SdVolume::cacheMirrorBlock_
+00800489 B EEPROM
+0080048a B SD
+008004d3 B rx_buffer
+00800517 B tx_buffer
+0080055b B Serial
+0080057d B timer0_overflow_count
+00800581 B timer0_millis
+00800585 b timer0_fract
+00800586 B __brkval
+00800588 B __flp
+0080058a B __bss_end
+0080058a N __heap_start
+0080058a N _end
 00810000 N __eeprom_end

@@ -29,12 +29,12 @@
 #define VALVE_CONTROL_2_PIN 9			// see above
 
 // Define Global Variables
-static char MessageBuffer[256];
+static char MessageBuffer[8];
 File logFile;
 uint8_t leak, SPIFunc, interruptNo;
 
 // Define Program Functions
-static uint8_t openLogFile()
+static uint8_t openLogFile()						// TODO: set this up to create new logs every month
 {
 	if(!SD.begin(4))
 	{
@@ -209,23 +209,14 @@ static void setConsecGallons(uint8_t gals)
 	EEPROM.write(5,gals);
 }
 
-static uint8_t clearLog()
+static uint8_t clearLog()					// TODO: rewrite for multiple month logs
 {
 	useSD();
-	/*													// TODO: rewrite for using sd card
-	uint8 i;
-	if (getLastLogPos()!=LOG_START_POS-1)
+	closeLogFile();
+	if(SD.exists("log.txt"))
 	{
-		for(i=LOG_START_POS; i<=251; i++)
-		{
-			DS3234_set_sram_8b(i,0);
-		}
-		DS3234_set_sram_8b(2,(uint8)(LOG_START_POS-1));
+		SD.remove("log.txt");
 	}
-	printTime();
-	sprintf(MessageBuffer,"Log:\tCleared\n");
-	return printSerial();
-	*/
 }
 
 static uint8_t resetSystem()
@@ -475,6 +466,7 @@ void setup()
 
 void loop()
 {
+	// TODO: fix logical control
 	if (digitalRead(RST_PIN))
 	{
 		// manually reset system if INPUT 1 is held
