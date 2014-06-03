@@ -209,8 +209,8 @@ static void shutdown()
 	interruptNo = 0;
 	sleep_enable();
 	attachInterrupt(0,radioInterrupt,LOW);
-	attachInterrupt(1,meterInterrupt,FALLING);
-	LowPower.powerDown(SLEEP_FOREVER,ADC_OFF,BOD_OFF);
+	attachInterrupt(1,meterInterrupt,FALLING);		// TODO: fix this falling interrupt wont work, need change interrupt
+	LowPower.powerDown(SLEEP_8S,ADC_OFF,BOD_OFF);
 }
 
 static uint8_t reportLog()
@@ -431,7 +431,7 @@ void loop()
 		clearLog();
 	}
 
-	else if (digitalRead(METER_PIN))
+	else if (interruptNo == 2)
 	{
 		logGallon();
 		// check if a leak was previously detected
@@ -452,5 +452,5 @@ void loop()
 
 	checkRadioCommands();
 	Serial.flush();
-	//shutdown();
+	shutdown();
 }
