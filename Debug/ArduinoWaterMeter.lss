@@ -7,11 +7,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, DATA
   1 .text         00004240  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .bss          00000330  0080025a  0080025a  0000442e  2**0
+  2 .bss          00000428  0080025a  0080025a  0000442e  2**0
                   ALLOC
   3 .stab         0000bd78  00000000  00000000  00004430  2**2
                   CONTENTS, READONLY, DEBUGGING
-  4 .stabstr      0000b50a  00000000  00000000  000101a8  2**0
+  4 .stabstr      0000b520  00000000  00000000  000101a8  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -125,7 +125,7 @@ Disassembly of section .text:
       fa:	d9 f7       	brne	.-10     	; 0xf2 <.do_copy_data_loop>
 
 000000fc <__do_clear_bss>:
-      fc:	15 e0       	ldi	r17, 0x05	; 5
+      fc:	16 e0       	ldi	r17, 0x06	; 6
       fe:	aa e5       	ldi	r26, 0x5A	; 90
      100:	b2 e0       	ldi	r27, 0x02	; 2
      102:	01 c0       	rjmp	.+2      	; 0x106 <.do_clear_bss_start>
@@ -134,7 +134,7 @@ Disassembly of section .text:
      104:	1d 92       	st	X+, r1
 
 00000106 <.do_clear_bss_start>:
-     106:	aa 38       	cpi	r26, 0x8A	; 138
+     106:	a2 38       	cpi	r26, 0x82	; 130
      108:	b1 07       	cpc	r27, r17
      10a:	e1 f7       	brne	.-8      	; 0x104 <.do_clear_bss_loop>
 
@@ -893,11 +893,11 @@ Disassembly of section .text:
      6b4:	6f 5f       	subi	r22, 0xFF	; 255
      6b6:	7f 4f       	sbci	r23, 0xFF	; 255
      6b8:	69 f4       	brne	.+26     	; 0x6d4 <_Z41__static_initialization_and_destruction_0ii+0x26>
-#define VALVE_CONTROL_1_PIN 8			// polarity of valve control pins must be reversed to open or close valve
 #define VALVE_CONTROL_2_PIN 9			// see above
 
 // Define Global Variables
-static char MessageBuffer[8];
+static char MessageBuffer[256];
+static char LogBuffer[LOG_LINE_LENGTH];
 File logFile;
      6ba:	8a e5       	ldi	r24, 0x5A	; 90
      6bc:	92 e0       	ldi	r25, 0x02	; 2
@@ -1043,8 +1043,8 @@ static void printTime()
      784:	9e bf       	out	0x3e, r25	; 62
      786:	0f be       	out	0x3f, r0	; 63
      788:	8d bf       	out	0x3d, r24	; 61
-     78a:	8b e5       	ldi	r24, 0x5B	; 91
-     78c:	95 e0       	ldi	r25, 0x05	; 5
+     78a:	83 e5       	ldi	r24, 0x53	; 83
+     78c:	96 e0       	ldi	r25, 0x06	; 6
      78e:	b8 01       	movw	r22, r16
      790:	0e 94 a8 1e 	call	0x3d50	; 0x3d50 <_ZN5Print7printlnEPKc>
      794:	2b 96       	adiw	r28, 0x0b	; 11
@@ -1094,8 +1094,8 @@ static uint8_t openValve()
 static void setValvePos(uint8_t pos)
 {
 	EEPROM.write(0,pos);
-     7d2:	89 e8       	ldi	r24, 0x89	; 137
-     7d4:	94 e0       	ldi	r25, 0x04	; 4
+     7d2:	81 e8       	ldi	r24, 0x81	; 129
+     7d4:	95 e0       	ldi	r25, 0x05	; 5
      7d6:	60 e0       	ldi	r22, 0x00	; 0
      7d8:	70 e0       	ldi	r23, 0x00	; 0
      7da:	41 e0       	ldi	r20, 0x01	; 1
@@ -1122,8 +1122,8 @@ static void setValvePos(uint8_t pos)
      7f8:	6e e1       	ldi	r22, 0x1E	; 30
      7fa:	71 e0       	ldi	r23, 0x01	; 1
      7fc:	af dc       	rcall	.-1698   	; 0x15c <strcpy>
-     7fe:	8b e5       	ldi	r24, 0x5B	; 91
-     800:	95 e0       	ldi	r25, 0x05	; 5
+     7fe:	83 e5       	ldi	r24, 0x53	; 83
+     800:	96 e0       	ldi	r25, 0x06	; 6
 	}
 }
 
@@ -1176,8 +1176,8 @@ static uint8_t closeValve()
 static void setValvePos(uint8_t pos)
 {
 	EEPROM.write(0,pos);
-     836:	89 e8       	ldi	r24, 0x89	; 137
-     838:	94 e0       	ldi	r25, 0x04	; 4
+     836:	81 e8       	ldi	r24, 0x81	; 129
+     838:	95 e0       	ldi	r25, 0x05	; 5
      83a:	60 e0       	ldi	r22, 0x00	; 0
      83c:	70 e0       	ldi	r23, 0x00	; 0
      83e:	40 e0       	ldi	r20, 0x00	; 0
@@ -1204,8 +1204,8 @@ static void setValvePos(uint8_t pos)
      85c:	6d e2       	ldi	r22, 0x2D	; 45
      85e:	71 e0       	ldi	r23, 0x01	; 1
      860:	7d dc       	rcall	.-1798   	; 0x15c <strcpy>
-     862:	8b e5       	ldi	r24, 0x5B	; 91
-     864:	95 e0       	ldi	r25, 0x05	; 5
+     862:	83 e5       	ldi	r24, 0x53	; 83
+     864:	96 e0       	ldi	r25, 0x06	; 6
 	}
 }
 
@@ -1232,14 +1232,14 @@ static uint8_t reportLeak()
 {
 	printTime();
      872:	3b df       	rcall	.-394    	; 0x6ea <_ZL9printTimev>
-     874:	89 e8       	ldi	r24, 0x89	; 137
+     874:	81 e8       	ldi	r24, 0x81	; 129
 	return EEPROM.read(0);
 }
 
 static uint8_t wasLeakDetected()
 {
 	return EEPROM.read(1);
-     876:	94 e0       	ldi	r25, 0x04	; 4
+     876:	95 e0       	ldi	r25, 0x05	; 5
      878:	61 e0       	ldi	r22, 0x01	; 1
      87a:	70 e0       	ldi	r23, 0x00	; 0
      87c:	0e 94 e5 15 	call	0x2bca	; 0x2bca <_ZN11EEPROMClass4readEi>
@@ -1280,8 +1280,8 @@ static uint8_t reportLeak()
      8a6:	66 ea       	ldi	r22, 0xA6	; 166
      8a8:	71 e0       	ldi	r23, 0x01	; 1
      8aa:	58 dc       	rcall	.-1872   	; 0x15c <strcpy>
-     8ac:	8b e5       	ldi	r24, 0x5B	; 91
-     8ae:	95 e0       	ldi	r25, 0x05	; 5
+     8ac:	83 e5       	ldi	r24, 0x53	; 83
+     8ae:	96 e0       	ldi	r25, 0x06	; 6
 	}
 }
 
@@ -1329,14 +1329,14 @@ static uint8_t useSD()
      8d8:	81 e0       	ldi	r24, 0x01	; 1
 		SPIFunc = 1;
      8da:	80 93 76 02 	sts	0x0276, r24
-     8de:	8a e8       	ldi	r24, 0x8A	; 138
+     8de:	82 e8       	ldi	r24, 0x82	; 130
 uint8_t leak, SPIFunc, interruptNo;
 
 // Define Program Functions
 static uint8_t openLogFile()						// TODO: set this up to create new logs every month
 {
 	if(!SD.begin(4))
-     8e0:	94 e0       	ldi	r25, 0x04	; 4
+     8e0:	95 e0       	ldi	r25, 0x05	; 5
      8e2:	64 e0       	ldi	r22, 0x04	; 4
      8e4:	0e 94 93 1a 	call	0x3526	; 0x3526 <_ZN7SDClass5beginEh>
      8e8:	88 23       	and	r24, r24
@@ -1348,8 +1348,8 @@ static uint8_t openLogFile()						// TODO: set this up to create new logs every 
 	}
 	logFile = SD.open("log.txt",FILE_WRITE);
      8f0:	01 96       	adiw	r24, 0x01	; 1
-     8f2:	6a e8       	ldi	r22, 0x8A	; 138
-     8f4:	74 e0       	ldi	r23, 0x04	; 4
+     8f2:	62 e8       	ldi	r22, 0x82	; 130
+     8f4:	75 e0       	ldi	r23, 0x05	; 5
      8f6:	44 ef       	ldi	r20, 0xF4	; 244
      8f8:	51 e0       	ldi	r21, 0x01	; 1
      8fa:	23 e1       	ldi	r18, 0x13	; 19
@@ -1421,23 +1421,23 @@ static void closeLogFile()
 	logFile.close();
      96c:	92 e0       	ldi	r25, 0x02	; 2
      96e:	0e 94 5a 16 	call	0x2cb4	; 0x2cb4 <_ZN4File5closeEv>
-     972:	8a e8       	ldi	r24, 0x8A	; 138
+     972:	82 e8       	ldi	r24, 0x82	; 130
 
 static uint8_t clearLog()					// TODO: rewrite for multiple month logs
 {
 	useSD();
 	closeLogFile();
 	if(SD.exists("log.txt"))
-     974:	94 e0       	ldi	r25, 0x04	; 4
+     974:	95 e0       	ldi	r25, 0x05	; 5
      976:	64 ef       	ldi	r22, 0xF4	; 244
      978:	71 e0       	ldi	r23, 0x01	; 1
      97a:	0e 94 4a 18 	call	0x3094	; 0x3094 <_ZN7SDClass6existsEPc>
      97e:	88 23       	and	r24, r24
      980:	31 f0       	breq	.+12     	; 0x98e <__stack+0x8f>
-     982:	8a e8       	ldi	r24, 0x8A	; 138
+     982:	82 e8       	ldi	r24, 0x82	; 130
 	{
 		SD.remove("log.txt");
-     984:	94 e0       	ldi	r25, 0x04	; 4
+     984:	95 e0       	ldi	r25, 0x05	; 5
      986:	64 ef       	ldi	r22, 0xF4	; 244
      988:	71 e0       	ldi	r23, 0x01	; 1
      98a:	0e 94 40 18 	call	0x3080	; 0x3080 <_ZN7SDClass6removeEPc>
@@ -1463,8 +1463,8 @@ static uint8_t resetSystem()
      9a4:	02 df       	rcall	.-508    	; 0x7aa <_ZL9openValvev>
      9a6:	88 df       	rcall	.-240    	; 0x8b8 <_ZL8clearLogv>
 	clearLog();
-     9a8:	09 e8       	ldi	r16, 0x89	; 137
-     9aa:	14 e0       	ldi	r17, 0x04	; 4
+     9a8:	01 e8       	ldi	r16, 0x81	; 129
+     9aa:	15 e0       	ldi	r17, 0x05	; 5
 	EEPROM.write(0,pos);
 }
 
@@ -1520,8 +1520,8 @@ static void setConsecGallons(uint8_t gals)
      9e4:	6c ef       	ldi	r22, 0xFC	; 252
      9e6:	71 e0       	ldi	r23, 0x01	; 1
      9e8:	b9 db       	rcall	.-2190   	; 0x15c <strcpy>
-     9ea:	8b e5       	ldi	r24, 0x5B	; 91
-     9ec:	95 e0       	ldi	r25, 0x05	; 5
+     9ea:	83 e5       	ldi	r24, 0x53	; 83
+     9ec:	96 e0       	ldi	r25, 0x06	; 6
      9ee:	b8 01       	movw	r22, r16
      9f0:	0e 94 a6 1e 	call	0x3d4c	; 0x3d4c <_ZN5Print5printEPKc>
 	}
@@ -1567,14 +1567,14 @@ void loop()
      a16:	89 2b       	or	r24, r25
      a18:	09 f4       	brne	.+2      	; 0xa1c <loop+0x22>
      a1a:	61 c0       	rjmp	.+194    	; 0xade <loop+0xe4>
-     a1c:	89 e8       	ldi	r24, 0x89	; 137
+     a1c:	81 e8       	ldi	r24, 0x81	; 129
 	return EEPROM.read(0);
 }
 
 static uint8_t wasLeakDetected()
 {
 	return EEPROM.read(1);
-     a1e:	94 e0       	ldi	r25, 0x04	; 4
+     a1e:	95 e0       	ldi	r25, 0x05	; 5
      a20:	61 e0       	ldi	r22, 0x01	; 1
      a22:	70 e0       	ldi	r23, 0x00	; 0
      a24:	0e 94 e5 15 	call	0x2bca	; 0x2bca <_ZN11EEPROMClass4readEi>
@@ -1596,14 +1596,14 @@ static uint8_t wasLeakDetected()
 			if (leak!=0)
      a36:	09 f4       	brne	.+2      	; 0xa3a <loop+0x40>
      a38:	52 c0       	rjmp	.+164    	; 0xade <loop+0xe4>
-     a3a:	89 e8       	ldi	r24, 0x89	; 137
+     a3a:	81 e8       	ldi	r24, 0x81	; 129
 	EEPROM.write(0,pos);
 }
 
 static void setLeakCondition(uint8_t cond)
 {
 	EEPROM.write(1,cond);
-     a3c:	94 e0       	ldi	r25, 0x04	; 4
+     a3c:	95 e0       	ldi	r25, 0x05	; 5
      a3e:	61 e0       	ldi	r22, 0x01	; 1
      a40:	70 e0       	ldi	r23, 0x00	; 0
      a42:	0e 94 ec 15 	call	0x2bd8	; 0x2bd8 <_ZN11EEPROMClass5writeEih>
@@ -1619,9 +1619,9 @@ static void setLeakCondition(uint8_t cond)
 				reportLog();
 				reportLeak();
      a4c:	48 c0       	rjmp	.+144    	; 0xade <loop+0xe4>
-     a4e:	8b e5       	ldi	r24, 0x5B	; 91
+     a4e:	83 e5       	ldi	r24, 0x53	; 83
 				clearLog();
-     a50:	95 e0       	ldi	r25, 0x05	; 5
+     a50:	96 e0       	ldi	r25, 0x06	; 6
      a52:	0e 94 6f 1d 	call	0x3ade	; 0x3ade <_ZN14HardwareSerial4readEv>
 
 static void checkRadioCommands()
@@ -1669,11 +1669,11 @@ static void processRadio(uint8_t Signal)
 			closeValve();
      a8a:	29 c0       	rjmp	.+82     	; 0xade <loop+0xe4>
      a8c:	2e de       	rcall	.-932    	; 0x6ea <_ZL9printTimev>
-     a8e:	89 e8       	ldi	r24, 0x89	; 137
+     a8e:	81 e8       	ldi	r24, 0x81	; 129
 			break;
 		case 'o':
 			openValve();
-     a90:	94 e0       	ldi	r25, 0x04	; 4
+     a90:	95 e0       	ldi	r25, 0x05	; 5
      a92:	60 e0       	ldi	r22, 0x00	; 0
      a94:	70 e0       	ldi	r23, 0x00	; 0
 			break;
@@ -1716,8 +1716,8 @@ static uint8_t reportValve()
 	case 0:
 		sprintf(MessageBuffer,"Valve:\tClosed\n");
      ab6:	0c c0       	rjmp	.+24     	; 0xad0 <loop+0xd6>
-     ab8:	89 e8       	ldi	r24, 0x89	; 137
-     aba:	94 e0       	ldi	r25, 0x04	; 4
+     ab8:	81 e8       	ldi	r24, 0x81	; 129
+     aba:	95 e0       	ldi	r25, 0x05	; 5
      abc:	61 e0       	ldi	r22, 0x01	; 1
      abe:	70 e0       	ldi	r23, 0x00	; 0
 		break;
@@ -1737,8 +1737,8 @@ static void setLeakCondition(uint8_t cond)
      acc:	67 e1       	ldi	r22, 0x17	; 23
      ace:	72 e0       	ldi	r23, 0x02	; 2
      ad0:	45 db       	rcall	.-2422   	; 0x15c <strcpy>
-     ad2:	8b e5       	ldi	r24, 0x5B	; 91
-     ad4:	95 e0       	ldi	r25, 0x05	; 5
+     ad2:	83 e5       	ldi	r24, 0x53	; 83
+     ad4:	96 e0       	ldi	r25, 0x06	; 6
      ad6:	68 e7       	ldi	r22, 0x78	; 120
 }
 
@@ -1749,8 +1749,8 @@ static uint8_t clearLeak()
      ad8:	72 e0       	ldi	r23, 0x02	; 2
      ada:	0e 94 a6 1e 	call	0x3d4c	; 0x3d4c <_ZN5Print5printEPKc>
 	sprintf(MessageBuffer,"Leak:\tCleared\n");
-     ade:	8b e5       	ldi	r24, 0x5B	; 91
-     ae0:	95 e0       	ldi	r25, 0x05	; 5
+     ade:	83 e5       	ldi	r24, 0x53	; 83
+     ae0:	96 e0       	ldi	r25, 0x06	; 6
      ae2:	0e 94 3e 1d 	call	0x3a7c	; 0x3a7c <_ZN14HardwareSerial9availableEv>
      ae6:	89 2b       	or	r24, r25
 	}
@@ -1761,8 +1761,8 @@ static uint8_t printSerial()
 	return Serial.print(MessageBuffer);
      ae8:	09 f0       	breq	.+2      	; 0xaec <loop+0xf2>
      aea:	b1 cf       	rjmp	.-158    	; 0xa4e <loop+0x54>
-     aec:	8b e5       	ldi	r24, 0x5B	; 91
-     aee:	95 e0       	ldi	r25, 0x05	; 5
+     aec:	83 e5       	ldi	r24, 0x53	; 83
+     aee:	96 e0       	ldi	r25, 0x06	; 6
      af0:	0c 94 98 1d 	jmp	0x3b30	; 0x3b30 <_ZN14HardwareSerial5flushEv>
 
 00000af4 <setup>:
@@ -1833,20 +1833,20 @@ void setup()
      b5e:	b7 d0       	rcall	.+366    	; 0xcce <_Z11DS3234_inith>
      b60:	10 92 76 02 	sts	0x0276, r1
 	SPIFunc = 0;
-     b64:	8b e5       	ldi	r24, 0x5B	; 91
+     b64:	83 e5       	ldi	r24, 0x53	; 83
 
 	// Initialize Radio Communication
 	Serial.begin(9600,SERIAL_8N1);
-     b66:	95 e0       	ldi	r25, 0x05	; 5
+     b66:	96 e0       	ldi	r25, 0x06	; 6
      b68:	40 e8       	ldi	r20, 0x80	; 128
      b6a:	55 e2       	ldi	r21, 0x25	; 37
      b6c:	60 e0       	ldi	r22, 0x00	; 0
      b6e:	70 e0       	ldi	r23, 0x00	; 0
      b70:	26 e0       	ldi	r18, 0x06	; 6
      b72:	0e 94 b3 1c 	call	0x3966	; 0x3966 <_ZN14HardwareSerial5beginEmh>
-     b76:	8b e5       	ldi	r24, 0x5B	; 91
+     b76:	83 e5       	ldi	r24, 0x53	; 83
 	while(!Serial){;}
-     b78:	95 e0       	ldi	r25, 0x05	; 5
+     b78:	96 e0       	ldi	r25, 0x06	; 6
      b7a:	0e 94 e8 1d 	call	0x3bd0	; 0x3bd0 <_ZN14HardwareSerialcvbEv>
      b7e:	88 23       	and	r24, r24
      b80:	d1 f3       	breq	.-12     	; 0xb76 <setup+0x82>
@@ -3858,8 +3858,8 @@ dir_t* SdFile::cacheDirEntry(uint8_t action) {
     14ca:	33 1f       	adc	r19, r19
     14cc:	9a 95       	dec	r25
     14ce:	e1 f7       	brne	.-8      	; 0x14c8 <_ZN6SdFile13cacheDirEntryEh+0x24>
-    14d0:	2e 57       	subi	r18, 0x7E	; 126
-    14d2:	3d 4f       	sbci	r19, 0xFD	; 253
+    14d0:	26 58       	subi	r18, 0x86	; 134
+    14d2:	3c 4f       	sbci	r19, 0xFC	; 252
     14d4:	c9 01       	movw	r24, r18
 }
     14d6:	df 91       	pop	r29
@@ -3930,11 +3930,11 @@ uint8_t SdFile::sync(void) {
     152e:	bb 27       	eor	r27, r27
     1530:	9d 8b       	std	Y+21, r25	; 0x15
     1532:	8c 8b       	std	Y+20, r24	; 0x14
-    1534:	e0 91 80 02 	lds	r30, 0x0280
+    1534:	e0 91 78 03 	lds	r30, 0x0378
 
     // set modify time if user supplied a callback date/time function
     if (dateTime_) {
-    1538:	f0 91 81 02 	lds	r31, 0x0281
+    1538:	f0 91 79 03 	lds	r31, 0x0379
     153c:	30 97       	sbiw	r30, 0x00	; 0
     153e:	51 f0       	breq	.+20     	; 0x1554 <_ZN6SdFile4syncEv+0x78>
     1540:	be 01       	movw	r22, r28
@@ -4523,14 +4523,14 @@ int16_t SdFile::read(void* buf, uint16_t nbyte) {
     1888:	7b 07       	cpc	r23, r27
     188a:	09 f4       	brne	.+2      	; 0x188e <_ZN6SdFile4readEPvj+0x14c>
     188c:	64 c0       	rjmp	.+200    	; 0x1956 <_ZN6SdFile4readEPvj+0x214>
-    188e:	80 91 82 04 	lds	r24, 0x0482
+    188e:	80 91 7a 05 	lds	r24, 0x057A
   }
   uint8_t readBlock(uint32_t block, uint8_t* dst) {
     return sdCard_->readBlock(block, dst);}
   uint8_t readData(uint32_t block, uint16_t offset,
     uint16_t count, uint8_t* dst) {
       return sdCard_->readData(block, offset, count, dst);
-    1892:	90 91 83 04 	lds	r25, 0x0483
+    1892:	90 91 7b 05 	lds	r25, 0x057B
     1896:	95 01       	movw	r18, r10
     1898:	86 01       	movw	r16, r12
     189a:	74 01       	movw	r14, r8
@@ -4544,12 +4544,12 @@ int16_t SdFile::read(void* buf, uint16_t nbyte) {
       dst += n;
     18a6:	12 c0       	rjmp	.+36     	; 0x18cc <_ZN6SdFile4readEPvj+0x18a>
     18a8:	95 01       	movw	r18, r10
-    18aa:	2e 57       	subi	r18, 0x7E	; 126
+    18aa:	26 58       	subi	r18, 0x86	; 134
     } else {
       // read block to cache and copy data to caller
       if (!SdVolume::cacheRawBlock(block, SdVolume::CACHE_FOR_READ)) return -1;
       uint8_t* src = SdVolume::cacheBuffer_.data + offset;
-    18ac:	3d 4f       	sbci	r19, 0xFD	; 253
+    18ac:	3c 4f       	sbci	r19, 0xFC	; 252
     18ae:	a9 01       	movw	r20, r18
     18b0:	4c 0d       	add	r20, r12
       uint8_t* end = src + n;
@@ -4776,8 +4776,8 @@ dir_t* SdFile::readDirCache(void) {
     19ec:	33 1f       	adc	r19, r19
     19ee:	ea 95       	dec	r30
     19f0:	e1 f7       	brne	.-8      	; 0x19ea <_ZN6SdFile12readDirCacheEv+0x84>
-    19f2:	2e 57       	subi	r18, 0x7E	; 126
-    19f4:	3d 4f       	sbci	r19, 0xFD	; 253
+    19f2:	26 58       	subi	r18, 0x86	; 134
+    19f4:	3c 4f       	sbci	r19, 0xFC	; 252
     19f6:	d6 cf       	rjmp	.-84     	; 0x19a4 <_ZN6SdFile12readDirCacheEv+0x3e>
 
 000019f8 <_ZN6SdFile8openRootEP8SdVolume>:
@@ -4928,8 +4928,8 @@ uint8_t SdFile::openCachedEntry(uint8_t dirIndex, uint8_t oflag) {
     1aaa:	ff 1f       	adc	r31, r31
     1aac:	7a 95       	dec	r23
     1aae:	e1 f7       	brne	.-8      	; 0x1aa8 <_ZN6SdFile15openCachedEntryEhh+0x10>
-    1ab0:	ee 57       	subi	r30, 0x7E	; 126
-    1ab2:	fd 4f       	sbci	r31, 0xFD	; 253
+    1ab0:	e6 58       	subi	r30, 0x86	; 134
+    1ab2:	fc 4f       	sbci	r31, 0xFC	; 252
 
   // write or truncate is an error for a directory or read-only file
   if (p->attributes & (DIR_ATT_READ_ONLY | DIR_ATT_DIRECTORY)) {
@@ -5434,8 +5434,8 @@ size_t SdFile::write(const void* buf, uint16_t nbyte) {
     1d9a:	90 93 29 02 	sts	0x0229, r25
     1d9e:	a0 93 2a 02 	sts	0x022A, r26
     1da2:	b0 93 2b 02 	sts	0x022B, r27
-    1da6:	80 91 82 04 	lds	r24, 0x0482
-    1daa:	90 91 83 04 	lds	r25, 0x0483
+    1da6:	80 91 7a 05 	lds	r24, 0x057A
+    1daa:	90 91 7b 05 	lds	r25, 0x057B
   uint8_t readData(uint32_t block, uint16_t offset,
     uint16_t count, uint8_t* dst) {
       return sdCard_->readData(block, offset, count, dst);
@@ -5487,9 +5487,9 @@ size_t SdFile::write(const void* buf, uint16_t nbyte) {
     1df8:	00 93 2a 02 	sts	0x022A, r16
         SdVolume::cacheBlockNumber_ = block;
     1dfc:	10 93 2b 02 	sts	0x022B, r17
-    1e00:	80 91 84 04 	lds	r24, 0x0484
+    1e00:	80 91 7c 05 	lds	r24, 0x057C
     1e04:	81 60       	ori	r24, 0x01	; 1
-    1e06:	80 93 84 04 	sts	0x0484, r24
+    1e06:	80 93 7c 05 	sts	0x057C, r24
            return dataStartBlock_ + ((cluster - 2) << clusterSizeShift_);}
   uint32_t blockNumber(uint32_t cluster, uint32_t position) const {
            return clusterStartBlock(cluster) + blockOfCluster(position);}
@@ -5509,8 +5509,8 @@ size_t SdFile::write(const void* buf, uint16_t nbyte) {
     1e16:	09 f4       	brne	.+2      	; 0x1e1a <_ZN6SdFile5writeEPKvj+0x25e>
     1e18:	5c c0       	rjmp	.+184    	; 0x1ed2 <_ZN6SdFile5writeEPKvj+0x316>
     1e1a:	94 01       	movw	r18, r8
-    1e1c:	2e 57       	subi	r18, 0x7E	; 126
-    1e1e:	3d 4f       	sbci	r19, 0xFD	; 253
+    1e1c:	26 58       	subi	r18, 0x86	; 134
+    1e1e:	3c 4f       	sbci	r19, 0xFC	; 252
     1e20:	a9 01       	movw	r20, r18
     1e22:	4a 0d       	add	r20, r10
     1e24:	5b 1d       	adc	r21, r11
@@ -5598,9 +5598,9 @@ size_t SdFile::write(const void* buf, uint16_t nbyte) {
     1e9a:	80 68       	ori	r24, 0x80	; 128
     1e9c:	84 83       	std	Z+4, r24	; 0x04
     1e9e:	11 c0       	rjmp	.+34     	; 0x1ec2 <_ZN6SdFile5writeEPKvj+0x306>
-    1ea0:	80 91 80 02 	lds	r24, 0x0280
+    1ea0:	80 91 78 03 	lds	r24, 0x0378
     flags_ |= F_FILE_DIR_DIRTY;
-    1ea4:	90 91 81 02 	lds	r25, 0x0281
+    1ea4:	90 91 79 03 	lds	r25, 0x0379
     1ea8:	89 2b       	or	r24, r25
     1eaa:	59 f0       	breq	.+22     	; 0x1ec2 <_ZN6SdFile5writeEPKvj+0x306>
   } else if (dateTime_ && nbyte) {
@@ -6078,8 +6078,8 @@ uint8_t SdFile::open(SdFile* dirFile, const char* fileName, uint8_t oflag) {
     214c:	45 c0       	rjmp	.+138    	; 0x21d8 <_ZN6SdFile4openEPS_PKch+0x1d6>
     214e:	f5 01       	movw	r30, r10
     2150:	12 8a       	std	Z+18, r1	; 0x12
-    2152:	02 e8       	ldi	r16, 0x82	; 130
-    2154:	12 e0       	ldi	r17, 0x02	; 2
+    2152:	0a e7       	ldi	r16, 0x7A	; 122
+    2154:	13 e0       	ldi	r17, 0x03	; 3
 
     // use first entry in cluster
     dirIndex_ = 0;
@@ -6101,8 +6101,8 @@ uint8_t SdFile::open(SdFile* dirFile, const char* fileName, uint8_t oflag) {
     216a:	0d 92       	st	X+, r0
     216c:	81 50       	subi	r24, 0x01	; 1
     216e:	e1 f7       	brne	.-8      	; 0x2168 <_ZN6SdFile4openEPS_PKch+0x166>
-    2170:	e0 91 80 02 	lds	r30, 0x0280
-    2174:	f0 91 81 02 	lds	r31, 0x0281
+    2170:	e0 91 78 03 	lds	r30, 0x0378
+    2174:	f0 91 79 03 	lds	r31, 0x0379
 
   // set timestamps
   if (dateTime_) {
@@ -6264,7 +6264,7 @@ class SdFile : public Print {
 //------------------------------------------------------------------------------
 uint8_t SdVolume::cacheFlush(void) {
   if (cacheDirty_) {
-    225a:	80 91 84 04 	lds	r24, 0x0484
+    225a:	80 91 7c 05 	lds	r24, 0x057C
     225e:	88 23       	and	r24, r24
     2260:	99 f1       	breq	.+102    	; 0x22c8 <_ZN8SdVolume10cacheFlushEv+0x6e>
     if (!sdCard_->writeBlock(cacheBlockNumber_, cacheBuffer_.data)) {
@@ -6272,10 +6272,10 @@ uint8_t SdVolume::cacheFlush(void) {
     2266:	50 91 29 02 	lds	r21, 0x0229
     226a:	60 91 2a 02 	lds	r22, 0x022A
     226e:	70 91 2b 02 	lds	r23, 0x022B
-    2272:	80 91 82 04 	lds	r24, 0x0482
-    2276:	90 91 83 04 	lds	r25, 0x0483
-    227a:	22 e8       	ldi	r18, 0x82	; 130
-    227c:	32 e0       	ldi	r19, 0x02	; 2
+    2272:	80 91 7a 05 	lds	r24, 0x057A
+    2276:	90 91 7b 05 	lds	r25, 0x057B
+    227a:	2a e7       	ldi	r18, 0x7A	; 122
+    227c:	33 e0       	ldi	r19, 0x03	; 3
     227e:	0e 94 a0 07 	call	0xf40	; 0xf40 <_ZN7Sd2Card10writeBlockEmPKh>
     2282:	88 23       	and	r24, r24
     2284:	19 f1       	breq	.+70     	; 0x22cc <_ZN8SdVolume10cacheFlushEv+0x72>
@@ -6283,33 +6283,33 @@ uint8_t SdVolume::cacheFlush(void) {
     }
     // mirror FAT tables
     if (cacheMirrorBlock_) {
-    2286:	40 91 85 04 	lds	r20, 0x0485
-    228a:	50 91 86 04 	lds	r21, 0x0486
-    228e:	60 91 87 04 	lds	r22, 0x0487
-    2292:	70 91 88 04 	lds	r23, 0x0488
+    2286:	40 91 7d 05 	lds	r20, 0x057D
+    228a:	50 91 7e 05 	lds	r21, 0x057E
+    228e:	60 91 7f 05 	lds	r22, 0x057F
+    2292:	70 91 80 05 	lds	r23, 0x0580
     2296:	41 15       	cp	r20, r1
     2298:	51 05       	cpc	r21, r1
     229a:	61 05       	cpc	r22, r1
     229c:	71 05       	cpc	r23, r1
     229e:	91 f0       	breq	.+36     	; 0x22c4 <_ZN8SdVolume10cacheFlushEv+0x6a>
       if (!sdCard_->writeBlock(cacheMirrorBlock_, cacheBuffer_.data)) {
-    22a0:	80 91 82 04 	lds	r24, 0x0482
-    22a4:	90 91 83 04 	lds	r25, 0x0483
-    22a8:	22 e8       	ldi	r18, 0x82	; 130
-    22aa:	32 e0       	ldi	r19, 0x02	; 2
+    22a0:	80 91 7a 05 	lds	r24, 0x057A
+    22a4:	90 91 7b 05 	lds	r25, 0x057B
+    22a8:	2a e7       	ldi	r18, 0x7A	; 122
+    22aa:	33 e0       	ldi	r19, 0x03	; 3
     22ac:	0e 94 a0 07 	call	0xf40	; 0xf40 <_ZN7Sd2Card10writeBlockEmPKh>
     22b0:	88 23       	and	r24, r24
     22b2:	61 f0       	breq	.+24     	; 0x22cc <_ZN8SdVolume10cacheFlushEv+0x72>
         return false;
       }
       cacheMirrorBlock_ = 0;
-    22b4:	10 92 85 04 	sts	0x0485, r1
-    22b8:	10 92 86 04 	sts	0x0486, r1
-    22bc:	10 92 87 04 	sts	0x0487, r1
-    22c0:	10 92 88 04 	sts	0x0488, r1
+    22b4:	10 92 7d 05 	sts	0x057D, r1
+    22b8:	10 92 7e 05 	sts	0x057E, r1
+    22bc:	10 92 7f 05 	sts	0x057F, r1
+    22c0:	10 92 80 05 	sts	0x0580, r1
     }
     cacheDirty_ = 0;
-    22c4:	10 92 84 04 	sts	0x0484, r1
+    22c4:	10 92 7c 05 	sts	0x057C, r1
     22c8:	81 e0       	ldi	r24, 0x01	; 1
     22ca:	08 95       	ret
     22cc:	80 e0       	ldi	r24, 0x00	; 0
@@ -6335,21 +6335,21 @@ uint8_t SdVolume::cacheZeroBlock(uint32_t blockNumber) {
     22dc:	be df       	rcall	.-132    	; 0x225a <_ZN8SdVolume10cacheFlushEv>
     22de:	88 23       	and	r24, r24
     22e0:	a9 f0       	breq	.+42     	; 0x230c <_ZN8SdVolume14cacheZeroBlockEm+0x3c>
-    22e2:	e2 e8       	ldi	r30, 0x82	; 130
-    22e4:	f2 e0       	ldi	r31, 0x02	; 2
+    22e2:	ea e7       	ldi	r30, 0x7A	; 122
+    22e4:	f3 e0       	ldi	r31, 0x03	; 3
     22e6:	11 92       	st	Z+, r1
 
   // loop take less flash than memset(cacheBuffer_.data, 0, 512);
   for (uint16_t i = 0; i < 512; i++) {
     cacheBuffer_.data[i] = 0;
-    22e8:	84 e0       	ldi	r24, 0x04	; 4
+    22e8:	85 e0       	ldi	r24, 0x05	; 5
 // cache a zero block for blockNumber
 uint8_t SdVolume::cacheZeroBlock(uint32_t blockNumber) {
   if (!cacheFlush()) return false;
 
   // loop take less flash than memset(cacheBuffer_.data, 0, 512);
   for (uint16_t i = 0; i < 512; i++) {
-    22ea:	e2 38       	cpi	r30, 0x82	; 130
+    22ea:	ea 37       	cpi	r30, 0x7A	; 122
     22ec:	f8 07       	cpc	r31, r24
     22ee:	d9 f7       	brne	.-10     	; 0x22e6 <_ZN8SdVolume14cacheZeroBlockEm+0x16>
     22f0:	e0 92 28 02 	sts	0x0228, r14
@@ -6359,7 +6359,7 @@ uint8_t SdVolume::cacheZeroBlock(uint32_t blockNumber) {
     22f4:	f0 92 29 02 	sts	0x0229, r15
     22f8:	00 93 2a 02 	sts	0x022A, r16
     22fc:	10 93 2b 02 	sts	0x022B, r17
-    2300:	80 91 84 04 	lds	r24, 0x0484
+    2300:	80 91 7c 05 	lds	r24, 0x057C
            return dataStartBlock_ + ((cluster - 2) << clusterSizeShift_);}
   uint32_t blockNumber(uint32_t cluster, uint32_t position) const {
            return clusterStartBlock(cluster) + blockOfCluster(position);}
@@ -6367,7 +6367,7 @@ uint8_t SdVolume::cacheZeroBlock(uint32_t blockNumber) {
   static uint8_t cacheRawBlock(uint32_t blockNumber, uint8_t action);
   static void cacheSetDirty(void) {cacheDirty_ |= CACHE_FOR_WRITE;}
     2304:	81 60       	ori	r24, 0x01	; 1
-    2306:	80 93 84 04 	sts	0x0484, r24
+    2306:	80 93 7c 05 	sts	0x057C, r24
     230a:	81 e0       	ldi	r24, 0x01	; 1
     230c:	1f 91       	pop	r17
   cacheSetDirty();
@@ -6407,13 +6407,13 @@ uint8_t SdVolume::cacheRawBlock(uint32_t blockNumber, uint8_t action) {
     2340:	8c df       	rcall	.-232    	; 0x225a <_ZN8SdVolume10cacheFlushEv>
     2342:	88 23       	and	r24, r24
     2344:	d9 f0       	breq	.+54     	; 0x237c <_ZN8SdVolume13cacheRawBlockEmh+0x66>
-    2346:	80 91 82 04 	lds	r24, 0x0482
+    2346:	80 91 7a 05 	lds	r24, 0x057A
     if (!sdCard_->readBlock(blockNumber, cacheBuffer_.data)) return false;
-    234a:	90 91 83 04 	lds	r25, 0x0483
+    234a:	90 91 7b 05 	lds	r25, 0x057B
     234e:	b8 01       	movw	r22, r16
     2350:	a7 01       	movw	r20, r14
-    2352:	22 e8       	ldi	r18, 0x82	; 130
-    2354:	32 e0       	ldi	r19, 0x02	; 2
+    2352:	2a e7       	ldi	r18, 0x7A	; 122
+    2354:	33 e0       	ldi	r19, 0x03	; 3
     2356:	0e 94 90 08 	call	0x1120	; 0x1120 <_ZN7Sd2Card9readBlockEmPh>
     235a:	88 23       	and	r24, r24
     235c:	79 f0       	breq	.+30     	; 0x237c <_ZN8SdVolume13cacheRawBlockEmh+0x66>
@@ -6422,11 +6422,11 @@ uint8_t SdVolume::cacheRawBlock(uint32_t blockNumber, uint8_t action) {
     2362:	f0 92 29 02 	sts	0x0229, r15
     2366:	00 93 2a 02 	sts	0x022A, r16
     236a:	10 93 2b 02 	sts	0x022B, r17
-    236e:	80 91 84 04 	lds	r24, 0x0484
+    236e:	80 91 7c 05 	lds	r24, 0x057C
   }
   cacheDirty_ |= action;
     2372:	8d 29       	or	r24, r13
-    2374:	80 93 84 04 	sts	0x0484, r24
+    2374:	80 93 7c 05 	sts	0x057C, r24
     2378:	81 e0       	ldi	r24, 0x01	; 1
     237a:	01 c0       	rjmp	.+2      	; 0x237e <_ZN8SdVolume13cacheRawBlockEmh+0x68>
     237c:	80 e0       	ldi	r24, 0x00	; 0
@@ -6462,8 +6462,8 @@ uint8_t SdVolume::init(Sd2Card* dev, uint8_t part) {
     23a4:	14 2f       	mov	r17, r20
   uint32_t volumeStartBlock = 0;
   sdCard_ = dev;
-    23a6:	70 93 83 04 	sts	0x0483, r23
-    23aa:	60 93 82 04 	sts	0x0482, r22
+    23a6:	70 93 7b 05 	sts	0x057B, r23
+    23aa:	60 93 7a 05 	sts	0x057A, r22
   // if part == 0 assume super floppy with FAT boot sector in block zero
   // if part > 0 assume mbr volume with partition table
   if (part) {
@@ -6498,8 +6498,8 @@ uint8_t SdVolume::init(Sd2Card* dev, uint8_t part) {
     23de:	ff 1f       	adc	r31, r31
     23e0:	7a 95       	dec	r23
     23e2:	e1 f7       	brne	.-8      	; 0x23dc <_ZN8SdVolume4initEP7Sd2Cardh+0x52>
-    23e4:	ee 57       	subi	r30, 0x7E	; 126
-    23e6:	fd 4f       	sbci	r31, 0xFD	; 253
+    23e4:	e6 58       	subi	r30, 0x86	; 134
+    23e6:	fc 4f       	sbci	r31, 0xFC	; 252
     23e8:	e2 54       	subi	r30, 0x42	; 66
     23ea:	fe 4f       	sbci	r31, 0xFE	; 254
     23ec:	80 81       	ld	r24, Z
@@ -6528,8 +6528,8 @@ uint8_t SdVolume::init(Sd2Card* dev, uint8_t part) {
     241a:	dd 1f       	adc	r29, r29
     241c:	6a 95       	dec	r22
     241e:	e1 f7       	brne	.-8      	; 0x2418 <_ZN8SdVolume4initEP7Sd2Cardh+0x8e>
-    2420:	c8 5b       	subi	r28, 0xB8	; 184
-    2422:	db 4f       	sbci	r29, 0xFB	; 251
+    2420:	c0 5c       	subi	r28, 0xC0	; 192
+    2422:	da 4f       	sbci	r29, 0xFA	; 250
     2424:	88 80       	ld	r8, Y
     2426:	99 80       	ldd	r9, Y+1	; 0x01
     2428:	aa 80       	ldd	r10, Y+2	; 0x02
@@ -6553,24 +6553,24 @@ uint8_t SdVolume::init(Sd2Card* dev, uint8_t part) {
     2440:	88 23       	and	r24, r24
     2442:	09 f4       	brne	.+2      	; 0x2446 <_ZN8SdVolume4initEP7Sd2Cardh+0xbc>
     2444:	d7 c0       	rjmp	.+430    	; 0x25f4 <_ZN8SdVolume4initEP7Sd2Cardh+0x26a>
-    2446:	80 91 8d 02 	lds	r24, 0x028D
+    2446:	80 91 85 03 	lds	r24, 0x0385
   bpb_t* bpb = &cacheBuffer_.fbs.bpb;
   if (bpb->bytesPerSector != 512 ||
-    244a:	90 91 8e 02 	lds	r25, 0x028E
+    244a:	90 91 86 03 	lds	r25, 0x0386
     244e:	80 50       	subi	r24, 0x00	; 0
     2450:	92 40       	sbci	r25, 0x02	; 2
     2452:	09 f0       	breq	.+2      	; 0x2456 <_ZN8SdVolume4initEP7Sd2Cardh+0xcc>
     2454:	cf c0       	rjmp	.+414    	; 0x25f4 <_ZN8SdVolume4initEP7Sd2Cardh+0x26a>
-    2456:	20 91 92 02 	lds	r18, 0x0292
+    2456:	20 91 8a 03 	lds	r18, 0x038A
     245a:	22 23       	and	r18, r18
     245c:	09 f4       	brne	.+2      	; 0x2460 <_ZN8SdVolume4initEP7Sd2Cardh+0xd6>
     245e:	ca c0       	rjmp	.+404    	; 0x25f4 <_ZN8SdVolume4initEP7Sd2Cardh+0x26a>
-    2460:	80 91 90 02 	lds	r24, 0x0290
-    2464:	90 91 91 02 	lds	r25, 0x0291
+    2460:	80 91 88 03 	lds	r24, 0x0388
+    2464:	90 91 89 03 	lds	r25, 0x0389
     2468:	89 2b       	or	r24, r25
     246a:	09 f4       	brne	.+2      	; 0x246e <_ZN8SdVolume4initEP7Sd2Cardh+0xe4>
     246c:	c3 c0       	rjmp	.+390    	; 0x25f4 <_ZN8SdVolume4initEP7Sd2Cardh+0x26a>
-    246e:	80 91 8f 02 	lds	r24, 0x028F
+    246e:	80 91 87 03 	lds	r24, 0x0387
     2472:	88 23       	and	r24, r24
     2474:	09 f4       	brne	.+2      	; 0x2478 <_ZN8SdVolume4initEP7Sd2Cardh+0xee>
     2476:	be c0       	rjmp	.+380    	; 0x25f4 <_ZN8SdVolume4initEP7Sd2Cardh+0x26a>
@@ -6582,7 +6582,7 @@ uint8_t SdVolume::init(Sd2Card* dev, uint8_t part) {
       return false;
   }
   fatCount_ = bpb->fatCount;
-    247c:	80 91 8f 02 	lds	r24, 0x028F
+    247c:	80 91 87 03 	lds	r24, 0x0387
   blocksPerCluster_ = bpb->sectorsPerCluster;
     2480:	84 83       	std	Z+4, r24	; 0x04
     2482:	15 86       	std	Z+13, r1	; 0x0d
@@ -6622,32 +6622,32 @@ uint8_t SdVolume::init(Sd2Card* dev, uint8_t part) {
     24ae:	82 17       	cp	r24, r18
     24b0:	93 07       	cpc	r25, r19
     24b2:	59 f7       	brne	.-42     	; 0x248a <_ZN8SdVolume4initEP7Sd2Cardh+0x100>
-    24b4:	20 91 98 02 	lds	r18, 0x0298
+    24b4:	20 91 90 03 	lds	r18, 0x0390
     // error if not power of 2
     if (clusterSizeShift_++ > 7) return false;
   }
   blocksPerFat_ = bpb->sectorsPerFat16 ?
                     bpb->sectorsPerFat16 : bpb->sectorsPerFat32;
-    24b8:	30 91 99 02 	lds	r19, 0x0299
+    24b8:	30 91 91 03 	lds	r19, 0x0391
     24bc:	21 15       	cp	r18, r1
     24be:	31 05       	cpc	r19, r1
     24c0:	19 f0       	breq	.+6      	; 0x24c8 <_ZN8SdVolume4initEP7Sd2Cardh+0x13e>
     24c2:	40 e0       	ldi	r20, 0x00	; 0
     24c4:	50 e0       	ldi	r21, 0x00	; 0
     24c6:	08 c0       	rjmp	.+16     	; 0x24d8 <_ZN8SdVolume4initEP7Sd2Cardh+0x14e>
-    24c8:	20 91 a6 02 	lds	r18, 0x02A6
-    24cc:	30 91 a7 02 	lds	r19, 0x02A7
-    24d0:	40 91 a8 02 	lds	r20, 0x02A8
-    24d4:	50 91 a9 02 	lds	r21, 0x02A9
+    24c8:	20 91 9e 03 	lds	r18, 0x039E
+    24cc:	30 91 9f 03 	lds	r19, 0x039F
+    24d0:	40 91 a0 03 	lds	r20, 0x03A0
+    24d4:	50 91 a1 03 	lds	r21, 0x03A1
     24d8:	f6 01       	movw	r30, r12
     24da:	25 83       	std	Z+5, r18	; 0x05
     24dc:	36 83       	std	Z+6, r19	; 0x06
     24de:	47 83       	std	Z+7, r20	; 0x07
     24e0:	50 87       	std	Z+8, r21	; 0x08
-    24e2:	e0 90 90 02 	lds	r14, 0x0290
+    24e2:	e0 90 88 03 	lds	r14, 0x0388
 
   fatStartBlock_ = volumeStartBlock + bpb->reservedSectorCount;
-    24e6:	f0 90 91 02 	lds	r15, 0x0291
+    24e6:	f0 90 89 03 	lds	r15, 0x0389
     24ea:	00 e0       	ldi	r16, 0x00	; 0
     24ec:	10 e0       	ldi	r17, 0x00	; 0
     24ee:	e8 0c       	add	r14, r8
@@ -6658,14 +6658,14 @@ uint8_t SdVolume::init(Sd2Card* dev, uint8_t part) {
     24f8:	f4 8a       	std	Z+20, r15	; 0x14
     24fa:	05 8b       	std	Z+21, r16	; 0x15
     24fc:	16 8b       	std	Z+22, r17	; 0x16
-    24fe:	80 91 93 02 	lds	r24, 0x0293
+    24fe:	80 91 8b 03 	lds	r24, 0x038B
 
   // count for FAT16 zero for FAT32
   rootDirEntryCount_ = bpb->rootDirEntryCount;
-    2502:	90 91 94 02 	lds	r25, 0x0294
+    2502:	90 91 8c 03 	lds	r25, 0x038C
     2506:	91 8f       	std	Z+25, r25	; 0x19
     2508:	80 8f       	std	Z+24, r24	; 0x18
-    250a:	60 91 92 02 	lds	r22, 0x0292
+    250a:	60 91 8a 03 	lds	r22, 0x038A
 
   // directory start for FAT16 dataStart for FAT32
   rootDirStart_ = fatStartBlock_ + bpb->fatCount * blocksPerFat_;
@@ -6682,11 +6682,11 @@ uint8_t SdVolume::init(Sd2Card* dev, uint8_t part) {
     2524:	73 8f       	std	Z+27, r23	; 0x1b
     2526:	84 8f       	std	Z+28, r24	; 0x1c
     2528:	95 8f       	std	Z+29, r25	; 0x1d
-    252a:	20 91 93 02 	lds	r18, 0x0293
+    252a:	20 91 8b 03 	lds	r18, 0x038B
 
   // data start for FAT16 and FAT32
   dataStartBlock_ = rootDirStart_ + ((32 * bpb->rootDirEntryCount + 511)/512);
-    252e:	30 91 94 02 	lds	r19, 0x0294
+    252e:	30 91 8c 03 	lds	r19, 0x038C
     2532:	55 e0       	ldi	r21, 0x05	; 5
     2534:	22 0f       	add	r18, r18
     2536:	33 1f       	adc	r19, r19
@@ -6707,21 +6707,21 @@ uint8_t SdVolume::init(Sd2Card* dev, uint8_t part) {
     2554:	37 87       	std	Z+15, r19	; 0x0f
     2556:	40 8b       	std	Z+16, r20	; 0x10
     2558:	51 8b       	std	Z+17, r21	; 0x11
-    255a:	80 91 95 02 	lds	r24, 0x0295
+    255a:	80 91 8d 03 	lds	r24, 0x038D
 
   // total blocks for FAT16 or FAT32
   uint32_t totalBlocks = bpb->totalSectors16 ?
                            bpb->totalSectors16 : bpb->totalSectors32;
-    255e:	90 91 96 02 	lds	r25, 0x0296
+    255e:	90 91 8e 03 	lds	r25, 0x038E
     2562:	00 97       	sbiw	r24, 0x00	; 0
     2564:	19 f0       	breq	.+6      	; 0x256c <_ZN8SdVolume4initEP7Sd2Cardh+0x1e2>
     2566:	a0 e0       	ldi	r26, 0x00	; 0
     2568:	b0 e0       	ldi	r27, 0x00	; 0
     256a:	08 c0       	rjmp	.+16     	; 0x257c <_ZN8SdVolume4initEP7Sd2Cardh+0x1f2>
-    256c:	80 91 a2 02 	lds	r24, 0x02A2
-    2570:	90 91 a3 02 	lds	r25, 0x02A3
-    2574:	a0 91 a4 02 	lds	r26, 0x02A4
-    2578:	b0 91 a5 02 	lds	r27, 0x02A5
+    256c:	80 91 9a 03 	lds	r24, 0x039A
+    2570:	90 91 9b 03 	lds	r25, 0x039B
+    2574:	a0 91 9c 03 	lds	r26, 0x039C
+    2578:	b0 91 9d 03 	lds	r27, 0x039D
     257c:	85 01       	movw	r16, r10
     257e:	74 01       	movw	r14, r8
   // total data blocks
@@ -6778,12 +6778,12 @@ uint8_t SdVolume::init(Sd2Card* dev, uint8_t part) {
     25d0:	87 8b       	std	Z+23, r24	; 0x17
     25d2:	81 e0       	ldi	r24, 0x01	; 1
     25d4:	10 c0       	rjmp	.+32     	; 0x25f6 <_ZN8SdVolume4initEP7Sd2Cardh+0x26c>
-    25d6:	80 91 ae 02 	lds	r24, 0x02AE
+    25d6:	80 91 a6 03 	lds	r24, 0x03A6
   } else {
     rootDirStart_ = bpb->fat32RootCluster;
-    25da:	90 91 af 02 	lds	r25, 0x02AF
-    25de:	a0 91 b0 02 	lds	r26, 0x02B0
-    25e2:	b0 91 b1 02 	lds	r27, 0x02B1
+    25da:	90 91 a7 03 	lds	r25, 0x03A7
+    25de:	a0 91 a8 03 	lds	r26, 0x03A8
+    25e2:	b0 91 a9 03 	lds	r27, 0x03A9
     25e6:	f6 01       	movw	r30, r12
     25e8:	82 8f       	std	Z+26, r24	; 0x1a
     25ea:	93 8f       	std	Z+27, r25	; 0x1b
@@ -6922,8 +6922,8 @@ uint8_t SdVolume::fatPut(uint32_t cluster, uint32_t value) {
     26c4:	f0 70       	andi	r31, 0x00	; 0
     26c6:	ee 0f       	add	r30, r30
     26c8:	ff 1f       	adc	r31, r31
-    26ca:	ee 57       	subi	r30, 0x7E	; 126
-    26cc:	fd 4f       	sbci	r31, 0xFD	; 253
+    26ca:	e6 58       	subi	r30, 0x86	; 134
+    26cc:	fc 4f       	sbci	r31, 0xFC	; 252
     26ce:	51 82       	std	Z+1, r5	; 0x01
     26d0:	40 82       	st	Z, r4
     26d2:	0d c0       	rjmp	.+26     	; 0x26ee <_ZN8SdVolume6fatPutEmm+0xde>
@@ -6936,15 +6936,15 @@ uint8_t SdVolume::fatPut(uint32_t cluster, uint32_t value) {
     26dc:	ff 1f       	adc	r31, r31
     26de:	ee 0f       	add	r30, r30
     26e0:	ff 1f       	adc	r31, r31
-    26e2:	ee 57       	subi	r30, 0x7E	; 126
-    26e4:	fd 4f       	sbci	r31, 0xFD	; 253
+    26e2:	e6 58       	subi	r30, 0x86	; 134
+    26e4:	fc 4f       	sbci	r31, 0xFC	; 252
     26e6:	40 82       	st	Z, r4
     26e8:	51 82       	std	Z+1, r5	; 0x01
     26ea:	62 82       	std	Z+2, r6	; 0x02
     26ec:	73 82       	std	Z+3, r7	; 0x03
-    26ee:	80 91 84 04 	lds	r24, 0x0484
+    26ee:	80 91 7c 05 	lds	r24, 0x057C
     26f2:	81 60       	ori	r24, 0x01	; 1
-    26f4:	80 93 84 04 	sts	0x0484, r24
+    26f4:	80 93 7c 05 	sts	0x057C, r24
     26f8:	8a 89       	ldd	r24, Y+18	; 0x12
   }
   cacheSetDirty();
@@ -6961,10 +6961,10 @@ uint8_t SdVolume::fatPut(uint32_t cluster, uint32_t value) {
     2708:	99 1e       	adc	r9, r25
     270a:	aa 1e       	adc	r10, r26
     270c:	bb 1e       	adc	r11, r27
-    270e:	80 92 85 04 	sts	0x0485, r8
-    2712:	90 92 86 04 	sts	0x0486, r9
-    2716:	a0 92 87 04 	sts	0x0487, r10
-    271a:	b0 92 88 04 	sts	0x0488, r11
+    270e:	80 92 7d 05 	sts	0x057D, r8
+    2712:	90 92 7e 05 	sts	0x057E, r9
+    2716:	a0 92 7f 05 	sts	0x057F, r10
+    271a:	b0 92 80 05 	sts	0x0580, r11
     271e:	81 e0       	ldi	r24, 0x01	; 1
     2720:	01 c0       	rjmp	.+2      	; 0x2724 <_ZN8SdVolume6fatPutEmm+0x114>
     2722:	80 e0       	ldi	r24, 0x00	; 0
@@ -7075,8 +7075,8 @@ uint8_t SdVolume::fatGet(uint32_t cluster, uint32_t* value) const {
     27d8:	f0 70       	andi	r31, 0x00	; 0
     27da:	ee 0f       	add	r30, r30
     27dc:	ff 1f       	adc	r31, r31
-    27de:	ee 57       	subi	r30, 0x7E	; 126
-    27e0:	fd 4f       	sbci	r31, 0xFD	; 253
+    27de:	e6 58       	subi	r30, 0x86	; 134
+    27e0:	fc 4f       	sbci	r31, 0xFC	; 252
     27e2:	80 81       	ld	r24, Z
     27e4:	91 81       	ldd	r25, Z+1	; 0x01
     27e6:	a0 e0       	ldi	r26, 0x00	; 0
@@ -7091,8 +7091,8 @@ uint8_t SdVolume::fatGet(uint32_t cluster, uint32_t* value) const {
     27f4:	ff 1f       	adc	r31, r31
     27f6:	ee 0f       	add	r30, r30
     27f8:	ff 1f       	adc	r31, r31
-    27fa:	ee 57       	subi	r30, 0x7E	; 126
-    27fc:	fd 4f       	sbci	r31, 0xFD	; 253
+    27fa:	e6 58       	subi	r30, 0x86	; 134
+    27fc:	fc 4f       	sbci	r31, 0xFC	; 252
     27fe:	80 81       	ld	r24, Z
     2800:	91 81       	ldd	r25, Z+1	; 0x01
     2802:	a2 81       	ldd	r26, Z+2	; 0x02
@@ -8402,10 +8402,10 @@ class Sd2Card {
  public:
   /** Construct an instance of Sd2Card. */
   Sd2Card(void) : errorCode_(0), inBlock_(0), partialBlockRead_(0), type_(0) {}
-    2ebe:	10 92 8f 04 	sts	0x048F, r1
-    2ec2:	10 92 90 04 	sts	0x0490, r1
-    2ec6:	10 92 93 04 	sts	0x0493, r1
-    2eca:	10 92 95 04 	sts	0x0495, r1
+    2ebe:	10 92 87 05 	sts	0x0587, r1
+    2ec2:	10 92 88 05 	sts	0x0588, r1
+    2ec6:	10 92 8b 05 	sts	0x058B, r1
+    2eca:	10 92 8d 05 	sts	0x058D, r1
  * \brief Access FAT16 and FAT32 volumes on SD and SDHC cards.
  */
 class SdVolume {
@@ -8416,13 +8416,13 @@ class SdVolume {
     2ed0:	90 e0       	ldi	r25, 0x00	; 0
     2ed2:	a0 e0       	ldi	r26, 0x00	; 0
     2ed4:	b0 e0       	ldi	r27, 0x00	; 0
-    2ed6:	80 93 96 04 	sts	0x0496, r24
-    2eda:	90 93 97 04 	sts	0x0497, r25
-    2ede:	a0 93 98 04 	sts	0x0498, r26
-    2ee2:	b0 93 99 04 	sts	0x0499, r27
-    2ee6:	10 92 ad 04 	sts	0x04AD, r1
-    2eea:	10 92 b7 04 	sts	0x04B7, r1
-    2eee:	10 92 b6 04 	sts	0x04B6, r1
+    2ed6:	80 93 8e 05 	sts	0x058E, r24
+    2eda:	90 93 8f 05 	sts	0x058F, r25
+    2ede:	a0 93 90 05 	sts	0x0590, r26
+    2ee2:	b0 93 91 05 	sts	0x0591, r27
+    2ee6:	10 92 a5 05 	sts	0x05A5, r1
+    2eea:	10 92 af 05 	sts	0x05AF, r1
+    2eee:	10 92 ae 05 	sts	0x05AE, r1
  * \brief Access FAT16 and FAT32 files on SD and SDHC cards.
  */
 class SdFile : public Print {
@@ -8431,9 +8431,9 @@ class SdFile : public Print {
   SdFile(void) : type_(FAT_FILE_TYPE_CLOSED) {}
     2ef2:	86 e3       	ldi	r24, 0x36	; 54
     2ef4:	92 e0       	ldi	r25, 0x02	; 2
-    2ef6:	90 93 b5 04 	sts	0x04B5, r25
-    2efa:	80 93 b4 04 	sts	0x04B4, r24
-    2efe:	10 92 b9 04 	sts	0x04B9, r1
+    2ef6:	90 93 ad 05 	sts	0x05AD, r25
+    2efa:	80 93 ac 05 	sts	0x05AC, r24
+    2efe:	10 92 b1 05 	sts	0x05B1, r1
 void File::rewindDirectory(void) {  
   if (isDirectory())
     _file->rewind();
@@ -9313,14 +9313,14 @@ File SDClass::open(const char *filepath, uint8_t mode) {
     33da:	cd 96       	adiw	r24, 0x3d	; 61
     33dc:	22 30       	cpi	r18, 0x02	; 2
     33de:	48 f4       	brcc	.+18     	; 0x33f2 <_ZN7SDClass4openEPKch+0x110>
-    33e0:	64 eb       	ldi	r22, 0xB4	; 180
+    33e0:	6c ea       	ldi	r22, 0xAC	; 172
   /** \deprecated Use:
    * uint8_t SdFile::open(SdFile* dirFile, const char* fileName, uint8_t oflag);
    */
   uint8_t open(SdFile& dirFile, // NOLINT
     const char* fileName, uint8_t oflag) {
     return open(&dirFile, fileName, oflag);
-    33e2:	74 e0       	ldi	r23, 0x04	; 4
+    33e2:	75 e0       	ldi	r23, 0x05	; 5
     33e4:	a7 01       	movw	r20, r14
     33e6:	2d 2d       	mov	r18, r13
     33e8:	0e 94 01 10 	call	0x2002	; 0x2002 <_ZN6SdFile4openEPS_PKch>
@@ -9707,8 +9707,8 @@ void SPIClass::begin() {
     35f8:	10 f4       	brcc	.+4      	; 0x35fe <malloc+0x14>
     35fa:	62 e0       	ldi	r22, 0x02	; 2
     35fc:	70 e0       	ldi	r23, 0x00	; 0
-    35fe:	e0 91 88 05 	lds	r30, 0x0588
-    3602:	f0 91 89 05 	lds	r31, 0x0589
+    35fe:	e0 91 80 06 	lds	r30, 0x0680
+    3602:	f0 91 81 06 	lds	r31, 0x0681
     3606:	40 e0       	ldi	r20, 0x00	; 0
     3608:	50 e0       	ldi	r21, 0x00	; 0
     360a:	a0 e0       	ldi	r26, 0x00	; 0
@@ -9731,8 +9731,8 @@ void SPIClass::begin() {
     362c:	8e 93       	st	-X, r24
     362e:	12 97       	sbiw	r26, 0x02	; 2
     3630:	2c c0       	rjmp	.+88     	; 0x368a <malloc+0xa0>
-    3632:	90 93 89 05 	sts	0x0589, r25
-    3636:	80 93 88 05 	sts	0x0588, r24
+    3632:	90 93 81 06 	sts	0x0681, r25
+    3636:	80 93 80 06 	sts	0x0680, r24
     363a:	27 c0       	rjmp	.+78     	; 0x368a <malloc+0xa0>
     363c:	41 15       	cp	r20, r1
     363e:	51 05       	cpc	r21, r1
@@ -9768,8 +9768,8 @@ void SPIClass::begin() {
     367a:	93 83       	std	Z+3, r25	; 0x03
     367c:	82 83       	std	Z+2, r24	; 0x02
     367e:	04 c0       	rjmp	.+8      	; 0x3688 <malloc+0x9e>
-    3680:	90 93 89 05 	sts	0x0589, r25
-    3684:	80 93 88 05 	sts	0x0588, r24
+    3680:	90 93 81 06 	sts	0x0681, r25
+    3684:	80 93 80 06 	sts	0x0680, r24
     3688:	fe 01       	movw	r30, r28
     368a:	32 96       	adiw	r30, 0x02	; 2
     368c:	45 c0       	rjmp	.+138    	; 0x3718 <malloc+0x12e>
@@ -9782,14 +9782,14 @@ void SPIClass::begin() {
     369a:	99 83       	std	Y+1, r25	; 0x01
     369c:	88 83       	st	Y, r24
     369e:	3c c0       	rjmp	.+120    	; 0x3718 <malloc+0x12e>
-    36a0:	80 91 86 05 	lds	r24, 0x0586
-    36a4:	90 91 87 05 	lds	r25, 0x0587
+    36a0:	80 91 7e 06 	lds	r24, 0x067E
+    36a4:	90 91 7f 06 	lds	r25, 0x067F
     36a8:	89 2b       	or	r24, r25
     36aa:	41 f4       	brne	.+16     	; 0x36bc <malloc+0xd2>
     36ac:	80 91 2e 02 	lds	r24, 0x022E
     36b0:	90 91 2f 02 	lds	r25, 0x022F
-    36b4:	90 93 87 05 	sts	0x0587, r25
-    36b8:	80 93 86 05 	sts	0x0586, r24
+    36b4:	90 93 7f 06 	sts	0x067F, r25
+    36b8:	80 93 7e 06 	sts	0x067E, r24
     36bc:	40 91 30 02 	lds	r20, 0x0230
     36c0:	50 91 31 02 	lds	r21, 0x0231
     36c4:	41 15       	cp	r20, r1
@@ -9801,8 +9801,8 @@ void SPIClass::begin() {
     36d2:	90 91 2d 02 	lds	r25, 0x022D
     36d6:	48 1b       	sub	r20, r24
     36d8:	59 0b       	sbc	r21, r25
-    36da:	20 91 86 05 	lds	r18, 0x0586
-    36de:	30 91 87 05 	lds	r19, 0x0587
+    36da:	20 91 7e 06 	lds	r18, 0x067E
+    36de:	30 91 7f 06 	lds	r19, 0x067F
     36e2:	24 17       	cp	r18, r20
     36e4:	35 07       	cpc	r19, r21
     36e6:	b0 f4       	brcc	.+44     	; 0x3714 <malloc+0x12a>
@@ -9820,8 +9820,8 @@ void SPIClass::begin() {
     36fe:	50 f0       	brcs	.+20     	; 0x3714 <malloc+0x12a>
     3700:	42 0f       	add	r20, r18
     3702:	53 1f       	adc	r21, r19
-    3704:	50 93 87 05 	sts	0x0587, r21
-    3708:	40 93 86 05 	sts	0x0586, r20
+    3704:	50 93 7f 06 	sts	0x067F, r21
+    3708:	40 93 7e 06 	sts	0x067E, r20
     370c:	f9 01       	movw	r30, r18
     370e:	61 93       	st	Z+, r22
     3710:	71 93       	st	Z+, r23
@@ -9846,8 +9846,8 @@ void SPIClass::begin() {
     3732:	22 97       	sbiw	r28, 0x02	; 2
     3734:	1b 82       	std	Y+3, r1	; 0x03
     3736:	1a 82       	std	Y+2, r1	; 0x02
-    3738:	60 91 88 05 	lds	r22, 0x0588
-    373c:	70 91 89 05 	lds	r23, 0x0589
+    3738:	60 91 80 06 	lds	r22, 0x0680
+    373c:	70 91 81 06 	lds	r23, 0x0681
     3740:	61 15       	cp	r22, r1
     3742:	71 05       	cpc	r23, r1
     3744:	81 f4       	brne	.+32     	; 0x3766 <free+0x42>
@@ -9855,13 +9855,13 @@ void SPIClass::begin() {
     3748:	99 81       	ldd	r25, Y+1	; 0x01
     374a:	82 0f       	add	r24, r18
     374c:	93 1f       	adc	r25, r19
-    374e:	20 91 86 05 	lds	r18, 0x0586
-    3752:	30 91 87 05 	lds	r19, 0x0587
+    374e:	20 91 7e 06 	lds	r18, 0x067E
+    3752:	30 91 7f 06 	lds	r19, 0x067F
     3756:	28 17       	cp	r18, r24
     3758:	39 07       	cpc	r19, r25
     375a:	39 f5       	brne	.+78     	; 0x37aa <free+0x86>
-    375c:	d0 93 87 05 	sts	0x0587, r29
-    3760:	c0 93 86 05 	sts	0x0586, r28
+    375c:	d0 93 7f 06 	sts	0x067F, r29
+    3760:	c0 93 7e 06 	sts	0x067E, r28
     3764:	74 c0       	rjmp	.+232    	; 0x384e <free+0x12a>
     3766:	db 01       	movw	r26, r22
     3768:	40 e0       	ldi	r20, 0x00	; 0
@@ -9897,8 +9897,8 @@ void SPIClass::begin() {
     37a4:	41 15       	cp	r20, r1
     37a6:	51 05       	cpc	r21, r1
     37a8:	71 f4       	brne	.+28     	; 0x37c6 <free+0xa2>
-    37aa:	d0 93 89 05 	sts	0x0589, r29
-    37ae:	c0 93 88 05 	sts	0x0588, r28
+    37aa:	d0 93 81 06 	sts	0x0681, r29
+    37ae:	c0 93 80 06 	sts	0x0680, r28
     37b2:	4d c0       	rjmp	.+154    	; 0x384e <free+0x12a>
     37b4:	12 96       	adiw	r26, 0x02	; 2
     37b6:	8d 91       	ld	r24, X+
@@ -9955,22 +9955,22 @@ void SPIClass::begin() {
     381c:	9c 91       	ld	r25, X
     381e:	84 0f       	add	r24, r20
     3820:	95 1f       	adc	r25, r21
-    3822:	20 91 86 05 	lds	r18, 0x0586
-    3826:	30 91 87 05 	lds	r19, 0x0587
+    3822:	20 91 7e 06 	lds	r18, 0x067E
+    3826:	30 91 7f 06 	lds	r19, 0x067F
     382a:	28 17       	cp	r18, r24
     382c:	39 07       	cpc	r19, r25
     382e:	79 f4       	brne	.+30     	; 0x384e <free+0x12a>
     3830:	30 97       	sbiw	r30, 0x00	; 0
     3832:	29 f4       	brne	.+10     	; 0x383e <free+0x11a>
-    3834:	10 92 89 05 	sts	0x0589, r1
-    3838:	10 92 88 05 	sts	0x0588, r1
+    3834:	10 92 81 06 	sts	0x0681, r1
+    3838:	10 92 80 06 	sts	0x0680, r1
     383c:	02 c0       	rjmp	.+4      	; 0x3842 <free+0x11e>
     383e:	13 82       	std	Z+3, r1	; 0x03
     3840:	12 82       	std	Z+2, r1	; 0x02
     3842:	42 50       	subi	r20, 0x02	; 2
     3844:	50 40       	sbci	r21, 0x00	; 0
-    3846:	50 93 87 05 	sts	0x0587, r21
-    384a:	40 93 86 05 	sts	0x0586, r20
+    3846:	50 93 7f 06 	sts	0x067F, r21
+    384a:	40 93 7e 06 	sts	0x067E, r20
     384e:	df 91       	pop	r29
     3850:	cf 91       	pop	r28
     3852:	08 95       	ret
@@ -9995,24 +9995,24 @@ void SPIClass::begin() {
     3872:	82 fd       	sbrc	r24, 2
     3874:	1d c0       	rjmp	.+58     	; 0x38b0 <__vector_18+0x5a>
     3876:	40 91 c6 00 	lds	r20, 0x00C6
-    387a:	20 91 13 05 	lds	r18, 0x0513
-    387e:	30 91 14 05 	lds	r19, 0x0514
+    387a:	20 91 0b 06 	lds	r18, 0x060B
+    387e:	30 91 0c 06 	lds	r19, 0x060C
     3882:	2f 5f       	subi	r18, 0xFF	; 255
     3884:	3f 4f       	sbci	r19, 0xFF	; 255
     3886:	2f 73       	andi	r18, 0x3F	; 63
     3888:	30 70       	andi	r19, 0x00	; 0
-    388a:	80 91 15 05 	lds	r24, 0x0515
-    388e:	90 91 16 05 	lds	r25, 0x0516
+    388a:	80 91 0d 06 	lds	r24, 0x060D
+    388e:	90 91 0e 06 	lds	r25, 0x060E
     3892:	28 17       	cp	r18, r24
     3894:	39 07       	cpc	r19, r25
     3896:	71 f0       	breq	.+28     	; 0x38b4 <__vector_18+0x5e>
-    3898:	e0 91 13 05 	lds	r30, 0x0513
-    389c:	f0 91 14 05 	lds	r31, 0x0514
-    38a0:	ed 52       	subi	r30, 0x2D	; 45
-    38a2:	fb 4f       	sbci	r31, 0xFB	; 251
+    3898:	e0 91 0b 06 	lds	r30, 0x060B
+    389c:	f0 91 0c 06 	lds	r31, 0x060C
+    38a0:	e5 53       	subi	r30, 0x35	; 53
+    38a2:	fa 4f       	sbci	r31, 0xFA	; 250
     38a4:	40 83       	st	Z, r20
-    38a6:	30 93 14 05 	sts	0x0514, r19
-    38aa:	20 93 13 05 	sts	0x0513, r18
+    38a6:	30 93 0c 06 	sts	0x060C, r19
+    38aa:	20 93 0b 06 	sts	0x060B, r18
     38ae:	02 c0       	rjmp	.+4      	; 0x38b4 <__vector_18+0x5e>
     38b0:	80 91 c6 00 	lds	r24, 0x00C6
     38b4:	ff 91       	pop	r31
@@ -10029,8 +10029,8 @@ void SPIClass::begin() {
     38ca:	18 95       	reti
 
 000038cc <_Z14serialEventRunv>:
-    38cc:	e0 91 67 05 	lds	r30, 0x0567
-    38d0:	f0 91 68 05 	lds	r31, 0x0568
+    38cc:	e0 91 5f 06 	lds	r30, 0x065F
+    38d0:	f0 91 60 06 	lds	r31, 0x0660
     38d4:	e0 5c       	subi	r30, 0xC0	; 192
     38d6:	ff 4f       	sbci	r31, 0xFF	; 255
     38d8:	81 91       	ld	r24, Z+
@@ -10058,10 +10058,10 @@ void SPIClass::begin() {
     3900:	9f 93       	push	r25
     3902:	ef 93       	push	r30
     3904:	ff 93       	push	r31
-    3906:	20 91 57 05 	lds	r18, 0x0557
-    390a:	30 91 58 05 	lds	r19, 0x0558
-    390e:	80 91 59 05 	lds	r24, 0x0559
-    3912:	90 91 5a 05 	lds	r25, 0x055A
+    3906:	20 91 4f 06 	lds	r18, 0x064F
+    390a:	30 91 50 06 	lds	r19, 0x0650
+    390e:	80 91 51 06 	lds	r24, 0x0651
+    3912:	90 91 52 06 	lds	r25, 0x0652
     3916:	28 17       	cp	r18, r24
     3918:	39 07       	cpc	r19, r25
     391a:	31 f4       	brne	.+12     	; 0x3928 <__vector_19+0x38>
@@ -10069,18 +10069,18 @@ void SPIClass::begin() {
     3920:	8f 7d       	andi	r24, 0xDF	; 223
     3922:	80 93 c1 00 	sts	0x00C1, r24
     3926:	14 c0       	rjmp	.+40     	; 0x3950 <__vector_19+0x60>
-    3928:	e0 91 59 05 	lds	r30, 0x0559
-    392c:	f0 91 5a 05 	lds	r31, 0x055A
-    3930:	e9 5e       	subi	r30, 0xE9	; 233
-    3932:	fa 4f       	sbci	r31, 0xFA	; 250
+    3928:	e0 91 51 06 	lds	r30, 0x0651
+    392c:	f0 91 52 06 	lds	r31, 0x0652
+    3930:	e1 5f       	subi	r30, 0xF1	; 241
+    3932:	f9 4f       	sbci	r31, 0xF9	; 249
     3934:	20 81       	ld	r18, Z
-    3936:	80 91 59 05 	lds	r24, 0x0559
-    393a:	90 91 5a 05 	lds	r25, 0x055A
+    3936:	80 91 51 06 	lds	r24, 0x0651
+    393a:	90 91 52 06 	lds	r25, 0x0652
     393e:	01 96       	adiw	r24, 0x01	; 1
     3940:	8f 73       	andi	r24, 0x3F	; 63
     3942:	90 70       	andi	r25, 0x00	; 0
-    3944:	90 93 5a 05 	sts	0x055A, r25
-    3948:	80 93 59 05 	sts	0x0559, r24
+    3944:	90 93 52 06 	sts	0x0652, r25
+    3948:	80 93 51 06 	sts	0x0651, r24
     394c:	20 93 c6 00 	sts	0x00C6, r18
     3950:	ff 91       	pop	r31
     3952:	ef 91       	pop	r30
@@ -10420,62 +10420,62 @@ void SPIClass::begin() {
     3bd2:	08 95       	ret
 
 00003bd4 <_GLOBAL__I_rx_buffer>:
-    3bd4:	10 92 5e 05 	sts	0x055E, r1
-    3bd8:	10 92 5d 05 	sts	0x055D, r1
+    3bd4:	10 92 56 06 	sts	0x0656, r1
+    3bd8:	10 92 55 06 	sts	0x0655, r1
     3bdc:	88 ee       	ldi	r24, 0xE8	; 232
     3bde:	93 e0       	ldi	r25, 0x03	; 3
     3be0:	a0 e0       	ldi	r26, 0x00	; 0
     3be2:	b0 e0       	ldi	r27, 0x00	; 0
-    3be4:	80 93 5f 05 	sts	0x055F, r24
-    3be8:	90 93 60 05 	sts	0x0560, r25
-    3bec:	a0 93 61 05 	sts	0x0561, r26
-    3bf0:	b0 93 62 05 	sts	0x0562, r27
+    3be4:	80 93 57 06 	sts	0x0657, r24
+    3be8:	90 93 58 06 	sts	0x0658, r25
+    3bec:	a0 93 59 06 	sts	0x0659, r26
+    3bf0:	b0 93 5a 06 	sts	0x065A, r27
     3bf4:	8e e4       	ldi	r24, 0x4E	; 78
     3bf6:	92 e0       	ldi	r25, 0x02	; 2
-    3bf8:	90 93 5c 05 	sts	0x055C, r25
-    3bfc:	80 93 5b 05 	sts	0x055B, r24
-    3c00:	83 ed       	ldi	r24, 0xD3	; 211
-    3c02:	94 e0       	ldi	r25, 0x04	; 4
-    3c04:	90 93 68 05 	sts	0x0568, r25
-    3c08:	80 93 67 05 	sts	0x0567, r24
-    3c0c:	87 e1       	ldi	r24, 0x17	; 23
-    3c0e:	95 e0       	ldi	r25, 0x05	; 5
-    3c10:	90 93 6a 05 	sts	0x056A, r25
-    3c14:	80 93 69 05 	sts	0x0569, r24
+    3bf8:	90 93 54 06 	sts	0x0654, r25
+    3bfc:	80 93 53 06 	sts	0x0653, r24
+    3c00:	8b ec       	ldi	r24, 0xCB	; 203
+    3c02:	95 e0       	ldi	r25, 0x05	; 5
+    3c04:	90 93 60 06 	sts	0x0660, r25
+    3c08:	80 93 5f 06 	sts	0x065F, r24
+    3c0c:	8f e0       	ldi	r24, 0x0F	; 15
+    3c0e:	96 e0       	ldi	r25, 0x06	; 6
+    3c10:	90 93 62 06 	sts	0x0662, r25
+    3c14:	80 93 61 06 	sts	0x0661, r24
     3c18:	85 ec       	ldi	r24, 0xC5	; 197
     3c1a:	90 e0       	ldi	r25, 0x00	; 0
-    3c1c:	90 93 6c 05 	sts	0x056C, r25
-    3c20:	80 93 6b 05 	sts	0x056B, r24
+    3c1c:	90 93 64 06 	sts	0x0664, r25
+    3c20:	80 93 63 06 	sts	0x0663, r24
     3c24:	84 ec       	ldi	r24, 0xC4	; 196
     3c26:	90 e0       	ldi	r25, 0x00	; 0
-    3c28:	90 93 6e 05 	sts	0x056E, r25
-    3c2c:	80 93 6d 05 	sts	0x056D, r24
+    3c28:	90 93 66 06 	sts	0x0666, r25
+    3c2c:	80 93 65 06 	sts	0x0665, r24
     3c30:	80 ec       	ldi	r24, 0xC0	; 192
     3c32:	90 e0       	ldi	r25, 0x00	; 0
-    3c34:	90 93 70 05 	sts	0x0570, r25
-    3c38:	80 93 6f 05 	sts	0x056F, r24
+    3c34:	90 93 68 06 	sts	0x0668, r25
+    3c38:	80 93 67 06 	sts	0x0667, r24
     3c3c:	81 ec       	ldi	r24, 0xC1	; 193
     3c3e:	90 e0       	ldi	r25, 0x00	; 0
-    3c40:	90 93 72 05 	sts	0x0572, r25
-    3c44:	80 93 71 05 	sts	0x0571, r24
+    3c40:	90 93 6a 06 	sts	0x066A, r25
+    3c44:	80 93 69 06 	sts	0x0669, r24
     3c48:	82 ec       	ldi	r24, 0xC2	; 194
     3c4a:	90 e0       	ldi	r25, 0x00	; 0
-    3c4c:	90 93 74 05 	sts	0x0574, r25
-    3c50:	80 93 73 05 	sts	0x0573, r24
+    3c4c:	90 93 6c 06 	sts	0x066C, r25
+    3c50:	80 93 6b 06 	sts	0x066B, r24
     3c54:	86 ec       	ldi	r24, 0xC6	; 198
     3c56:	90 e0       	ldi	r25, 0x00	; 0
-    3c58:	90 93 76 05 	sts	0x0576, r25
-    3c5c:	80 93 75 05 	sts	0x0575, r24
+    3c58:	90 93 6e 06 	sts	0x066E, r25
+    3c5c:	80 93 6d 06 	sts	0x066D, r24
     3c60:	84 e0       	ldi	r24, 0x04	; 4
-    3c62:	80 93 77 05 	sts	0x0577, r24
+    3c62:	80 93 6f 06 	sts	0x066F, r24
     3c66:	83 e0       	ldi	r24, 0x03	; 3
-    3c68:	80 93 78 05 	sts	0x0578, r24
+    3c68:	80 93 70 06 	sts	0x0670, r24
     3c6c:	87 e0       	ldi	r24, 0x07	; 7
-    3c6e:	80 93 79 05 	sts	0x0579, r24
+    3c6e:	80 93 71 06 	sts	0x0671, r24
     3c72:	85 e0       	ldi	r24, 0x05	; 5
-    3c74:	80 93 7a 05 	sts	0x057A, r24
+    3c74:	80 93 72 06 	sts	0x0672, r24
     3c78:	81 e0       	ldi	r24, 0x01	; 1
-    3c7a:	80 93 7b 05 	sts	0x057B, r24
+    3c7a:	80 93 73 06 	sts	0x0673, r24
     3c7e:	08 95       	ret
 
 00003c80 <_ZN5Print5writeEPKhj>:
@@ -10634,11 +10634,11 @@ void SPIClass::begin() {
     3d9c:	9f 93       	push	r25
     3d9e:	af 93       	push	r26
     3da0:	bf 93       	push	r27
-    3da2:	80 91 81 05 	lds	r24, 0x0581
-    3da6:	90 91 82 05 	lds	r25, 0x0582
-    3daa:	a0 91 83 05 	lds	r26, 0x0583
-    3dae:	b0 91 84 05 	lds	r27, 0x0584
-    3db2:	30 91 85 05 	lds	r19, 0x0585
+    3da2:	80 91 79 06 	lds	r24, 0x0679
+    3da6:	90 91 7a 06 	lds	r25, 0x067A
+    3daa:	a0 91 7b 06 	lds	r26, 0x067B
+    3dae:	b0 91 7c 06 	lds	r27, 0x067C
+    3db2:	30 91 7d 06 	lds	r19, 0x067D
     3db6:	01 96       	adiw	r24, 0x01	; 1
     3db8:	a1 1d       	adc	r26, r1
     3dba:	b1 1d       	adc	r27, r1
@@ -10650,22 +10650,22 @@ void SPIClass::begin() {
     3dc6:	01 96       	adiw	r24, 0x01	; 1
     3dc8:	a1 1d       	adc	r26, r1
     3dca:	b1 1d       	adc	r27, r1
-    3dcc:	20 93 85 05 	sts	0x0585, r18
-    3dd0:	80 93 81 05 	sts	0x0581, r24
-    3dd4:	90 93 82 05 	sts	0x0582, r25
-    3dd8:	a0 93 83 05 	sts	0x0583, r26
-    3ddc:	b0 93 84 05 	sts	0x0584, r27
-    3de0:	80 91 7d 05 	lds	r24, 0x057D
-    3de4:	90 91 7e 05 	lds	r25, 0x057E
-    3de8:	a0 91 7f 05 	lds	r26, 0x057F
-    3dec:	b0 91 80 05 	lds	r27, 0x0580
+    3dcc:	20 93 7d 06 	sts	0x067D, r18
+    3dd0:	80 93 79 06 	sts	0x0679, r24
+    3dd4:	90 93 7a 06 	sts	0x067A, r25
+    3dd8:	a0 93 7b 06 	sts	0x067B, r26
+    3ddc:	b0 93 7c 06 	sts	0x067C, r27
+    3de0:	80 91 75 06 	lds	r24, 0x0675
+    3de4:	90 91 76 06 	lds	r25, 0x0676
+    3de8:	a0 91 77 06 	lds	r26, 0x0677
+    3dec:	b0 91 78 06 	lds	r27, 0x0678
     3df0:	01 96       	adiw	r24, 0x01	; 1
     3df2:	a1 1d       	adc	r26, r1
     3df4:	b1 1d       	adc	r27, r1
-    3df6:	80 93 7d 05 	sts	0x057D, r24
-    3dfa:	90 93 7e 05 	sts	0x057E, r25
-    3dfe:	a0 93 7f 05 	sts	0x057F, r26
-    3e02:	b0 93 80 05 	sts	0x0580, r27
+    3df6:	80 93 75 06 	sts	0x0675, r24
+    3dfa:	90 93 76 06 	sts	0x0676, r25
+    3dfe:	a0 93 77 06 	sts	0x0677, r26
+    3e02:	b0 93 78 06 	sts	0x0678, r27
     3e06:	bf 91       	pop	r27
     3e08:	af 91       	pop	r26
     3e0a:	9f 91       	pop	r25
@@ -10681,10 +10681,10 @@ void SPIClass::begin() {
 00003e1c <millis>:
     3e1c:	8f b7       	in	r24, 0x3f	; 63
     3e1e:	f8 94       	cli
-    3e20:	20 91 81 05 	lds	r18, 0x0581
-    3e24:	30 91 82 05 	lds	r19, 0x0582
-    3e28:	40 91 83 05 	lds	r20, 0x0583
-    3e2c:	50 91 84 05 	lds	r21, 0x0584
+    3e20:	20 91 79 06 	lds	r18, 0x0679
+    3e24:	30 91 7a 06 	lds	r19, 0x067A
+    3e28:	40 91 7b 06 	lds	r20, 0x067B
+    3e2c:	50 91 7c 06 	lds	r21, 0x067C
     3e30:	8f bf       	out	0x3f, r24	; 63
     3e32:	b9 01       	movw	r22, r18
     3e34:	ca 01       	movw	r24, r20
@@ -10695,10 +10695,10 @@ void SPIClass::begin() {
     3e3a:	ac 01       	movw	r20, r24
     3e3c:	7f b7       	in	r23, 0x3f	; 63
     3e3e:	f8 94       	cli
-    3e40:	80 91 7d 05 	lds	r24, 0x057D
-    3e44:	90 91 7e 05 	lds	r25, 0x057E
-    3e48:	a0 91 7f 05 	lds	r26, 0x057F
-    3e4c:	b0 91 80 05 	lds	r27, 0x0580
+    3e40:	80 91 75 06 	lds	r24, 0x0675
+    3e44:	90 91 76 06 	lds	r25, 0x0676
+    3e48:	a0 91 77 06 	lds	r26, 0x0677
+    3e4c:	b0 91 78 06 	lds	r27, 0x0678
     3e50:	66 b5       	in	r22, 0x26	; 38
     3e52:	a8 9b       	sbis	0x15, 0	; 21
     3e54:	05 c0       	rjmp	.+10     	; 0x3e60 <delay+0x28>
@@ -10727,10 +10727,10 @@ void SPIClass::begin() {
     3e82:	2d c0       	rjmp	.+90     	; 0x3ede <delay+0xa6>
     3e84:	ff b7       	in	r31, 0x3f	; 63
     3e86:	f8 94       	cli
-    3e88:	80 91 7d 05 	lds	r24, 0x057D
-    3e8c:	90 91 7e 05 	lds	r25, 0x057E
-    3e90:	a0 91 7f 05 	lds	r26, 0x057F
-    3e94:	b0 91 80 05 	lds	r27, 0x0580
+    3e88:	80 91 75 06 	lds	r24, 0x0675
+    3e8c:	90 91 76 06 	lds	r25, 0x0676
+    3e90:	a0 91 77 06 	lds	r26, 0x0677
+    3e94:	b0 91 78 06 	lds	r27, 0x0678
     3e98:	e6 b5       	in	r30, 0x26	; 38
     3e9a:	a8 9b       	sbis	0x15, 0	; 21
     3e9c:	05 c0       	rjmp	.+10     	; 0x3ea8 <delay+0x70>

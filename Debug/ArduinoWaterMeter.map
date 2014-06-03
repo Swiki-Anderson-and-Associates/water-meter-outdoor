@@ -1427,7 +1427,7 @@ LOAD c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a
                 0x0080025a                _edata = .
                 0x0080025a                PROVIDE (__data_end, .)
 
-.bss            0x0080025a      0x330
+.bss            0x0080025a      0x428
                 0x0080025a                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
@@ -1441,56 +1441,56 @@ LOAD c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a
                 0x00800277        0x1 ./src/WaterMeterMain.o
                 0x00800277                interruptNo
  .bss._ZL13MessageBuffer
-                0x00800278        0x8 ./src/WaterMeterMain.o
+                0x00800278      0x100 ./src/WaterMeterMain.o
  .bss._ZN6SdFile9dateTime_E
-                0x00800280        0x2 ./arduinolib/utility/SdFile.o
-                0x00800280                SdFile::dateTime_
+                0x00800378        0x2 ./arduinolib/utility/SdFile.o
+                0x00800378                SdFile::dateTime_
  .bss._ZN8SdVolume12cacheBuffer_E
-                0x00800282      0x200 ./arduinolib/utility/SdVolume.o
-                0x00800282                SdVolume::cacheBuffer_
+                0x0080037a      0x200 ./arduinolib/utility/SdVolume.o
+                0x0080037a                SdVolume::cacheBuffer_
  .bss._ZN8SdVolume7sdCard_E
-                0x00800482        0x2 ./arduinolib/utility/SdVolume.o
-                0x00800482                SdVolume::sdCard_
+                0x0080057a        0x2 ./arduinolib/utility/SdVolume.o
+                0x0080057a                SdVolume::sdCard_
  .bss._ZN8SdVolume11cacheDirty_E
-                0x00800484        0x1 ./arduinolib/utility/SdVolume.o
-                0x00800484                SdVolume::cacheDirty_
+                0x0080057c        0x1 ./arduinolib/utility/SdVolume.o
+                0x0080057c                SdVolume::cacheDirty_
  .bss._ZN8SdVolume17cacheMirrorBlock_E
-                0x00800485        0x4 ./arduinolib/utility/SdVolume.o
-                0x00800485                SdVolume::cacheMirrorBlock_
- .bss.EEPROM    0x00800489        0x1 ./arduinolib/EEPROM.o
-                0x00800489                EEPROM
- .bss.SD        0x0080048a       0x49 ./arduinolib/SD.o
-                0x0080048a                SD
+                0x0080057d        0x4 ./arduinolib/utility/SdVolume.o
+                0x0080057d                SdVolume::cacheMirrorBlock_
+ .bss.EEPROM    0x00800581        0x1 ./arduinolib/EEPROM.o
+                0x00800581                EEPROM
+ .bss.SD        0x00800582       0x49 ./arduinolib/SD.o
+                0x00800582                SD
  .bss.rx_buffer
-                0x008004d3       0x44 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
-                0x008004d3                rx_buffer
+                0x008005cb       0x44 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+                0x008005cb                rx_buffer
  .bss.tx_buffer
-                0x00800517       0x44 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
-                0x00800517                tx_buffer
- .bss.Serial    0x0080055b       0x22 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
-                0x0080055b                Serial
+                0x0080060f       0x44 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+                0x0080060f                tx_buffer
+ .bss.Serial    0x00800653       0x22 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+                0x00800653                Serial
  .bss.timer0_overflow_count
-                0x0080057d        0x4 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
-                0x0080057d                timer0_overflow_count
+                0x00800675        0x4 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
+                0x00800675                timer0_overflow_count
  .bss.timer0_millis
-                0x00800581        0x4 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
-                0x00800581                timer0_millis
+                0x00800679        0x4 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
+                0x00800679                timer0_millis
  .bss.timer0_fract
-                0x00800585        0x1 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
+                0x0080067d        0x1 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
  *(COMMON)
- COMMON         0x00800586        0x4 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(malloc.o)
-                0x00800586                __brkval
-                0x00800588                __flp
-                0x0080058a                PROVIDE (__bss_end, .)
+ COMMON         0x0080067e        0x4 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(malloc.o)
+                0x0080067e                __brkval
+                0x00800680                __flp
+                0x00800682                PROVIDE (__bss_end, .)
                 0x00004240                __data_load_start = LOADADDR (.data)
                 0x0000439a                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x0080058a        0x0
-                0x0080058a                PROVIDE (__noinit_start, .)
+.noinit         0x00800682        0x0
+                0x00800682                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x0080058a                PROVIDE (__noinit_end, .)
-                0x0080058a                _end = .
-                0x0080058a                PROVIDE (__heap_start, .)
+                0x00800682                PROVIDE (__noinit_end, .)
+                0x00800682                _end = .
+                0x00800682                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
  *(.eeprom*)
@@ -1550,9 +1550,9 @@ LOAD c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a
  .stab          0x0000bc58      0x120 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(realloc.o)
                                 0x5ac (size before relaxing)
 
-.stabstr        0x00000000     0xb50a
+.stabstr        0x00000000     0xb520
  *(.stabstr)
- .stabstr       0x00000000     0xb50a ./src/WaterMeterMain.o
+ .stabstr       0x00000000     0xb520 ./src/WaterMeterMain.o
 
 .stab.excl
  *(.stab.excl)

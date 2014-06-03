@@ -10,6 +10,8 @@
 #define DS3234_CREG_BYTE 0x00		// Byte to set the control register of the DS3234
 #define DS3234_SREG_BYTE 0x10		// Byte to set the SREG of the DS3234
 
+#define LOG_LINE_LENGTH		8		// number of bytes in a single line of the log file
+
 // Define Pins Used for Operation
 #define RADIO_RX_PIN		0			// radio Rx pin
 #define RADIO_TX_PIN		1			// radio Tx pin
@@ -29,7 +31,7 @@
 #define VALVE_CONTROL_2_PIN 9			// see above
 
 // Define Global Variables
-static char MessageBuffer[8];
+static char MessageBuffer[256];
 File logFile;
 uint8_t leak, SPIFunc, interruptNo;
 
@@ -164,6 +166,9 @@ static uint32_t readLogEntry(uint8_t logStart)
 static void writeLogEntry(uint8_t startPos, uint32_t t_unix)
 {
 	useSD();
+	logFile.seek(logFile.size());
+	logFile.write(LogBuffer);
+	logFile.flush();
 	/*																		// TODO: rewrite function for SD or EEPROM
 	// stores t_unix as 4 bytes
 	uint8 splitByte;
@@ -478,6 +483,7 @@ void loop()
 		reportLog();
 		reportLeak();
 		clearLog();
+		// niggerfaggot
 	}
 
 	else if (digitalRead(METER_PIN))
