@@ -31,9 +31,7 @@ c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_copy_data.
 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_clear_bss.o)
                               ./src/WaterMeterMain.o (__do_clear_bss)
 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_ctors.o)
-                              ./src/WaterMeterMain.o (__do_global_ctors)
-c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_dtors.o)
-                              ./src/WaterMeterMain.o (__do_global_dtors)
+                              ./arduinolib/SD.o (__do_global_ctors)
 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_fixunssfsi.o)
                               C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(Print.o) (__fixunssfsi)
 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_addsub_sf.o)
@@ -147,6 +145,8 @@ Discarded input sections
  .bss           0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5/crtm328p.o
  .text          0x00000000        0x0 ./src/WaterMeterMain.o
  .bss           0x00000000        0x0 ./src/WaterMeterMain.o
+ .bss.interruptNo
+                0x00000000        0x0 ./src/WaterMeterMain.o
  .text          0x00000000        0x0 ./src/pure_virtual.o
  .data          0x00000000        0x0 ./src/pure_virtual.o
  .bss           0x00000000        0x0 ./src/pure_virtual.o
@@ -292,9 +292,13 @@ Discarded input sections
                 0x00000000        0x0 ./lib/ds3234.o
  .text._Z13DS3234_get_a1hPch
                 0x00000000        0x0 ./lib/ds3234.o
+ .text._Z10DS3234_endv
+                0x00000000        0x0 ./lib/ds3234.o
  .text          0x00000000        0x0 ./arduinolib/utility/Sd2Card.o
  .data          0x00000000        0x0 ./arduinolib/utility/Sd2Card.o
  .bss           0x00000000        0x0 ./arduinolib/utility/Sd2Card.o
+ .text._ZN7Sd2Card10setSckRateEh
+                0x00000000        0x0 ./arduinolib/utility/Sd2Card.o
  .text._ZN7Sd2Card9writeStopEv
                 0x00000000        0x0 ./arduinolib/utility/Sd2Card.o
  .text._ZN7Sd2Card9writeDataEPKh
@@ -311,10 +315,14 @@ Discarded input sections
                 0x00000000        0x0 ./arduinolib/utility/Sd2Card.o
  .text._ZN7Sd2Card5eraseEmm
                 0x00000000        0x0 ./arduinolib/utility/Sd2Card.o
+ .text._ZN7Sd2Card4initEhh
+                0x00000000        0x0 ./arduinolib/utility/Sd2Card.o
  .text          0x00000000        0x0 ./arduinolib/utility/SdFile.o
  .data          0x00000000        0x0 ./arduinolib/utility/SdFile.o
  .bss           0x00000000        0x0 ./arduinolib/utility/SdFile.o
  .text._ZN6SdFile7dirNameERK14directoryEntryPc
+                0x00000000        0x0 ./arduinolib/utility/SdFile.o
+ .text._ZN6SdFile10make83NameEPKcPh
                 0x00000000        0x0 ./arduinolib/utility/SdFile.o
  .text._ZN6SdFile7write_PEPKc
                 0x00000000        0x0 ./arduinolib/utility/SdFile.o
@@ -322,7 +330,17 @@ Discarded input sections
                 0x00000000        0x0 ./arduinolib/utility/SdFile.o
  .text._ZN6SdFile15contiguousRangeEPmS0_
                 0x00000000        0x0 ./arduinolib/utility/SdFile.o
+ .text._ZN6SdFile5closeEv
+                0x00000000        0x0 ./arduinolib/utility/SdFile.o
  .text._ZN6SdFile9timestampEhjhhhhh
+                0x00000000        0x0 ./arduinolib/utility/SdFile.o
+ .text._ZN6SdFile8truncateEm
+                0x00000000        0x0 ./arduinolib/utility/SdFile.o
+ .text._ZN6SdFile6removeEv
+                0x00000000        0x0 ./arduinolib/utility/SdFile.o
+ .text._ZN6SdFile4readEPvj
+                0x00000000        0x0 ./arduinolib/utility/SdFile.o
+ .text._ZN6SdFile12readDirCacheEv
                 0x00000000        0x0 ./arduinolib/utility/SdFile.o
  .text._ZN6SdFile5rmDirEv
                 0x00000000        0x0 ./arduinolib/utility/SdFile.o
@@ -336,6 +354,10 @@ Discarded input sections
                 0x00000000        0x0 ./arduinolib/utility/SdFile.o
  .text._ZN6SdFile12printDirNameERK14directoryEntryh
                 0x00000000        0x0 ./arduinolib/utility/SdFile.o
+ .text._ZN6SdFile8openRootEP8SdVolume
+                0x00000000        0x0 ./arduinolib/utility/SdFile.o
+ .text._ZN6SdFile15openCachedEntryEhh
+                0x00000000        0x0 ./arduinolib/utility/SdFile.o
  .text._ZN6SdFile4openEPS_jh
                 0x00000000        0x0 ./arduinolib/utility/SdFile.o
  .text._ZN6SdFile8rmRfStarEv
@@ -346,15 +368,30 @@ Discarded input sections
                 0x00000000        0x0 ./arduinolib/utility/SdFile.o
  .text._ZN6SdFile5writeEPKc
                 0x00000000        0x0 ./arduinolib/utility/SdFile.o
+ .text._ZN6SdFile13addDirClusterEv
+                0x00000000        0x0 ./arduinolib/utility/SdFile.o
+ .text._ZN6SdFile4openEPS_PKch
+                0x00000000        0x0 ./arduinolib/utility/SdFile.o
+ .text._ZN6SdFile6removeEPS_PKc
+                0x00000000        0x0 ./arduinolib/utility/SdFile.o
  .text._ZN6SdFile16createContiguousEPS_PKcm
                 0x00000000        0x0 ./arduinolib/utility/SdFile.o
  .text._ZN6SdFile7makeDirEPS_PKc
                 0x00000000        0x0 ./arduinolib/utility/SdFile.o
  .bss._ZN6SdFile12oldDateTime_E
                 0x00000000        0x0 ./arduinolib/utility/SdFile.o
+ .progmem.data  0x00000000        0x0 ./arduinolib/utility/SdFile.o
  .text          0x00000000        0x0 ./arduinolib/utility/SdVolume.o
  .data          0x00000000        0x0 ./arduinolib/utility/SdVolume.o
  .bss           0x00000000        0x0 ./arduinolib/utility/SdVolume.o
+ .text._ZN8SdVolume14cacheZeroBlockEm
+                0x00000000        0x0 ./arduinolib/utility/SdVolume.o
+ .text._ZN8SdVolume4initEP7Sd2Cardh
+                0x00000000        0x0 ./arduinolib/utility/SdVolume.o
+ .text._ZN8SdVolume9freeChainEm
+                0x00000000        0x0 ./arduinolib/utility/SdVolume.o
+ .text._ZNK8SdVolume9chainSizeEmPm
+                0x00000000        0x0 ./arduinolib/utility/SdVolume.o
  .text          0x00000000        0x0 ./arduinolib/EEPROM.o
  .data          0x00000000        0x0 ./arduinolib/EEPROM.o
  .bss           0x00000000        0x0 ./arduinolib/EEPROM.o
@@ -363,47 +400,101 @@ Discarded input sections
  .bss           0x00000000        0x0 ./arduinolib/File.o
  .text._ZN4FileC2Ev
                 0x00000000        0x0 ./arduinolib/File.o
+ .text._ZN4FileC1Ev
+                0x00000000        0x0 ./arduinolib/File.o
  .text._ZN4FileD2Ev
+                0x00000000        0x0 ./arduinolib/File.o
+ .text._ZN4FileD1Ev
                 0x00000000        0x0 ./arduinolib/File.o
  .text._ZN4File4nameEv
                 0x00000000        0x0 ./arduinolib/File.o
  .text._ZN4File11isDirectoryEv
                 0x00000000        0x0 ./arduinolib/File.o
+ .text._ZN4File5writeEh
+                0x00000000        0x0 ./arduinolib/File.o
+ .text._ZN4File9availableEv
+                0x00000000        0x0 ./arduinolib/File.o
  .text._ZN4File8positionEv
                 0x00000000        0x0 ./arduinolib/File.o
  .text._ZN4File4sizeEv
                 0x00000000        0x0 ./arduinolib/File.o
+ .text._ZN4FilecvbEv
+                0x00000000        0x0 ./arduinolib/File.o
+ .text._ZN4File5closeEv
+                0x00000000        0x0 ./arduinolib/File.o
  .text._ZN4File4seekEm
+                0x00000000        0x0 ./arduinolib/File.o
+ .text._ZN4File5flushEv
                 0x00000000        0x0 ./arduinolib/File.o
  .text._ZN4File4readEPvj
                 0x00000000        0x0 ./arduinolib/File.o
+ .text._ZN4File4readEv
+                0x00000000        0x0 ./arduinolib/File.o
+ .text._ZN4File4peekEv
+                0x00000000        0x0 ./arduinolib/File.o
+ .text._ZN4File5writeEPKhj
+                0x00000000        0x0 ./arduinolib/File.o
+ .text._ZN4FileC1E6SdFilePKc
+                0x00000000        0x0 ./arduinolib/File.o
  .text._ZN4FileC2E6SdFilePKc
+                0x00000000        0x0 ./arduinolib/File.o
+ .rodata._ZTV4File
                 0x00000000        0x0 ./arduinolib/File.o
  .rodata._ZTV6Stream
                 0x00000000        0x0 ./arduinolib/File.o
  .text          0x00000000        0x0 ./arduinolib/SD.o
+ .data          0x00000000        0x0 ./arduinolib/SD.o
  .bss           0x00000000        0x0 ./arduinolib/SD.o
+ .text._Z20getNextPathComponentPcPjS_
+                0x00000000        0x0 ./arduinolib/SD.o
  .text._ZN4File15rewindDirectoryEv
                 0x00000000        0x0 ./arduinolib/SD.o
  .text._ZN4File12openNextFileEh
+                0x00000000        0x0 ./arduinolib/SD.o
+ .text._Z19callback_pathExistsR6SdFilePchPv
+                0x00000000        0x0 ./arduinolib/SD.o
+ .text._Z8walkPathPcR6SdFilePFhS1_S_hPvES2_
+                0x00000000        0x0 ./arduinolib/SD.o
+ .text._ZN7SDClass6removeEPc
                 0x00000000        0x0 ./arduinolib/SD.o
  .text._ZN7SDClass5rmdirEPc
                 0x00000000        0x0 ./arduinolib/SD.o
  .text._ZN7SDClass5mkdirEPc
                 0x00000000        0x0 ./arduinolib/SD.o
+ .text._ZN7SDClass6existsEPc
+                0x00000000        0x0 ./arduinolib/SD.o
+ .text._ZN7SDClass12getParentDirEPKcPi
+                0x00000000        0x0 ./arduinolib/SD.o
+ .text._ZN7SDClass4openEPKch
+                0x00000000        0x0 ./arduinolib/SD.o
+ .text._ZN7SDClass5beginEh
+                0x00000000        0x0 ./arduinolib/SD.o
  .text._Z14callback_rmdirR6SdFilePchPv
+                0x00000000        0x0 ./arduinolib/SD.o
+ .text._Z15callback_removeR6SdFilePchPv
                 0x00000000        0x0 ./arduinolib/SD.o
  .text._Z20callback_makeDirPathR6SdFilePchPv
                 0x00000000        0x0 ./arduinolib/SD.o
  .text          0x00000000        0x0 ./arduinolib/SPI.o
  .data          0x00000000        0x0 ./arduinolib/SPI.o
  .bss           0x00000000        0x0 ./arduinolib/SPI.o
+ .text._ZN8SPIClass3endEv
+                0x00000000        0x0 ./arduinolib/SPI.o
  .text._ZN8SPIClass15setClockDividerEh
                 0x00000000        0x0 ./arduinolib/SPI.o
  .bss.SPI       0x00000000        0x0 ./arduinolib/SPI.o
  .text          0x00000000        0x0 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(malloc.o)
  .data          0x00000000        0x0 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(malloc.o)
  .bss           0x00000000        0x0 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(malloc.o)
+ .text.avr-libc
+                0x00000000        0x0 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(malloc.o)
+ .data.__malloc_margin
+                0x00000000        0x0 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(malloc.o)
+ .data.__malloc_heap_start
+                0x00000000        0x0 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(malloc.o)
+ .data.__malloc_heap_end
+                0x00000000        0x0 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(malloc.o)
+ COMMON         0x00000000        0x0 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(malloc.o)
  .text          0x00000000        0x0 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
  .data          0x00000000        0x0 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
  .bss           0x00000000        0x0 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
@@ -637,6 +728,7 @@ Discarded input sections
  .text          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_mulsi3.o)
  .data          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_mulsi3.o)
  .bss           0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_mulsi3.o)
+ .text.libgcc   0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_mulsi3.o)
  .text          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_udivmodqi4.o)
  .data          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_udivmodqi4.o)
  .bss           0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_udivmodqi4.o)
@@ -664,10 +756,6 @@ Discarded input sections
  .data          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_ctors.o)
  .bss           0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_ctors.o)
  .text.libgcc   0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_ctors.o)
- .text          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_dtors.o)
- .data          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_dtors.o)
- .bss           0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_dtors.o)
- .text.libgcc   0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_dtors.o)
  .text          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_fixunssfsi.o)
  .data          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_fixunssfsi.o)
  .bss           0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_fixunssfsi.o)
@@ -750,6 +838,7 @@ Discarded input sections
  .data          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(toupper.o)
  .bss           0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(toupper.o)
  .text.ctype    0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(toupper.o)
+ .text          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(memcmp.o)
  .data          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(memcmp.o)
  .bss           0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(memcmp.o)
  .text          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(memcpy.o)
@@ -758,6 +847,7 @@ Discarded input sections
  .text          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(memmove.o)
  .data          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(memmove.o)
  .bss           0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(memmove.o)
+ .text          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(strchr.o)
  .data          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(strchr.o)
  .bss           0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(strchr.o)
  .text          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(strcmp.o)
@@ -768,6 +858,7 @@ Discarded input sections
  .text          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(strncmp.o)
  .data          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(strncmp.o)
  .bss           0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(strncmp.o)
+ .text          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(strncpy.o)
  .data          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(strncpy.o)
  .bss           0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(strncpy.o)
  .text          0x00000000        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(strrchr.o)
@@ -938,7 +1029,7 @@ LOAD c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000     0x4240
+.text           0x00000000     0x2468
  *(.vectors)
  .vectors       0x00000000       0x68 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5/crtm328p.o
                 0x00000000                __vectors
@@ -946,437 +1037,295 @@ LOAD c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a
  *(.vectors)
  *(.progmem.gcc*)
  *(.progmem*)
- .progmem.data  0x00000068       0x10 ./arduinolib/utility/SdFile.o
- .progmem.data  0x00000078       0x5a C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring_digital.o)
-                0x00000078                port_to_mode_PGM
-                0x00000096                digital_pin_to_port_PGM
-                0x000000aa                digital_pin_to_bit_mask_PGM
-                0x00000082                port_to_output_PGM
-                0x0000008c                port_to_input_PGM
-                0x000000be                digital_pin_to_timer_PGM
-                0x000000d2                . = ALIGN (0x2)
-                0x000000d2                __trampolines_start = .
+ .progmem.data  0x00000068       0x5a C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring_digital.o)
+                0x00000068                port_to_mode_PGM
+                0x00000086                digital_pin_to_port_PGM
+                0x0000009a                digital_pin_to_bit_mask_PGM
+                0x00000072                port_to_output_PGM
+                0x0000007c                port_to_input_PGM
+                0x000000ae                digital_pin_to_timer_PGM
+                0x000000c2                . = ALIGN (0x2)
+                0x000000c2                __trampolines_start = .
  *(.trampolines)
- .trampolines   0x000000d2        0x0 linker stubs
+ .trampolines   0x000000c2        0x0 linker stubs
  *(.trampolines*)
-                0x000000d2                __trampolines_end = .
+                0x000000c2                __trampolines_end = .
  *(.jumptables)
  *(.jumptables*)
  *(.lowtext)
  *(.lowtext*)
-                0x000000d2                __ctors_start = .
+                0x000000c2                __ctors_start = .
  *(.ctors)
- .ctors         0x000000d2        0x2 ./src/WaterMeterMain.o
- .ctors         0x000000d4        0x2 ./arduinolib/SD.o
- .ctors         0x000000d6        0x2 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
-                0x000000d8                __ctors_end = .
-                0x000000d8                __dtors_start = .
+ .ctors         0x000000c2        0x2 ./arduinolib/SD.o
+ .ctors         0x000000c4        0x2 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+                0x000000c6                __ctors_end = .
+                0x000000c6                __dtors_start = .
  *(.dtors)
- .dtors         0x000000d8        0x2 ./src/WaterMeterMain.o
-                0x000000da                __dtors_end = .
+                0x000000c6                __dtors_end = .
  SORT(*)(.ctors)
  SORT(*)(.dtors)
  *(.init0)
- .init0         0x000000da        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5/crtm328p.o
-                0x000000da                __init
+ .init0         0x000000c6        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5/crtm328p.o
+                0x000000c6                __init
  *(.init0)
  *(.init1)
  *(.init1)
  *(.init2)
- .init2         0x000000da        0xc c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5/crtm328p.o
+ .init2         0x000000c6        0xc c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5/crtm328p.o
  *(.init2)
  *(.init3)
  *(.init3)
  *(.init4)
- .init4         0x000000e6       0x16 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_copy_data.o)
-                0x000000e6                __do_copy_data
- .init4         0x000000fc       0x10 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_clear_bss.o)
-                0x000000fc                __do_clear_bss
+ .init4         0x000000d2       0x16 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_copy_data.o)
+                0x000000d2                __do_copy_data
+ .init4         0x000000e8       0x10 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_clear_bss.o)
+                0x000000e8                __do_clear_bss
  *(.init4)
  *(.init5)
  *(.init5)
  *(.init6)
- .init6         0x0000010c       0x16 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_ctors.o)
-                0x0000010c                __do_global_ctors
+ .init6         0x000000f8       0x16 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_ctors.o)
+                0x000000f8                __do_global_ctors
  *(.init6)
  *(.init7)
  *(.init7)
  *(.init8)
  *(.init8)
  *(.init9)
- .init9         0x00000122        0x8 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5/crtm328p.o
+ .init9         0x0000010e        0x8 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5/crtm328p.o
  *(.init9)
  *(.text)
- .text          0x0000012a        0x2 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5/crtm328p.o
-                0x0000012a                __vector_22
-                0x0000012a                __vector_1
-                0x0000012a                __vector_24
-                0x0000012a                __vector_12
-                0x0000012a                __bad_interrupt
-                0x0000012a                __vector_3
-                0x0000012a                __vector_23
-                0x0000012a                __vector_25
-                0x0000012a                __vector_11
-                0x0000012a                __vector_13
-                0x0000012a                __vector_17
-                0x0000012a                __vector_7
-                0x0000012a                __vector_5
-                0x0000012a                __vector_4
-                0x0000012a                __vector_9
-                0x0000012a                __vector_2
-                0x0000012a                __vector_21
-                0x0000012a                __vector_15
-                0x0000012a                __vector_8
-                0x0000012a                __vector_14
-                0x0000012a                __vector_10
-                0x0000012a                __vector_20
- .text          0x0000012c       0x1a c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(memcmp.o)
-                0x0000012c                memcmp
- .text          0x00000146       0x16 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(strchr.o)
-                0x00000146                strchr
- .text          0x0000015c        0xe c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(strcpy.o)
-                0x0000015c                strcpy
- .text          0x0000016a       0x1e c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(strncpy.o)
-                0x0000016a                strncpy
- .text          0x00000188       0x46 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(sprintf.o)
-                0x00000188                sprintf
- .text          0x000001ce      0x3a0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(vfprintf_std.o)
-                0x000001ce                vfprintf
- .text          0x0000056e       0x16 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(strnlen_P.o)
-                0x0000056e                strnlen_P
- .text          0x00000584       0x16 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(strnlen.o)
-                0x00000584                strnlen
- .text          0x0000059a       0x58 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(fputc.o)
-                0x0000059a                fputc
- .text          0x000005f2       0xbc c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(ultoa_invert.o)
-                0x000005f2                __ultoa_invert
-                0x000006ae                . = ALIGN (0x2)
+ .text          0x00000116        0x2 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5/crtm328p.o
+                0x00000116                __vector_22
+                0x00000116                __vector_1
+                0x00000116                __vector_24
+                0x00000116                __vector_12
+                0x00000116                __bad_interrupt
+                0x00000116                __vector_3
+                0x00000116                __vector_23
+                0x00000116                __vector_25
+                0x00000116                __vector_11
+                0x00000116                __vector_13
+                0x00000116                __vector_17
+                0x00000116                __vector_7
+                0x00000116                __vector_5
+                0x00000116                __vector_4
+                0x00000116                __vector_9
+                0x00000116                __vector_2
+                0x00000116                __vector_21
+                0x00000116                __vector_15
+                0x00000116                __vector_8
+                0x00000116                __vector_14
+                0x00000116                __vector_10
+                0x00000116                __vector_20
+ .text          0x00000118        0xe c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(strcpy.o)
+                0x00000118                strcpy
+ .text          0x00000126       0x46 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(sprintf.o)
+                0x00000126                sprintf
+ .text          0x0000016c      0x3a0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(vfprintf_std.o)
+                0x0000016c                vfprintf
+ .text          0x0000050c       0x16 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(strnlen_P.o)
+                0x0000050c                strnlen_P
+ .text          0x00000522       0x16 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(strnlen.o)
+                0x00000522                strnlen
+ .text          0x00000538       0x58 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(fputc.o)
+                0x00000538                fputc
+ .text          0x00000590       0xbc c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(ultoa_invert.o)
+                0x00000590                __ultoa_invert
+                0x0000064c                . = ALIGN (0x2)
  *(.text.*)
- .text._Z41__static_initialization_and_destruction_0ii
-                0x000006ae       0x28 ./src/WaterMeterMain.o
- .text._GLOBAL__D_logFile
-                0x000006d6        0xa ./src/WaterMeterMain.o
- .text._GLOBAL__I_logFile
-                0x000006e0        0xa ./src/WaterMeterMain.o
  .text._ZL9printTimev
-                0x000006ea       0xc0 ./src/WaterMeterMain.o
+                0x0000064c       0xa8 ./src/WaterMeterMain.o
  .text._ZL9openValvev
-                0x000007aa       0x64 ./src/WaterMeterMain.o
- .text._ZL10closeValvev
-                0x0000080e       0x64 ./src/WaterMeterMain.o
- .text._ZL10reportLeakv
-                0x00000872       0x46 ./src/WaterMeterMain.o
- .text._ZL8clearLogv
-                0x000008b8       0xe8 ./src/WaterMeterMain.o
+                0x000006f4       0x64 ./src/WaterMeterMain.o
  .text._ZL11resetSystemv
-                0x000009a0       0x5a ./src/WaterMeterMain.o
- .text.loop     0x000009fa       0xfa ./src/WaterMeterMain.o
-                0x000009fa                loop
- .text.setup    0x00000af4       0x98 ./src/WaterMeterMain.o
-                0x00000af4                setup
+                0x00000758       0x58 ./src/WaterMeterMain.o
+ .text._ZL10closeValvev
+                0x000007b0       0x64 ./src/WaterMeterMain.o
+ .text._ZL10reportLeakv
+                0x00000814       0x46 ./src/WaterMeterMain.o
+ .text.loop     0x0000085a       0xf2 ./src/WaterMeterMain.o
+                0x0000085a                loop
+ .text.setup    0x0000094c       0x90 ./src/WaterMeterMain.o
+                0x0000094c                setup
  .text.__vector_6
-                0x00000b8c       0x28 ./lib/LowPower.o
-                0x00000b8c                __vector_6
+                0x000009dc       0x28 ./lib/LowPower.o
+                0x000009dc                __vector_6
  .text._Z10DS3234_gethP2ts
-                0x00000bb4      0x104 ./lib/ds3234.o
-                0x00000bb4                DS3234_get(unsigned char, ts*)
- .text._Z10DS3234_endv
-                0x00000cb8       0x16 ./lib/ds3234.o
-                0x00000cb8                DS3234_end()
+                0x00000a04      0x104 ./lib/ds3234.o
+                0x00000a04                DS3234_get(unsigned char, ts*)
  .text._Z11DS3234_inith
-                0x00000cce       0x22 ./lib/ds3234.o
-                0x00000cce                DS3234_init(unsigned char)
- .text._ZN7Sd2Card10setSckRateEh
-                0x00000cf0       0x4a ./arduinolib/utility/Sd2Card.o
-                0x00000cf0                Sd2Card::setSckRate(unsigned char)
+                0x00000b08       0x1c ./lib/ds3234.o
+                0x00000b08                DS3234_init(unsigned char)
  .text._ZN7Sd2Card11waitNotBusyEj
-                0x00000d3a       0x44 ./arduinolib/utility/Sd2Card.o
-                0x00000d3a                Sd2Card::waitNotBusy(unsigned int)
+                0x00000b24       0x44 ./arduinolib/utility/Sd2Card.o
+                0x00000b24                Sd2Card::waitNotBusy(unsigned int)
  .text._ZN7Sd2Card13chipSelectLowEv
-                0x00000d7e        0xa ./arduinolib/utility/Sd2Card.o
-                0x00000d7e                Sd2Card::chipSelectLow()
+                0x00000b68        0xa ./arduinolib/utility/Sd2Card.o
+                0x00000b68                Sd2Card::chipSelectLow()
  .text._ZN7Sd2Card14chipSelectHighEv
-                0x00000d88        0xa ./arduinolib/utility/Sd2Card.o
-                0x00000d88                Sd2Card::chipSelectHigh()
+                0x00000b72        0xa ./arduinolib/utility/Sd2Card.o
+                0x00000b72                Sd2Card::chipSelectHigh()
  .text._ZN7Sd2Card9writeDataEhPKh
-                0x00000d92       0x72 ./arduinolib/utility/Sd2Card.o
-                0x00000d92                Sd2Card::writeData(unsigned char, unsigned char const*)
+                0x00000b7c       0x72 ./arduinolib/utility/Sd2Card.o
+                0x00000b7c                Sd2Card::writeData(unsigned char, unsigned char const*)
  .text._ZN7Sd2Card14waitStartBlockEv
-                0x00000e04       0x58 ./arduinolib/utility/Sd2Card.o
-                0x00000e04                Sd2Card::waitStartBlock()
+                0x00000bee       0x58 ./arduinolib/utility/Sd2Card.o
+                0x00000bee                Sd2Card::waitStartBlock()
  .text._ZN7Sd2Card7readEndEv
-                0x00000e5c       0x44 ./arduinolib/utility/Sd2Card.o
-                0x00000e5c                Sd2Card::readEnd()
+                0x00000c46       0x44 ./arduinolib/utility/Sd2Card.o
+                0x00000c46                Sd2Card::readEnd()
  .text._ZN7Sd2Card11cardCommandEhm
-                0x00000ea0       0xa0 ./arduinolib/utility/Sd2Card.o
-                0x00000ea0                Sd2Card::cardCommand(unsigned char, unsigned long)
+                0x00000c8a       0xa0 ./arduinolib/utility/Sd2Card.o
+                0x00000c8a                Sd2Card::cardCommand(unsigned char, unsigned long)
  .text._ZN7Sd2Card10writeBlockEmPKh
-                0x00000f40       0xae ./arduinolib/utility/Sd2Card.o
-                0x00000f40                Sd2Card::writeBlock(unsigned long, unsigned char const*)
+                0x00000d2a       0xae ./arduinolib/utility/Sd2Card.o
+                0x00000d2a                Sd2Card::writeBlock(unsigned long, unsigned char const*)
  .text._ZN7Sd2Card8readDataEmjjPh
-                0x00000fee      0x132 ./arduinolib/utility/Sd2Card.o
-                0x00000fee                Sd2Card::readData(unsigned long, unsigned int, unsigned int, unsigned char*)
+                0x00000dd8      0x132 ./arduinolib/utility/Sd2Card.o
+                0x00000dd8                Sd2Card::readData(unsigned long, unsigned int, unsigned int, unsigned char*)
  .text._ZN7Sd2Card9readBlockEmPh
-                0x00001120       0x1e ./arduinolib/utility/Sd2Card.o
-                0x00001120                Sd2Card::readBlock(unsigned long, unsigned char*)
- .text._ZN7Sd2Card4initEhh
-                0x0000113e      0x192 ./arduinolib/utility/Sd2Card.o
-                0x0000113e                Sd2Card::init(unsigned char, unsigned char)
- .text._ZN6SdFile10make83NameEPKcPh
-                0x000012d0       0x82 ./arduinolib/utility/SdFile.o
-                0x000012d0                SdFile::make83Name(char const*, unsigned char*)
+                0x00000f0a       0x1e ./arduinolib/utility/Sd2Card.o
+                0x00000f0a                Sd2Card::readBlock(unsigned long, unsigned char*)
  .text._ZN6SdFile7seekSetEm
-                0x00001352      0x152 ./arduinolib/utility/SdFile.o
-                0x00001352                SdFile::seekSet(unsigned long)
+                0x00000f28      0x150 ./arduinolib/utility/SdFile.o
+                0x00000f28                SdFile::seekSet(unsigned long)
  .text._ZN6SdFile13cacheDirEntryEh
-                0x000014a4       0x38 ./arduinolib/utility/SdFile.o
-                0x000014a4                SdFile::cacheDirEntry(unsigned char)
+                0x00001078       0x38 ./arduinolib/utility/SdFile.o
+                0x00001078                SdFile::cacheDirEntry(unsigned char)
  .text._ZN6SdFile4syncEv
-                0x000014dc       0x90 ./arduinolib/utility/SdFile.o
-                0x000014dc                SdFile::sync()
- .text._ZN6SdFile5closeEv
-                0x0000156c       0x16 ./arduinolib/utility/SdFile.o
-                0x0000156c                SdFile::close()
- .text._ZN6SdFile8truncateEm
-                0x00001582      0x18e ./arduinolib/utility/SdFile.o
-                0x00001582                SdFile::truncate(unsigned long)
- .text._ZN6SdFile6removeEv
-                0x00001710       0x32 ./arduinolib/utility/SdFile.o
-                0x00001710                SdFile::remove()
- .text._ZN6SdFile4readEPvj
-                0x00001742      0x224 ./arduinolib/utility/SdFile.o
-                0x00001742                SdFile::read(void*, unsigned int)
- .text._ZN6SdFile12readDirCacheEv
-                0x00001966       0x92 ./arduinolib/utility/SdFile.o
-                0x00001966                SdFile::readDirCache()
- .text._ZN6SdFile8openRootEP8SdVolume
-                0x000019f8       0xa0 ./arduinolib/utility/SdFile.o
-                0x000019f8                SdFile::openRoot(SdVolume*)
- .text._ZN6SdFile15openCachedEntryEhh
-                0x00001a98       0xd8 ./arduinolib/utility/SdFile.o
-                0x00001a98                SdFile::openCachedEntry(unsigned char, unsigned char)
+                0x000010b0       0x90 ./arduinolib/utility/SdFile.o
+                0x000010b0                SdFile::sync()
  .text._ZN6SdFile10addClusterEv
-                0x00001b70       0x4c ./arduinolib/utility/SdFile.o
-                0x00001b70                SdFile::addCluster()
+                0x00001140       0x4c ./arduinolib/utility/SdFile.o
+                0x00001140                SdFile::addCluster()
  .text._ZN6SdFile5writeEPKvj
-                0x00001bbc      0x362 ./arduinolib/utility/SdFile.o
-                0x00001bbc                SdFile::write(void const*, unsigned int)
+                0x0000118c      0x362 ./arduinolib/utility/SdFile.o
+                0x0000118c                SdFile::write(void const*, unsigned int)
  .text._ZN6SdFile5writeEh
-                0x00001f1e       0x20 ./arduinolib/utility/SdFile.o
-                0x00001f1e                SdFile::write(unsigned char)
- .text._ZN6SdFile13addDirClusterEv
-                0x00001f3e       0xc4 ./arduinolib/utility/SdFile.o
-                0x00001f3e                SdFile::addDirCluster()
- .text._ZN6SdFile4openEPS_PKch
-                0x00002002      0x202 ./arduinolib/utility/SdFile.o
-                0x00002002                SdFile::open(SdFile*, char const*, unsigned char)
- .text._ZN6SdFile6removeEPS_PKc
-                0x00002204       0x56 ./arduinolib/utility/SdFile.o
-                0x00002204                SdFile::remove(SdFile*, char const*)
+                0x000014ee       0x20 ./arduinolib/utility/SdFile.o
+                0x000014ee                SdFile::write(unsigned char)
  .text._ZN8SdVolume10cacheFlushEv
-                0x0000225a       0x76 ./arduinolib/utility/SdVolume.o
-                0x0000225a                SdVolume::cacheFlush()
- .text._ZN8SdVolume14cacheZeroBlockEm
-                0x000022d0       0x46 ./arduinolib/utility/SdVolume.o
-                0x000022d0                SdVolume::cacheZeroBlock(unsigned long)
+                0x0000150e       0x72 ./arduinolib/utility/SdVolume.o
+                0x0000150e                SdVolume::cacheFlush()
  .text._ZN8SdVolume13cacheRawBlockEmh
-                0x00002316       0x74 ./arduinolib/utility/SdVolume.o
-                0x00002316                SdVolume::cacheRawBlock(unsigned long, unsigned char)
- .text._ZN8SdVolume4initEP7Sd2Cardh
-                0x0000238a      0x286 ./arduinolib/utility/SdVolume.o
-                0x0000238a                SdVolume::init(Sd2Card*, unsigned char)
+                0x00001580       0x72 ./arduinolib/utility/SdVolume.o
+                0x00001580                SdVolume::cacheRawBlock(unsigned long, unsigned char)
  .text._ZN8SdVolume6fatPutEmm
-                0x00002610      0x136 ./arduinolib/utility/SdVolume.o
-                0x00002610                SdVolume::fatPut(unsigned long, unsigned long)
+                0x000015f2      0x136 ./arduinolib/utility/SdVolume.o
+                0x000015f2                SdVolume::fatPut(unsigned long, unsigned long)
  .text._ZNK8SdVolume6fatGetEmPm
-                0x00002746       0xe4 ./arduinolib/utility/SdVolume.o
-                0x00002746                SdVolume::fatGet(unsigned long, unsigned long*) const
- .text._ZN8SdVolume9freeChainEm
-                0x0000282a       0xae ./arduinolib/utility/SdVolume.o
-                0x0000282a                SdVolume::freeChain(unsigned long)
- .text._ZNK8SdVolume9chainSizeEmPm
-                0x000028d8       0xdc ./arduinolib/utility/SdVolume.o
-                0x000028d8                SdVolume::chainSize(unsigned long, unsigned long*) const
+                0x00001728       0xe4 ./arduinolib/utility/SdVolume.o
+                0x00001728                SdVolume::fatGet(unsigned long, unsigned long*) const
  .text._ZN8SdVolume15allocContiguousEmPm
-                0x000029b4      0x216 ./arduinolib/utility/SdVolume.o
-                0x000029b4                SdVolume::allocContiguous(unsigned long, unsigned long*)
+                0x0000180c      0x216 ./arduinolib/utility/SdVolume.o
+                0x0000180c                SdVolume::allocContiguous(unsigned long, unsigned long*)
  .text._ZN11EEPROMClass4readEi
-                0x00002bca        0xe ./arduinolib/EEPROM.o
-                0x00002bca                EEPROMClass::read(int)
+                0x00001a22        0xe ./arduinolib/EEPROM.o
+                0x00001a22                EEPROMClass::read(int)
  .text._ZN11EEPROMClass5writeEih
-                0x00002bd8       0x18 ./arduinolib/EEPROM.o
-                0x00002bd8                EEPROMClass::write(int, unsigned char)
- .text._ZN4FileC1Ev
-                0x00002bf0       0x26 ./arduinolib/File.o
-                0x00002bf0                File::File()
- .text._ZN4FileD1Ev
-                0x00002c16        0xc ./arduinolib/File.o
-                0x00002c16                File::~File()
- .text._ZN4File5writeEh
-                0x00002c22       0x30 ./arduinolib/File.o
-                0x00002c22                File::write(unsigned char)
- .text._ZN4File9availableEv
-                0x00002c52       0x48 ./arduinolib/File.o
-                0x00002c52                File::available()
- .text._ZN4FilecvbEv
-                0x00002c9a       0x1a ./arduinolib/File.o
-                0x00002c9a                File::operator bool()
- .text._ZN4File5closeEv
-                0x00002cb4       0x22 ./arduinolib/File.o
-                0x00002cb4                File::close()
- .text._ZN4File5flushEv
-                0x00002cd6       0x10 ./arduinolib/File.o
-                0x00002cd6                File::flush()
- .text._ZN4File4readEv
-                0x00002ce6       0x3c ./arduinolib/File.o
-                0x00002ce6                File::read()
- .text._ZN4File4peekEv
-                0x00002d22       0x78 ./arduinolib/File.o
-                0x00002d22                File::peek()
- .text._ZN4File5writeEPKhj
-                0x00002d9a       0x3a ./arduinolib/File.o
-                0x00002d9a                File::write(unsigned char const*, unsigned int)
- .text._ZN4FileC1E6SdFilePKc
-                0x00002dd4       0x70 ./arduinolib/File.o
-                0x00002dd4                File::File(SdFile, char const*)
- .text._Z20getNextPathComponentPcPjS_
-                0x00002e44       0x7a ./arduinolib/SD.o
-                0x00002e44                getNextPathComponent(char*, unsigned int*, char*)
+                0x00001a30       0x18 ./arduinolib/EEPROM.o
+                0x00001a30                EEPROMClass::write(int, unsigned char)
  .text._GLOBAL__I__Z20getNextPathComponentPcPjS_
-                0x00002ebe       0x46 ./arduinolib/SD.o
- .text._Z19callback_pathExistsR6SdFilePchPv
-                0x00002f04       0x62 ./arduinolib/SD.o
-                0x00002f04                callback_pathExists(SdFile&, char*, unsigned char, void*)
- .text._Z8walkPathPcR6SdFilePFhS1_S_hPvES2_
-                0x00002f66      0x11a ./arduinolib/SD.o
-                0x00002f66                walkPath(char*, SdFile&, unsigned char (*)(SdFile&, char*, unsigned char, void*), void*)
- .text._ZN7SDClass6removeEPc
-                0x00003080       0x14 ./arduinolib/SD.o
-                0x00003080                SDClass::remove(char*)
- .text._ZN7SDClass6existsEPc
-                0x00003094       0x14 ./arduinolib/SD.o
-                0x00003094                SDClass::exists(char*)
- .text._ZN7SDClass12getParentDirEPKcPi
-                0x000030a8      0x23a ./arduinolib/SD.o
-                0x000030a8                SDClass::getParentDir(char const*, int*)
- .text._ZN7SDClass4openEPKch
-                0x000032e2      0x244 ./arduinolib/SD.o
-                0x000032e2                SDClass::open(char const*, unsigned char)
- .text._ZN7SDClass5beginEh
-                0x00003526       0x70 ./arduinolib/SD.o
-                0x00003526                SDClass::begin(unsigned char)
- .text._Z15callback_removeR6SdFilePchPv
-                0x00003596        0xc ./arduinolib/SD.o
-                0x00003596                callback_remove(SdFile&, char*, unsigned char, void*)
- .text._ZN8SPIClass3endEv
-                0x000035a2        0x8 ./arduinolib/SPI.o
-                0x000035a2                SPIClass::end()
+                0x00001a48       0x46 ./arduinolib/SD.o
  .text._ZN8SPIClass11setBitOrderEh
-                0x000035aa       0x12 ./arduinolib/SPI.o
-                0x000035aa                SPIClass::setBitOrder(unsigned char)
+                0x00001a8e       0x12 ./arduinolib/SPI.o
+                0x00001a8e                SPIClass::setBitOrder(unsigned char)
  .text._ZN8SPIClass11setDataModeEh
-                0x000035bc        0xa ./arduinolib/SPI.o
-                0x000035bc                SPIClass::setDataMode(unsigned char)
+                0x00001aa0        0xa ./arduinolib/SPI.o
+                0x00001aa0                SPIClass::setDataMode(unsigned char)
  .text._ZN8SPIClass5beginEv
-                0x000035c6       0x24 ./arduinolib/SPI.o
-                0x000035c6                SPIClass::begin()
- .text.avr-libc
-                0x000035ea      0x26a C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(malloc.o)
-                0x000035ea                malloc
-                0x00003724                free
+                0x00001aaa       0x24 ./arduinolib/SPI.o
+                0x00001aaa                SPIClass::begin()
  .text._Z11serialEventv
-                0x00003854        0x2 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
-                0x00003854                serialEvent()
+                0x00001ace        0x2 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+                0x00001ace                serialEvent()
  .text.__vector_18
-                0x00003856       0x76 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
-                0x00003856                __vector_18
+                0x00001ad0       0x76 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+                0x00001ad0                __vector_18
  .text._Z14serialEventRunv
-                0x000038cc       0x24 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
-                0x000038cc                serialEventRun()
+                0x00001b46       0x24 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+                0x00001b46                serialEventRun()
  .text.__vector_19
-                0x000038f0       0x76 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
-                0x000038f0                __vector_19
+                0x00001b6a       0x76 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+                0x00001b6a                __vector_19
  .text._ZN14HardwareSerial5beginEmh
-                0x00003966      0x116 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
-                0x00003966                HardwareSerial::begin(unsigned long, unsigned char)
+                0x00001be0      0x116 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+                0x00001be0                HardwareSerial::begin(unsigned long, unsigned char)
  .text._ZN14HardwareSerial9availableEv
-                0x00003a7c       0x22 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
-                0x00003a7c                HardwareSerial::available()
+                0x00001cf6       0x22 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+                0x00001cf6                HardwareSerial::available()
  .text._ZN14HardwareSerial4peekEv
-                0x00003a9e       0x40 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
-                0x00003a9e                HardwareSerial::peek()
+                0x00001d18       0x40 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+                0x00001d18                HardwareSerial::peek()
  .text._ZN14HardwareSerial4readEv
-                0x00003ade       0x52 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
-                0x00003ade                HardwareSerial::read()
+                0x00001d58       0x52 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+                0x00001d58                HardwareSerial::read()
  .text._ZN14HardwareSerial5flushEv
-                0x00003b30       0x20 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
-                0x00003b30                HardwareSerial::flush()
+                0x00001daa       0x20 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+                0x00001daa                HardwareSerial::flush()
  .text._ZN14HardwareSerial5writeEh
-                0x00003b50       0x80 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
-                0x00003b50                HardwareSerial::write(unsigned char)
+                0x00001dca       0x80 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+                0x00001dca                HardwareSerial::write(unsigned char)
  .text._ZN14HardwareSerialcvbEv
-                0x00003bd0        0x4 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
-                0x00003bd0                HardwareSerial::operator bool()
+                0x00001e4a        0x4 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+                0x00001e4a                HardwareSerial::operator bool()
  .text._GLOBAL__I_rx_buffer
-                0x00003bd4       0xac C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+                0x00001e4e       0xac C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
  .text._ZN5Print5writeEPKhj
-                0x00003c80       0x54 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(Print.o)
-                0x00003c80                Print::write(unsigned char const*, unsigned int)
+                0x00001efa       0x54 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(Print.o)
+                0x00001efa                Print::write(unsigned char const*, unsigned int)
  .text._ZN5Print7printlnEv
-                0x00003cd4       0x40 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(Print.o)
-                0x00003cd4                Print::println()
+                0x00001f4e       0x40 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(Print.o)
+                0x00001f4e                Print::println()
  .text._ZN5Print5writeEPKc
-                0x00003d14       0x38 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(Print.o)
-                0x00003d14                Print::write(char const*)
+                0x00001f8e       0x38 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(Print.o)
+                0x00001f8e                Print::write(char const*)
  .text._ZN5Print5printEPKc
-                0x00003d4c        0x4 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(Print.o)
-                0x00003d4c                Print::print(char const*)
+                0x00001fc6        0x4 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(Print.o)
+                0x00001fc6                Print::print(char const*)
  .text._ZN5Print7printlnEPKc
-                0x00003d50       0x22 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(Print.o)
-                0x00003d50                Print::println(char const*)
- .text.main     0x00003d72       0x1a C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(main.o)
-                0x00003d72                main
+                0x00001fca       0x22 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(Print.o)
+                0x00001fca                Print::println(char const*)
+ .text.main     0x00001fec       0x1a C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(main.o)
+                0x00001fec                main
  .text.__vector_16
-                0x00003d8c       0x90 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
-                0x00003d8c                __vector_16
- .text.millis   0x00003e1c       0x1c C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
-                0x00003e1c                millis
- .text.delay    0x00003e38       0xb2 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
-                0x00003e38                delay
- .text.init     0x00003eea       0x76 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
-                0x00003eea                init
- .text.pinMode  0x00003f60       0x7e C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring_digital.o)
-                0x00003f60                pinMode
+                0x00002006       0x90 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
+                0x00002006                __vector_16
+ .text.millis   0x00002096       0x1c C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
+                0x00002096                millis
+ .text.delay    0x000020b2       0xb2 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
+                0x000020b2                delay
+ .text.init     0x00002164       0x76 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
+                0x00002164                init
+ .text.pinMode  0x000021da       0x7e C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring_digital.o)
+                0x000021da                pinMode
  .text.digitalWrite
-                0x00003fde       0xa8 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring_digital.o)
-                0x00003fde                digitalWrite
+                0x00002258       0xa8 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring_digital.o)
+                0x00002258                digitalWrite
  .text.digitalRead
-                0x00004086       0xa6 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring_digital.o)
-                0x00004086                digitalRead
- .text.libgcc   0x0000412c       0x3e c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_mulsi3.o)
-                0x0000412c                __mulsi3
- .text.libgcc   0x0000416a       0x44 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_udivmodsi4.o)
-                0x0000416a                __udivmodsi4
- .text.libgcc   0x000041ae       0x38 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_prologue.o)
-                0x000041ae                __prologue_saves__
- .text.libgcc   0x000041e6       0x36 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_epilogue.o)
-                0x000041e6                __epilogue_restores__
- .text.libgcc   0x0000421c        0xc c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_tablejump.o)
-                0x00004220                __tablejump__
-                0x0000421c                __tablejump2__
-                0x00004228                . = ALIGN (0x2)
+                0x00002300       0xa6 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring_digital.o)
+                0x00002300                digitalRead
+ .text.libgcc   0x000023a6       0x44 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_udivmodsi4.o)
+                0x000023a6                __udivmodsi4
+ .text.libgcc   0x000023ea       0x38 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_prologue.o)
+                0x000023ea                __prologue_saves__
+ .text.libgcc   0x00002422       0x36 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_epilogue.o)
+                0x00002422                __epilogue_restores__
+ .text.libgcc   0x00002458        0xc c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_tablejump.o)
+                0x0000245c                __tablejump__
+                0x00002458                __tablejump2__
+                0x00002464                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00004228        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_exit.o)
-                0x00004228                exit
-                0x00004228                _exit
+ .fini9         0x00002464        0x0 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_exit.o)
+                0x00002464                exit
+                0x00002464                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
  *(.fini7)
  *(.fini7)
  *(.fini6)
- .fini6         0x00004228       0x14 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_dtors.o)
-                0x00004228                __do_global_dtors
  *(.fini6)
  *(.fini5)
  *(.fini5)
@@ -1389,108 +1338,85 @@ LOAD c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x0000423c        0x4 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_exit.o)
+ .fini0         0x00002464        0x4 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x00004240                _etext = .
+                0x00002468                _etext = .
 
-.data           0x00800100      0x15a load address 0x00004240
+.data           0x00800100      0x13a load address 0x00002468
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
- .data          0x00800100      0x126 ./src/WaterMeterMain.o
- .data          0x00800226        0x2 ./arduinolib/SD.o
+ .data          0x00800100      0x11e ./src/WaterMeterMain.o
  *(.data*)
  .data._ZN8SdVolume17cacheBlockNumber_E
-                0x00800228        0x4 ./arduinolib/utility/SdVolume.o
-                0x00800228                SdVolume::cacheBlockNumber_
- .data.__malloc_margin
-                0x0080022c        0x2 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(malloc.o)
-                0x0080022c                __malloc_margin
- .data.__malloc_heap_start
-                0x0080022e        0x2 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(malloc.o)
-                0x0080022e                __malloc_heap_start
- .data.__malloc_heap_end
-                0x00800230        0x2 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(malloc.o)
-                0x00800230                __malloc_heap_end
+                0x0080021e        0x4 ./arduinolib/utility/SdVolume.o
+                0x0080021e                SdVolume::cacheBlockNumber_
  *(.rodata)
  *(.rodata*)
  .rodata._ZTV6SdFile
-                0x00800232        0x8 ./arduinolib/utility/SdFile.o
-                0x00800232                vtable for SdFile
- .rodata._ZTV4File
-                0x0080023a       0x10 ./arduinolib/File.o
-                0x0080023a                vtable for File
+                0x00800222        0x8 ./arduinolib/utility/SdFile.o
+                0x00800222                vtable for SdFile
  .rodata._ZTV14HardwareSerial
-                0x0080024a       0x10 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
-                0x0080024a                vtable for HardwareSerial
+                0x0080022a       0x10 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+                0x0080022a                vtable for HardwareSerial
  *(.gnu.linkonce.d*)
-                0x0080025a                . = ALIGN (0x2)
-                0x0080025a                _edata = .
-                0x0080025a                PROVIDE (__data_end, .)
+                0x0080023a                . = ALIGN (0x2)
+                0x0080023a                _edata = .
+                0x0080023a                PROVIDE (__data_end, .)
 
-.bss            0x0080025a      0x428
-                0x0080025a                PROVIDE (__bss_start, .)
+.bss            0x0080023a      0x407
+                0x0080023a                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
- .bss.logFile   0x0080025a       0x1b ./src/WaterMeterMain.o
-                0x0080025a                logFile
- .bss.leak      0x00800275        0x1 ./src/WaterMeterMain.o
-                0x00800275                leak
- .bss.SPIFunc   0x00800276        0x1 ./src/WaterMeterMain.o
-                0x00800276                SPIFunc
- .bss.interruptNo
-                0x00800277        0x1 ./src/WaterMeterMain.o
-                0x00800277                interruptNo
+ .bss.leak      0x0080023a        0x1 ./src/WaterMeterMain.o
+                0x0080023a                leak
  .bss._ZL13MessageBuffer
-                0x00800278      0x100 ./src/WaterMeterMain.o
+                0x0080023b      0x100 ./src/WaterMeterMain.o
  .bss._ZN6SdFile9dateTime_E
-                0x00800378        0x2 ./arduinolib/utility/SdFile.o
-                0x00800378                SdFile::dateTime_
+                0x0080033b        0x2 ./arduinolib/utility/SdFile.o
+                0x0080033b                SdFile::dateTime_
  .bss._ZN8SdVolume12cacheBuffer_E
-                0x0080037a      0x200 ./arduinolib/utility/SdVolume.o
-                0x0080037a                SdVolume::cacheBuffer_
+                0x0080033d      0x200 ./arduinolib/utility/SdVolume.o
+                0x0080033d                SdVolume::cacheBuffer_
  .bss._ZN8SdVolume7sdCard_E
-                0x0080057a        0x2 ./arduinolib/utility/SdVolume.o
-                0x0080057a                SdVolume::sdCard_
+                0x0080053d        0x2 ./arduinolib/utility/SdVolume.o
+                0x0080053d                SdVolume::sdCard_
  .bss._ZN8SdVolume11cacheDirty_E
-                0x0080057c        0x1 ./arduinolib/utility/SdVolume.o
-                0x0080057c                SdVolume::cacheDirty_
+                0x0080053f        0x1 ./arduinolib/utility/SdVolume.o
+                0x0080053f                SdVolume::cacheDirty_
  .bss._ZN8SdVolume17cacheMirrorBlock_E
-                0x0080057d        0x4 ./arduinolib/utility/SdVolume.o
-                0x0080057d                SdVolume::cacheMirrorBlock_
- .bss.EEPROM    0x00800581        0x1 ./arduinolib/EEPROM.o
-                0x00800581                EEPROM
- .bss.SD        0x00800582       0x49 ./arduinolib/SD.o
-                0x00800582                SD
+                0x00800540        0x4 ./arduinolib/utility/SdVolume.o
+                0x00800540                SdVolume::cacheMirrorBlock_
+ .bss.EEPROM    0x00800544        0x1 ./arduinolib/EEPROM.o
+                0x00800544                EEPROM
+ .bss.SD        0x00800545       0x49 ./arduinolib/SD.o
+                0x00800545                SD
  .bss.rx_buffer
-                0x008005cb       0x44 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
-                0x008005cb                rx_buffer
+                0x0080058e       0x44 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+                0x0080058e                rx_buffer
  .bss.tx_buffer
-                0x0080060f       0x44 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
-                0x0080060f                tx_buffer
- .bss.Serial    0x00800653       0x22 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
-                0x00800653                Serial
+                0x008005d2       0x44 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+                0x008005d2                tx_buffer
+ .bss.Serial    0x00800616       0x22 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+                0x00800616                Serial
  .bss.timer0_overflow_count
-                0x00800675        0x4 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
-                0x00800675                timer0_overflow_count
+                0x00800638        0x4 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
+                0x00800638                timer0_overflow_count
  .bss.timer0_millis
-                0x00800679        0x4 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
-                0x00800679                timer0_millis
+                0x0080063c        0x4 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
+                0x0080063c                timer0_millis
  .bss.timer0_fract
-                0x0080067d        0x1 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
+                0x00800640        0x1 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
  *(COMMON)
- COMMON         0x0080067e        0x4 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(malloc.o)
-                0x0080067e                __brkval
-                0x00800680                __flp
-                0x00800682                PROVIDE (__bss_end, .)
-                0x00004240                __data_load_start = LOADADDR (.data)
-                0x0000439a                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00800641                PROVIDE (__bss_end, .)
+                0x00002468                __data_load_start = LOADADDR (.data)
+                0x000025a2                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00800682        0x0
-                0x00800682                PROVIDE (__noinit_start, .)
+.noinit         0x00800641        0x0
+                0x00800641                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x00800682                PROVIDE (__noinit_end, .)
-                0x00800682                _end = .
-                0x00800682                PROVIDE (__heap_start, .)
+                0x00800641                PROVIDE (__noinit_end, .)
+                0x00800641                _end = .
+                0x00800641                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
  *(.eeprom*)
@@ -1508,51 +1434,51 @@ LOAD c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a
 .signature
  *(.signature*)
 
-.stab           0x00000000     0xbd78
+.stab           0x00000000     0x9444
  *(.stab)
- .stab          0x00000000     0x1428 ./src/WaterMeterMain.o
- .stab          0x00001428      0x15c ./src/pure_virtual.o
+ .stab          0x00000000     0x1224 ./src/WaterMeterMain.o
+ .stab          0x00001224      0x15c ./src/pure_virtual.o
                                 0x198 (size before relaxing)
- .stab          0x00001584      0x420 ./lib/LowPower.o
+ .stab          0x00001380      0x420 ./lib/LowPower.o
                                 0xb04 (size before relaxing)
- .stab          0x000019a4      0x510 ./lib/Time.o
+ .stab          0x000017a0      0x510 ./lib/Time.o
                                 0xffc (size before relaxing)
- .stab          0x00001eb4      0x7a4 ./lib/ds3234.o
+ .stab          0x00001cb0      0x75c ./lib/ds3234.o
                                0x1428 (size before relaxing)
- .stab          0x00002658     0x1518 ./arduinolib/utility/Sd2Card.o
+ .stab          0x0000240c      0xd74 ./arduinolib/utility/Sd2Card.o
                                0x1ad0 (size before relaxing)
- .stab          0x00003b70     0x168c ./arduinolib/utility/SdFile.o
+ .stab          0x00003180      0xbdc ./arduinolib/utility/SdFile.o
                                0x2a00 (size before relaxing)
- .stab          0x000051fc     0x12a8 ./arduinolib/utility/SdVolume.o
+ .stab          0x00003d5c      0xf24 ./arduinolib/utility/SdVolume.o
                                0x12b4 (size before relaxing)
- .stab          0x000064a4      0x660 ./arduinolib/EEPROM.o
+ .stab          0x00004c80      0x660 ./arduinolib/EEPROM.o
                                 0x66c (size before relaxing)
- .stab          0x00006b04      0xac8 ./arduinolib/File.o
+ .stab          0x000052e0      0x63c ./arduinolib/File.o
                                0x1440 (size before relaxing)
- .stab          0x000075cc      0xf30 ./arduinolib/SD.o
+ .stab          0x0000591c      0x6b4 ./arduinolib/SD.o
                                0x18e4 (size before relaxing)
- .stab          0x000084fc      0x678 ./arduinolib/SPI.o
+ .stab          0x00005fd0      0x648 ./arduinolib/SPI.o
                                 0x6cc (size before relaxing)
- .stab          0x00008b74      0x708 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(malloc.o)
+ .stab          0x00006618      0x330 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(malloc.o)
                                 0x714 (size before relaxing)
- .stab          0x0000927c      0xab0 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
+ .stab          0x00006948      0xab0 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
                                 0xf84 (size before relaxing)
- .stab          0x00009d2c      0x630 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(Print.o)
+ .stab          0x000073f8      0x630 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(Print.o)
                                0x1020 (size before relaxing)
- .stab          0x0000a35c      0x3fc C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(WString.o)
+ .stab          0x00007a28      0x3fc C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(WString.o)
                                0x2214 (size before relaxing)
- .stab          0x0000a758      0x588 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(main.o)
+ .stab          0x00007e24      0x588 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(main.o)
                                 0x594 (size before relaxing)
- .stab          0x0000ace0      0x78c C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
+ .stab          0x000083ac      0x78c C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring.o)
                                 0xa74 (size before relaxing)
- .stab          0x0000b46c      0x7ec C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring_digital.o)
+ .stab          0x00008b38      0x7ec C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(wiring_digital.o)
                                 0xb1c (size before relaxing)
- .stab          0x0000bc58      0x120 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(realloc.o)
+ .stab          0x00009324      0x120 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(realloc.o)
                                 0x5ac (size before relaxing)
 
-.stabstr        0x00000000     0xb520
+.stabstr        0x00000000     0xb3ff
  *(.stabstr)
- .stabstr       0x00000000     0xb520 ./src/WaterMeterMain.o
+ .stabstr       0x00000000     0xb3ff ./src/WaterMeterMain.o
 
 .stab.excl
  *(.stab.excl)
@@ -1617,7 +1543,6 @@ Symbol                                            File
 DS3234_clear_a1f(unsigned char)                   ./lib/ds3234.o
 DS3234_clear_a2f(unsigned char)                   ./lib/ds3234.o
 DS3234_end()                                      ./lib/ds3234.o
-                                                  ./src/WaterMeterMain.o
 DS3234_get(unsigned char, ts*)                    ./lib/ds3234.o
                                                   ./src/WaterMeterMain.o
 DS3234_get_a1(unsigned char, char*, unsigned char) ./lib/ds3234.o
@@ -1647,21 +1572,18 @@ EEPROMClass::write(int, unsigned char)            ./arduinolib/EEPROM.o
                                                   ./src/WaterMeterMain.o
 File::File()                                      ./arduinolib/File.o
                                                   ./arduinolib/SD.o
-                                                  ./src/WaterMeterMain.o
 File::File()                                      ./arduinolib/File.o
 File::File(SdFile, char const*)                   ./arduinolib/File.o
                                                   ./arduinolib/SD.o
 File::File(SdFile, char const*)                   ./arduinolib/File.o
 File::available()                                 ./arduinolib/File.o
 File::close()                                     ./arduinolib/File.o
-                                                  ./src/WaterMeterMain.o
 File::flush()                                     ./arduinolib/File.o
 File::isDirectory()                               ./arduinolib/File.o
                                                   ./arduinolib/SD.o
 File::name()                                      ./arduinolib/File.o
 File::openNextFile(unsigned char)                 ./arduinolib/SD.o
 File::operator bool()                             ./arduinolib/File.o
-                                                  ./src/WaterMeterMain.o
 File::peek()                                      ./arduinolib/File.o
 File::position()                                  ./arduinolib/File.o
 File::read()                                      ./arduinolib/File.o
@@ -1673,7 +1595,6 @@ File::write(unsigned char const*, unsigned int)   ./arduinolib/File.o
 File::write(unsigned char)                        ./arduinolib/File.o
 File::~File()                                     ./arduinolib/File.o
 File::~File()                                     ./arduinolib/File.o
-                                                  ./src/WaterMeterMain.o
 HardwareSerial::HardwareSerial(ring_buffer*, ring_buffer*, unsigned char volatile*, unsigned char volatile*, unsigned char volatile*, unsigned char volatile*, unsigned char volatile*, unsigned char volatile*, unsigned char, unsigned char, unsigned char, unsigned char, unsigned char) C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
 HardwareSerial::HardwareSerial(ring_buffer*, ring_buffer*, unsigned char volatile*, unsigned char volatile*, unsigned char volatile*, unsigned char volatile*, unsigned char volatile*, unsigned char volatile*, unsigned char, unsigned char, unsigned char, unsigned char, unsigned char) C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
 HardwareSerial::available()                       C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
@@ -1736,17 +1657,12 @@ Print::write(unsigned char const*, unsigned int)  C:\Dropbox\Work\Programming\Ec
                                                   ./arduinolib/File.o
                                                   ./arduinolib/utility/SdFile.o
 SD                                                ./arduinolib/SD.o
-                                                  ./src/WaterMeterMain.o
 SDClass::begin(unsigned char)                     ./arduinolib/SD.o
-                                                  ./src/WaterMeterMain.o
 SDClass::exists(char*)                            ./arduinolib/SD.o
-                                                  ./src/WaterMeterMain.o
 SDClass::getParentDir(char const*, int*)          ./arduinolib/SD.o
 SDClass::mkdir(char*)                             ./arduinolib/SD.o
 SDClass::open(char const*, unsigned char)         ./arduinolib/SD.o
-                                                  ./src/WaterMeterMain.o
 SDClass::remove(char*)                            ./arduinolib/SD.o
-                                                  ./src/WaterMeterMain.o
 SDClass::rmdir(char*)                             ./arduinolib/SD.o
 SPI                                               ./arduinolib/SPI.o
 SPIClass::begin()                                 ./arduinolib/SPI.o
@@ -1758,7 +1674,6 @@ SPIClass::setBitOrder(unsigned char)              ./arduinolib/SPI.o
 SPIClass::setClockDivider(unsigned char)          ./arduinolib/SPI.o
 SPIClass::setDataMode(unsigned char)              ./arduinolib/SPI.o
                                                   ./lib/ds3234.o
-SPIFunc                                           ./src/WaterMeterMain.o
 Sd2Card::cardCommand(unsigned char, unsigned long) ./arduinolib/utility/Sd2Card.o
 Sd2Card::cardSize()                               ./arduinolib/utility/Sd2Card.o
 Sd2Card::chipSelectHigh()                         ./arduinolib/utility/Sd2Card.o
@@ -2049,11 +1964,6 @@ __do_copy_data                                    c:/arduino/hardware/tools/avr/
 __do_global_ctors                                 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_ctors.o)
                                                   C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(HardwareSerial.o)
                                                   ./arduinolib/SD.o
-                                                  ./src/WaterMeterMain.o
-__do_global_dtors                                 c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_dtors.o)
-                                                  ./src/WaterMeterMain.o
-__dtors_end                                       c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_dtors.o)
-__dtors_start                                     c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_dtors.o)
 __epilogue_restores__                             c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_epilogue.o)
                                                   c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(vfprintf_std.o)
                                                   c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(sprintf.o)
@@ -2139,7 +2049,6 @@ __subsf3                                          c:/arduino/hardware/tools/avr/
                                                   C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(Print.o)
 __tablejump2__                                    c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_tablejump.o)
 __tablejump__                                     c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_tablejump.o)
-                                                  c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_dtors.o)
                                                   c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_ctors.o)
 __thenan_sf                                       c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_thenan_sf.o)
                                                   c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/avr5\libgcc.a(_div_sf.o)
@@ -2258,7 +2167,6 @@ isspace                                           c:/arduino/hardware/tools/avr/
 itoa                                              c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(itoa.o)
                                                   C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(WString.o)
 leak                                              ./src/WaterMeterMain.o
-logFile                                           ./src/WaterMeterMain.o
 loop                                              ./src/WaterMeterMain.o
                                                   C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\328P_16MHz\libArduinoUnoCore.a(main.o)
 ltoa                                              c:/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.3.2/../../../../avr/lib/avr5\libc.a(ltoa.o)

@@ -34,61 +34,10 @@
 
 // Define Global Variables
 static char MessageBuffer[256];
-File logFile;
-uint8_t leak, SPIFunc, interruptNo;
+//File logFile;
+uint8_t leak, interruptNo;
 
 // Define Program Functions
-static uint8_t openLogFile()						// TODO: set this up to create new logs every month
-{
-	if(!SD.begin(4))
-	{
-		return 1;		// SD card error
-	}
-	logFile = SD.open("log.txt",FILE_WRITE);
-	if(logFile)
-	{
-		return 0;
-	}
-	else
-	{
-		return 2;		// file open error
-	}
-}
-
-static void closeLogFile()
-{
-	logFile.close();
-}
-
-static uint8_t useSD()
-{
-	if(SPIFunc)
-	{
-		return 0;
-	}
-	else
-	{
-		DS3234_end();
-		SPIFunc = 1;
-		return openLogFile();
-	}
-}
-
-static uint8_t useDS3234()
-{
-	if(!SPIFunc)
-	{
-		return 0;
-	}
-	else
-	{
-		closeLogFile();
-		SPIFunc = 0;
-		DS3234_init(DS3234_SS_PIN);;
-		return 0;
-	}
-}
-
 static uint8_t printSerial()
 {
 	return Serial.print(MessageBuffer);
@@ -97,7 +46,6 @@ static uint8_t printSerial()
 static void printTime()
 {
 	ts time;
-	useDS3234();
 	DS3234_get(DS3234_SS_PIN,&time);
 	sprintf(MessageBuffer,"%02u/%02u/%4d %02d:%02d:%02d\t",time.mon,time.mday,time.year,time.hour,time.min,time.sec);
 	Serial.println(MessageBuffer);
@@ -154,7 +102,6 @@ static uint8_t openValve()
 
 static uint32_t readLogEntry(uint8_t logStart)
 {
-	useSD();
 	/*																	// TODO: rewrite function for EEPROM or SD card
 	uint32_t t_unix = 0;
 	t_unix += (uint32_t)DS3234_get_sram_8b(logStart)*16777216;
@@ -167,10 +114,6 @@ static uint32_t readLogEntry(uint8_t logStart)
 
 static void writeLogEntry(uint8_t startPos, uint32_t t_unix)
 {
-	useSD();
-	logFile.seek(logFile.size());
-	logFile.write(LogBuffer);
-	logFile.flush();
 	/*																		// TODO: rewrite function for SD or EEPROM
 	// stores t_unix as 4 bytes
 	uint8 splitByte;
@@ -216,14 +159,9 @@ static void setConsecGallons(uint8_t gals)
 	EEPROM.write(5,gals);
 }
 
-static uint8_t clearLog()					// TODO: rewrite for multiple month logs
+static uint8_t clearLog()					// TODO: rewrite pull old function from wixel
 {
-	useSD();
-	closeLogFile();
-	if(SD.exists("log.txt"))
-	{
-		SD.remove("log.txt");
-	}
+
 }
 
 static uint8_t resetSystem()
@@ -460,7 +398,6 @@ void setup()
 
 	// Initialize SPI Communication
 	DS3234_init(DS3234_SS_PIN);
-	SPIFunc = 0;
 
 	// Initialize Radio Communication
 	Serial.begin(9600,SERIAL_8N1);
@@ -468,7 +405,6 @@ void setup()
 
 	// Set Global Variables
 	leak = 0;
-	interruptNo = 0;
 }
 
 void loop()
