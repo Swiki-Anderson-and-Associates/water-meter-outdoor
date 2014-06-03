@@ -9,10 +9,10 @@
 // new branch test
 
 // Define Constants
-#define DS3234_CREG_BYTE 0x00		// Byte to set the control register of the DS3234
-#define DS3234_SREG_BYTE 0x10		// Byte to set the SREG of the DS3234
+#define DS3234_CREG_BYTE 0x00			// Byte to set the control register of the DS3234
+#define DS3234_SREG_BYTE 0x10			// Byte to set the SREG of the DS3234
 
-#define LOG_LINE_LENGTH		8		// number of bytes in a single line of the log file
+#define LOG_START_POS		16			// memory position where gallon log starts
 
 // Define Pins Used for Operation
 #define RADIO_RX_PIN		0			// radio Rx pin
@@ -24,7 +24,7 @@
 #define MISO_PIN			12			// SPI MISO communication pin
 #define SPI_CLK_PIN			13			// SPI clock pin
 
-#define RADIO_PIN			2			// pin pulled low when Arduino is woken by the radio
+#define ALARM_PIN			2			// pin pulled low when Arduino is woken by the radio
 #define METER_PIN			3			// pin pulled low when one gallon has flowed through meter
 #define RST_PIN				6			// user reset pin, pulled low to reset
 
@@ -71,6 +71,11 @@ static uint8_t wasLeakDetected()
 	return EEPROM.read(1);
 }
 
+static uint8_t getLastLogPos()
+{
+	return EEPROM.read(2);
+}
+
 static uint8_t closeValve()
 {
 	digitalWrite(VALVE_ENABLE_PIN,1);
@@ -102,33 +107,29 @@ static uint8_t openValve()
 
 static uint32_t readLogEntry(uint8_t logStart)
 {
-	/*																	// TODO: rewrite function for EEPROM or SD card
 	uint32_t t_unix = 0;
-	t_unix += (uint32_t)DS3234_get_sram_8b(logStart)*16777216;
-	t_unix += (uint32_t)DS3234_get_sram_8b(logStart+1)*65536;
-	t_unix += (uint32_t)DS3234_get_sram_8b(logStart+2)*256;
-	t_unix += (uint32_t)DS3234_get_sram_8b(logStart+3);
+	t_unix += (uint32_t)EEPROM.read(logStart)*16777216;
+	t_unix += (uint32_t)EEPROM.read(logStart+1)*65536;
+	t_unix += (uint32_t)EEPROM.read(logStart+2)*256;
+	t_unix += (uint32_t)EEPROM.read(logStart+3);
 	return t_unix;
-	*/
 }
 
 static void writeLogEntry(uint8_t startPos, uint32_t t_unix)
 {
-	/*																		// TODO: rewrite function for SD or EEPROM
 	// stores t_unix as 4 bytes
-	uint8 splitByte;
+	uint8_t splitByte;
 	splitByte = t_unix/16777216;
-	DS3234_set_sram_8b(startPos,splitByte);
-	t_unix -= (uint32)(splitByte)*16777216;
+	EEPROM.write(startPos,(char)splitByte);
+	t_unix -= (uint32_t)(splitByte)*16777216;
 	splitByte = t_unix/65536;
-	DS3234_set_sram_8b(startPos+1,splitByte);
-	t_unix -= (uint32)(splitByte)*65536;
+	EEPROM.write(startPos+1,(char)splitByte);
+	t_unix -= (uint32_t)(splitByte)*65536;
 	splitByte = t_unix/256;
-	DS3234_set_sram_8b(startPos+2,splitByte);
-	t_unix -= (uint32)(splitByte)*256;
+	EEPROM.write(startPos+2,(char)splitByte);
+	t_unix -= (uint32_t)(splitByte)*256;
 	splitByte = t_unix;
-	DS3234_set_sram_8b(startPos+3,t_unix);
-	*/
+	EEPROM.write(startPos+3,t_unix);
 }
 
 static uint16_t getDayGallons()
@@ -159,9 +160,20 @@ static void setConsecGallons(uint8_t gals)
 	EEPROM.write(5,gals);
 }
 
-static uint8_t clearLog()					// TODO: rewrite pull old function from wixel
+static uint8_t clearLog()
 {
-
+	uint8_t i;
+	if (getLastLogPos()!=LOG_START_POS-1)
+	{
+		for(i=LOG_START_POS; i<=251; i++)
+		{
+			EEPROM.write(i,(char)0);
+		}
+		EEPROM.write(2,(uint8_t)(LOG_START_POS-1));
+	}
+	printTime();
+	sprintf(MessageBuffer,"Log:\tCleared\n");
+	return printSerial();
 }
 
 static uint8_t resetSystem()
@@ -203,9 +215,8 @@ static void shutdown()
 
 static uint8_t reportLog()
 {
-	/*														// TODO: rewrite using SD card
-	uint8 lastLog = getLastLogPos();
-	uint8 i;
+	uint8_t lastLog = getLastLogPos();
+	uint8_t i;
 	printTime();
 	sprintf(MessageBuffer,"Gallon Log:\n");
 	printSerial();
@@ -221,7 +232,7 @@ static uint8_t reportLog()
 			if(i%4 == 0)
 			{
 				printTime();
-				sprintf(MessageBuffer,"%u\t%lu\n",(i-12)/4,readLogEntry(i));
+				sprintf(MessageBuffer,"%u\t%lu\n",(i-12)/4,readLogEntry((i)));
 				printSerial();
 			}
 
@@ -230,17 +241,16 @@ static uint8_t reportLog()
 	printTime();
 	sprintf(MessageBuffer,"End Log\n");
 	return printSerial();
-	*/
 }
 
 static void logGallon()
-{/*														// TODO: rewrite using SD card
-	struct ts time;
-	uint32 t_unix = 0;
-	uint8 lastLog;
+{
+	ts time;
+	uint32_t t_unix = 0;
+	uint8_t lastLog;
 	t_unix = DS3234_get_unix();
 	lastLog = getLastLogPos();
-	DS3234_get(&time);
+	DS3234_get(DS3234_SS_PIN,&time);
 
 	if (lastLog>=251)
 	{
@@ -250,13 +260,11 @@ static void logGallon()
 
 	lastLog = getLastLogPos();
 	writeLogEntry(lastLog+1,t_unix);				// writes gallon to log
-	DS3234_set_sram_8b(2,lastLog+4);				// sets last log position
-	*/
+	EEPROM.write(2,lastLog+4);						// sets last log position
 }
 
 static uint8_t checkForLeaks()
 {
-	/*																				//TODO: rewrite using Sd log
 	uint16_t dayGallons = getDayGallons();
 	uint32_t t_lastLog = readLogEntry(getLastLogPos()-3);
 	uint32_t t_prevLog = readLogEntry(getLastLogPos()-7);
@@ -290,7 +298,6 @@ static uint8_t checkForLeaks()
 		setConsecGallons(0);					// reset consecutive gallon counter
 	}
 	return 0;									// no leak detected
-	*/
 }
 
 static uint8_t reportLeak()
@@ -385,7 +392,7 @@ void setup()
 	pinMode(SD_SS_PIN,OUTPUT);
 	pinMode(DS3234_SS_PIN,OUTPUT);
 
-	pinMode(RADIO_PIN,INPUT);
+	pinMode(ALARM_PIN,INPUT);
 	pinMode(METER_PIN,INPUT);
 
 	digitalWrite(VALVE_ENABLE_PIN,0);
@@ -409,6 +416,7 @@ void setup()
 
 void loop()
 {
+	leak = 0;
 	// TODO: fix logical control
 	if (digitalRead(RST_PIN))
 	{
@@ -416,7 +424,7 @@ void loop()
 		resetSystem();
 	}
 
-	if (digitalRead(RADIO_PIN))
+	if (digitalRead(ALARM_PIN))
 	{
 		reportLog();
 		reportLeak();
