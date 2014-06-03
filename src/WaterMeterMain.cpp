@@ -1,8 +1,10 @@
 #include <Arduino.h>
+#include <avr/sleep.h>
 #include <stdio.h>
 #include <SD.h>
 #include <EEPROM.h>
 #include "ds3234.h"
+#include "LowPower.h"
 
 // Define Constants
 #define DS3234_CREG_BYTE 0x00		// Byte to set the control register of the DS3234
@@ -18,8 +20,8 @@
 #define MISO_PIN			12			// SPI MISO communication pin
 #define SPI_CLK_PIN			13			// SPI clock pin
 
-#define ALARM_PIN			2			// pin pulled high when Arduino is woken by alarm time interval
-#define METER_PIN			3			// pin pulled high when one gallon has flowed through meter
+#define RADIO_PIN			2			// pin pulled low when Arduino is woken by the radio
+#define METER_PIN			3			// pin pulled low when one gallon has flowed through meter
 #define RST_PIN				6			// user reset pin, pulled low to reset
 
 #define VALVE_ENABLE_PIN	7			// pin must be pulled high to enable h bridge controller
@@ -29,7 +31,7 @@
 // Define Global Variables
 static char MessageBuffer[256];
 File logFile;
-uint8_t leak, SPIFunc;
+uint8_t leak, SPIFunc, interruptNo;
 
 // Define Program Functions
 static uint8_t openLogFile()
@@ -238,11 +240,29 @@ static uint8_t resetSystem()
 	return printSerial();
 }
 
+static void radioInterrupt()
+{
+	sleep_disable();
+	detachInterrupt(0);
+	detachInterrupt(1);
+	interruptNo = 1;
+}
+
+static void meterInterrupt()
+{
+	sleep_disable();
+	detachInterrupt(0);
+	detachInterrupt(1);
+	interruptNo = 2;
+}
+
 static void shutdown()
 {
-	/*											// TODO: rewrite using sleep function
-    digitalWrite(SYSTEM_POWER_PIN,0);
-    */
+	interruptNo = 0;
+	sleep_enable();
+	attachInterrupt(0,radioInterrupt,LOW);
+	attachInterrupt(1,meterInterrupt,FALLING);
+	LowPower.powerDown(SLEEP_FOREVER,ADC_OFF,BOD_OFF);
 }
 
 static uint8_t reportLog()
@@ -416,7 +436,6 @@ static void checkRadioCommands()
 	while(Serial.available())
 	{
 		processRadio(Serial.read());
-
 	}
 }
 
@@ -430,6 +449,9 @@ void setup()
 	pinMode(SD_SS_PIN,OUTPUT);
 	pinMode(DS3234_SS_PIN,OUTPUT);
 
+	pinMode(RADIO_PIN,INPUT);
+	pinMode(METER_PIN,INPUT);
+
 	digitalWrite(VALVE_ENABLE_PIN,0);
 	digitalWrite(VALVE_CONTROL_1_PIN,0);
 	digitalWrite(VALVE_CONTROL_2_PIN,0);
@@ -437,8 +459,6 @@ void setup()
 	digitalWrite(DS3234_SS_PIN,1);
 
 	pinMode(RST_PIN,INPUT_PULLUP);
-
-	// TODO: figure out how to handle interrupts
 
 	// Initialize SPI Communication
 	DS3234_init(DS3234_SS_PIN);
@@ -450,6 +470,7 @@ void setup()
 
 	// Set Global Variables
 	leak = 0;
+	interruptNo = 0;
 }
 
 void loop()
@@ -460,7 +481,7 @@ void loop()
 		resetSystem();
 	}
 
-	if (digitalRead(ALARM_PIN))
+	if (digitalRead(RADIO_PIN))
 	{
 		reportLog();
 		reportLeak();
@@ -488,5 +509,5 @@ void loop()
 
 	checkRadioCommands();
 	Serial.flush();
-	shutdown();
+	//shutdown();
 }

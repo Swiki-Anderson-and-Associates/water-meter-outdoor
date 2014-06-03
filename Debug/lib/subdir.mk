@@ -5,14 +5,17 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../lib/LowPower.cpp \
+../lib/Time.cpp \
 ../lib/ds3234.cpp 
 
 OBJS += \
 ./lib/LowPower.o \
+./lib/Time.o \
 ./lib/ds3234.o 
 
 CPP_DEPS += \
 ./lib/LowPower.d \
+./lib/Time.d \
 ./lib/ds3234.d 
 
 

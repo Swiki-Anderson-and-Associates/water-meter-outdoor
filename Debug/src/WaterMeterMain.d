@@ -18,7 +18,8 @@ src/WaterMeterMain.d src/WaterMeterMain.o: ../src/WaterMeterMain.cpp \
   C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\src/Print.h \
   C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoWaterMeter\arduinolib/utility/SdFatUtil.h \
   C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoWaterMeter\arduinolib/EEPROM.h \
-  C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoWaterMeter\lib/ds3234.h
+  C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoWaterMeter\lib/ds3234.h \
+  C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoWaterMeter\lib/LowPower.h
 
 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoUnoCore\src/Arduino.h:
 
@@ -59,3 +60,5 @@ C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoWaterMeter\arduinolib/utilit
 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoWaterMeter\arduinolib/EEPROM.h:
 
 C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoWaterMeter\lib/ds3234.h:
+
+C:\Dropbox\Work\Programming\Eclipseworkspace\ArduinoWaterMeter\lib/LowPower.h:
