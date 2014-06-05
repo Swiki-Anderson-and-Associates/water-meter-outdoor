@@ -35,7 +35,8 @@
 // Define Global Variables
 static char MessageBuffer[256];
 //File logFile;
-uint8_t leak, interruptNo;
+uint8_t leak;
+volatile uint8_t interruptNo;			// any variables changed by ISRs must be declared volatile
 
 // Define Program Functions
 static uint8_t printSerial()
@@ -209,7 +210,7 @@ static void shutdown()
 	interruptNo = 0;
 	sleep_enable();
 	attachInterrupt(0,radioInterrupt,LOW);
-	attachInterrupt(1,meterInterrupt,FALLING);		// TODO: fix this falling interrupt wont work, need change interrupt
+	attachInterrupt(1,meterInterrupt,CHANGE);		// Not sure if this will work right, may need extra library to pin change interrupt
 	LowPower.powerDown(SLEEP_8S,ADC_OFF,BOD_OFF);
 }
 
