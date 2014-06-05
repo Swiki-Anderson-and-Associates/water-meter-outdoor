@@ -13,7 +13,7 @@
 #define DS3234_SREG_BYTE 0x10			// Byte to set the SREG of the DS3234
 
 #define LOG_START_POS		16			// memory position where gallon log starts
-#define DEBOUNCE_MS			250			// time constant for debouncing in milliseconds
+#define DEBOUNCE_MS			100			// time constant for debouncing in milliseconds
 
 // Define Pins Used for Operation
 #define RADIO_RX_PIN		0			// radio Rx pin
@@ -54,7 +54,7 @@ static void printTime()
 	ts time;
 	DS3234_get(DS3234_SS_PIN,&time);
 	sprintf(MessageBuffer,"%02u/%02u/%4d %02d:%02d:%02d\t",time.mon,time.mday,time.year,time.hour,time.min,time.sec);
-	Serial.println(MessageBuffer);
+	Serial.print(MessageBuffer);
 }
 
 static void setValvePos(uint8_t pos)
@@ -196,27 +196,21 @@ static uint8_t resetSystem()
 
 static void radioInterrupt()
 {
-	sleep_disable();
-	detachInterrupt(0);
-	detachInterrupt(1);
 	lastInt = RADIO;
 }
 
 static void meterInterrupt()
 {
-	sleep_disable();
-	detachInterrupt(0);
-	detachInterrupt(1);
 	lastInt = METER;
 }
 
 static void shutdown()
 {
 	lastInt = NONE;
-	sleep_enable();
+	sleep_enable();										// Dont fuck with anything below this point in this function
 	attachInterrupt(0,radioInterrupt,LOW);
-	attachInterrupt(1,meterInterrupt,CHANGE);		// Not sure if this will work right, may need extra library to pin change interrupt
-	LowPower.powerDown(SLEEP_8S,ADC_OFF,BOD_OFF);
+	attachInterrupt(1,meterInterrupt,CHANGE);
+	LowPower.powerDown(SLEEP_8S,ADC_ON,BOD_ON);
 }
 
 static uint8_t reportLog()
@@ -398,8 +392,8 @@ void setup()
 	pinMode(SD_SS_PIN,OUTPUT);
 	pinMode(DS3234_SS_PIN,OUTPUT);
 
-	pinMode(ALARM_PIN,INPUT);
-	pinMode(METER_PIN,INPUT);
+	pinMode(ALARM_PIN,INPUT_PULLUP);
+	pinMode(METER_PIN,INPUT_PULLUP);
 
 	digitalWrite(VALVE_ENABLE_PIN,0);
 	digitalWrite(VALVE_CONTROL_1_PIN,0);
@@ -427,7 +421,7 @@ void setup()
 void loop()
 {
 	leak = 0;
-	if (digitalRead(RST_PIN))
+	if (!digitalRead(RST_PIN))
 	{
 		// manually reset system if INPUT 1 is held
 		resetSystem();
@@ -437,6 +431,7 @@ void loop()
 	{
 	case NONE:									// wait until a few sleeps have happened then transmit data back
 		timerCount++;
+		Serial.println("Timer");
 		if (timerCount >= 10)					// 10x 8 second intervals have passed
 		{
 			reportLog();
@@ -446,14 +441,20 @@ void loop()
 		}
 		break;
 	case RADIO:
+		Serial.println("Radio");
 		// I dont think we are going to implement radio wake yet since we are using AT mode for testing
 		break;
 	case METER:
+		Serial.println("Meter");
 		meterIntTime = millis();
+		Serial.println("BOUNCE");
 		if ((meterIntTime-lastMeterIntTime) > DEBOUNCE_MS)				// debounce reed switch
 		{
-			if (METER_PIN == LOW)
+			if (digitalRead(METER_PIN) == LOW)
 			{
+				Serial.println("LOW DETECTED");
+
+
 				logGallon();
 				// check if a leak was previously detected
 				if (wasLeakDetected()==0)
@@ -475,7 +476,11 @@ void loop()
 		break;
 	}
 
-	checkRadioCommands();
+	//checkRadioCommands();
+	Serial.print("Going to sleep...");
 	Serial.flush();
-	shutdown();
+	shutdown();							// Do not add or remove any lines below this or I will murder your family
+	sleep_disable();
+	detachInterrupt(0);
+	detachInterrupt(1);
 }
