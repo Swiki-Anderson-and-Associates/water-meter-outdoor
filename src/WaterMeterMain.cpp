@@ -445,10 +445,10 @@ void loop()
 		// I dont think we are going to implement radio wake yet since we are using AT mode for testing
 		break;
 	case METER:
-		Serial.println("Meter");
+		Serial.println("Meter");								// TODO: implement sleep for 250ms then check pin state for debouncing
 		meterIntTime = millis();
 		Serial.println("BOUNCE");
-		if ((meterIntTime-lastMeterIntTime) > DEBOUNCE_MS)				// debounce reed switch
+		if ((meterIntTime-lastMeterIntTime) > 20)				// debounce reed switch
 		{
 			if (digitalRead(METER_PIN) == LOW)
 			{
