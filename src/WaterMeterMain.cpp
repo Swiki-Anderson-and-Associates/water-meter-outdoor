@@ -32,11 +32,14 @@
 #define VALVE_CONTROL_1_PIN 8			// polarity of valve control pins must be reversed to open or close valve
 #define VALVE_CONTROL_2_PIN 9			// see above
 
+// Define Enumerations
+enum interruptType {NONE, RADIO, METER};
+
 // Define Global Variables
 static char MessageBuffer[256];
 //File logFile;
-uint8_t leak;
-volatile uint8_t interruptNo;			// any variables changed by ISRs must be declared volatile
+uint8_t leak, timerCount;
+volatile interruptType lastInt;			// any variables changed by ISRs must be declared volatile
 
 // Define Program Functions
 static uint8_t printSerial()
@@ -194,7 +197,7 @@ static void radioInterrupt()
 	sleep_disable();
 	detachInterrupt(0);
 	detachInterrupt(1);
-	interruptNo = 1;
+	lastInt = RADIO;
 }
 
 static void meterInterrupt()
@@ -202,12 +205,12 @@ static void meterInterrupt()
 	sleep_disable();
 	detachInterrupt(0);
 	detachInterrupt(1);
-	interruptNo = 2;
+	lastInt = METER;
 }
 
 static void shutdown()
 {
-	interruptNo = 0;
+	lastInt = NONE;
 	sleep_enable();
 	attachInterrupt(0,radioInterrupt,LOW);
 	attachInterrupt(1,meterInterrupt,CHANGE);		// Not sure if this will work right, may need extra library to pin change interrupt
@@ -413,42 +416,55 @@ void setup()
 
 	// Set Global Variables
 	leak = 0;
+	timerCount = -1;			// initialize at -1 since the first loop will increment this to 0before time has run
+	lastInt = NONE;
 }
 
 void loop()
 {
 	leak = 0;
-	// TODO: fix logical control
 	if (digitalRead(RST_PIN))
 	{
 		// manually reset system if INPUT 1 is held
 		resetSystem();
 	}
 
-	if (digitalRead(ALARM_PIN))
+	switch (lastInt)
 	{
-		reportLog();
-		reportLeak();
-		clearLog();
-	}
-
-	else if (interruptNo == 2)
-	{
-		logGallon();
-		// check if a leak was previously detected
-		if (wasLeakDetected()==0)
+	case NONE:
+		timerCount++;
+		if (timerCount >= 10)					// 10x 8 second intervals have passed
 		{
-			// if a new leak is detected, log it, report it, and turn off the valve
-			leak = checkForLeaks();
-			if (leak!=0)
+			reportLog();
+			reportLeak();
+			clearLog();
+			timerCount = 0;
+		}
+		// if neither interrupt has been called, do nothing
+		break;
+	case RADIO:
+		// I dont think we are going to implement radio wake yet since we are using AT mode for testing
+		break;
+	case METER:
+		if (METER_PIN == LOW)				// may need to add in delay for debouncing purposes
+		{
+			logGallon();
+			// check if a leak was previously detected
+			if (wasLeakDetected()==0)
 			{
-				setLeakCondition(leak);
-				closeValve();
-				reportLog();
-				reportLeak();
-				clearLog();
+				// if a new leak is detected, log it, report it, and turn off the valve
+				leak = checkForLeaks();
+				if (leak!=0)
+				{
+					setLeakCondition(leak);
+					closeValve();
+					reportLog();
+					reportLeak();
+					clearLog();
+				}
 			}
 		}
+		break;
 	}
 
 	checkRadioCommands();
