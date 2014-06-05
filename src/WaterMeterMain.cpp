@@ -13,6 +13,7 @@
 #define DS3234_SREG_BYTE 0x10			// Byte to set the SREG of the DS3234
 
 #define LOG_START_POS		16			// memory position where gallon log starts
+#define DEBOUNCE_MS			250			// time constant for debouncing in milliseconds
 
 // Define Pins Used for Operation
 #define RADIO_RX_PIN		0			// radio Rx pin
@@ -39,6 +40,7 @@ enum interruptType {NONE, RADIO, METER};
 static char MessageBuffer[256];
 //File logFile;
 uint8_t leak, timerCount;
+uint32_t meterIntTime, lastMeterIntTime;
 volatile interruptType lastInt;			// any variables changed by ISRs must be declared volatile
 
 // Define Program Functions
@@ -417,6 +419,8 @@ void setup()
 	// Set Global Variables
 	leak = 0;
 	timerCount = -1;			// initialize at -1 since the first loop will increment this to 0before time has run
+	meterIntTime = 0;
+	lastMeterIntTime = 0;
 	lastInt = NONE;
 }
 
@@ -431,7 +435,7 @@ void loop()
 
 	switch (lastInt)
 	{
-	case NONE:
+	case NONE:									// wait until a few sleeps have happened then transmit data back
 		timerCount++;
 		if (timerCount >= 10)					// 10x 8 second intervals have passed
 		{
@@ -440,30 +444,34 @@ void loop()
 			clearLog();
 			timerCount = 0;
 		}
-		// if neither interrupt has been called, do nothing
 		break;
 	case RADIO:
 		// I dont think we are going to implement radio wake yet since we are using AT mode for testing
 		break;
 	case METER:
-		if (METER_PIN == LOW)				// may need to add in delay for debouncing purposes
+		meterIntTime = millis();
+		if ((meterIntTime-lastMeterIntTime) > DEBOUNCE_MS)				// debounce reed switch
 		{
-			logGallon();
-			// check if a leak was previously detected
-			if (wasLeakDetected()==0)
+			if (METER_PIN == LOW)
 			{
-				// if a new leak is detected, log it, report it, and turn off the valve
-				leak = checkForLeaks();
-				if (leak!=0)
+				logGallon();
+				// check if a leak was previously detected
+				if (wasLeakDetected()==0)
 				{
-					setLeakCondition(leak);
-					closeValve();
-					reportLog();
-					reportLeak();
-					clearLog();
+					// if a new leak is detected, log it, report it, and turn off the valve
+					leak = checkForLeaks();
+					if (leak!=0)
+					{
+						setLeakCondition(leak);
+						closeValve();
+						reportLog();
+						reportLeak();
+						clearLog();
+					}
 				}
 			}
 		}
+		lastMeterIntTime = meterIntTime;
 		break;
 	}
 
