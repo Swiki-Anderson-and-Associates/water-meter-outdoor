@@ -206,11 +206,11 @@ static void meterInterrupt()
 
 static void shutdown()
 {
-	lastInt = NONE;
 	sleep_enable();										// Dont fuck with anything below this point in this function
 	attachInterrupt(0,radioInterrupt,LOW);
 	attachInterrupt(1,meterInterrupt,CHANGE);
-	LowPower.powerDown(SLEEP_8S,ADC_ON,BOD_ON);
+	lastInt = NONE;
+	LowPower.powerDown(SLEEP_8S,ADC_OFF,BOD_OFF);
 }
 
 static uint8_t reportLog()
@@ -431,7 +431,6 @@ void loop()
 	{
 	case NONE:									// wait until a few sleeps have happened then transmit data back
 		timerCount++;
-		Serial.println("Timer");
 		if (timerCount >= 10)					// 10x 8 second intervals have passed
 		{
 			reportLog();
@@ -441,43 +440,35 @@ void loop()
 		}
 		break;
 	case RADIO:
-		Serial.println("Radio");
 		// I dont think we are going to implement radio wake yet since we are using AT mode for testing
 		break;
 	case METER:
-		Serial.println("Meter");								// TODO: implement sleep for 250ms then check pin state for debouncing
-		meterIntTime = millis();
-		Serial.println("BOUNCE");
-		if ((meterIntTime-lastMeterIntTime) > 20)				// debounce reed switch
+		Serial.flush();											// wait 250ms before reading pin to avoid bounce
+		sleep_enable();
+		LowPower.powerDown(SLEEP_250MS,ADC_OFF,BOD_OFF);
+		sleep_disable();
+		if (digitalRead(METER_PIN) == LOW)
 		{
-			if (digitalRead(METER_PIN) == LOW)
+			logGallon();
+			// check if a leak was previously detected
+			if (wasLeakDetected()==0)
 			{
-				Serial.println("LOW DETECTED");
-
-
-				logGallon();
-				// check if a leak was previously detected
-				if (wasLeakDetected()==0)
+				// if a new leak is detected, log it, report it, and turn off the valve
+				leak = checkForLeaks();
+				if (leak!=0)
 				{
-					// if a new leak is detected, log it, report it, and turn off the valve
-					leak = checkForLeaks();
-					if (leak!=0)
-					{
-						setLeakCondition(leak);
-						closeValve();
-						reportLog();
-						reportLeak();
-						clearLog();
-					}
+					setLeakCondition(leak);
+					closeValve();
+					reportLog();
+					reportLeak();
+					clearLog();
 				}
 			}
 		}
-		lastMeterIntTime = meterIntTime;
 		break;
 	}
 
-	//checkRadioCommands();
-	Serial.print("Going to sleep...");
+	checkRadioCommands();
 	Serial.flush();
 	shutdown();							// Do not add or remove any lines below this or I will murder your family
 	sleep_disable();
