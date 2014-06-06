@@ -263,7 +263,7 @@ static void shutdown()
 
 static uint8_t reportLog()
 {
-	/*														// TODO: rewrite using SD card
+	/*																// TODO: rewrite using SD card
 	uint8 lastLog = getLastLogPos();
 	uint8 i;
 	printTime();
