@@ -440,7 +440,7 @@ void loop()
 		}
 		break;
 	case RADIO:
-		// I dont think we are going to implement radio wake yet since we are using AT mode for testing
+											// I dont think we are going to implement radio wake yet since we are using AT mode for testing
 		break;
 	case METER:
 		Serial.flush();											// wait 250ms before reading pin to avoid bounce
