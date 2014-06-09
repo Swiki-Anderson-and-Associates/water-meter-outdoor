@@ -19,6 +19,10 @@
 #define RADIO_RX_PIN		0			// radio Rx pin
 #define RADIO_TX_PIN		1			// radio Tx pin
 
+#define RADIO_SLEEP_PIN     14			// (A0) pin pulled low to wake radio from sleep
+#define RADIO_RTS_PIN       15			// (A1) pin pulled high to prevent the radio from transferring data
+#define RADIO_CTS_PIN       16			// (A2) pin pulled high by radio to tell the Arduino to stop sending data
+
 #define DS3234_SS_PIN		10			// pin pulled low to allow SPI communication with DS3234 RTC
 #define SD_SS_PIN			4			// pin pulled low to allow SPI communication with SD Card
 #define MOSI_PIN			11			// SPI MOSI communication pin
@@ -44,8 +48,20 @@ uint32_t meterIntTime, lastMeterIntTime;
 volatile interruptType lastInt;			// any variables changed by ISRs must be declared volatile
 
 // Define Program Functions
+static void wakeRadio()
+{
+	digitalWrite(RADIO_SLEEP_PIN,LOW);
+	while (digitalRead(RADIO_CTS_PIN)) {;}			// wait till radio wakes	// TODO: make this not an infinite loop
+}
+
+static void sleepRadio()
+{
+	digitalWrite(RADIO_SLEEP_PIN,HIGH);
+}
+
 static uint8_t printSerial()
 {
+	wakeRadio();
 	return Serial.print(MessageBuffer);
 }
 
@@ -54,7 +70,7 @@ static void printTime()
 	ts time;
 	DS3234_get(DS3234_SS_PIN,&time);
 	sprintf(MessageBuffer,"%02u/%02u/%4d %02d:%02d:%02d\t",time.mon,time.mday,time.year,time.hour,time.min,time.sec);
-	Serial.print(MessageBuffer);
+	printSerial();
 }
 
 static void setValvePos(uint8_t pos)
@@ -376,6 +392,8 @@ static void processRadio(uint8_t Signal)
 
 static void checkRadioCommands()
 {
+	wakeRadio();
+	delay(50);										// wait for data to be received
 	while(Serial.available())
 	{
 		processRadio(Serial.read());
@@ -394,6 +412,10 @@ void setup()
 
 	pinMode(ALARM_PIN,INPUT_PULLUP);
 	pinMode(METER_PIN,INPUT_PULLUP);
+
+	pinMode(RADIO_SLEEP_PIN,OUTPUT);
+	pinMode(RADIO_RTS_PIN,OUTPUT);
+	pinMode(RADIO_CTS_PIN,INPUT);
 
 	digitalWrite(VALVE_ENABLE_PIN,0);
 	digitalWrite(VALVE_CONTROL_1_PIN,0);
@@ -420,6 +442,7 @@ void setup()
 
 void loop()
 {
+	digitalWrite(RADIO_RTS_PIN,LOW);			// tell xbee we are ready to receive data
 	leak = 0;
 	if (!digitalRead(RST_PIN))
 	{
@@ -443,7 +466,7 @@ void loop()
 											// I dont think we are going to implement radio wake yet since we are using AT mode for testing
 		break;
 	case METER:
-		Serial.flush();											// wait 250ms before reading pin to avoid bounce
+		//Serial.flush();											// wait 250ms before reading pin to avoid bounce
 		sleep_enable();
 		LowPower.powerDown(SLEEP_250MS,ADC_OFF,BOD_OFF);
 		sleep_disable();
@@ -470,6 +493,8 @@ void loop()
 
 	checkRadioCommands();
 	Serial.flush();
+	digitalWrite(RADIO_RTS_PIN,HIGH);	// tell xbee to stop sending data
+	sleepRadio();
 	shutdown();							// Do not add or remove any lines below this or I will murder your family
 	sleep_disable();
 	detachInterrupt(0);
