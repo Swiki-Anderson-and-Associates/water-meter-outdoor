@@ -93,7 +93,7 @@ void DS3234_get(const uint8_t pin, struct ts *t)
     uint8_t TimeDate[7];        //second,minute,hour,dow,day,month,year
     uint8_t century = 0;
     uint8_t i, n;
-    uint16_t year_full;
+    uint16_t year_full, yday;
 
     for (i = 0; i <= 6; i++) {
         digitalWrite(pin, LOW);
@@ -121,6 +121,89 @@ void DS3234_get(const uint8_t pin, struct ts *t)
     t->year = year_full;
     t->wday = TimeDate[3];
     t->year_s = TimeDate[6];
+
+    yday = 0;								// add days from past months
+    for (i = 1; i <= t->mon; i++)
+    {
+    	switch (i-1)
+    	{
+    	case 1:
+    	case 3:
+    	case 5:
+    	case 7:
+    	case 8:
+    	case 10:
+    	case 12:
+    		yday += 31;
+    		break;
+    	case 4:
+    	case 6:
+    	case 9:
+    	case 11:
+    		yday += 30;
+    		break;
+    	case 2:
+    		yday+= 28;
+    		break;
+    	}
+    }
+
+    // Determine whether a leap day has occurred this year and add it if needed
+	if ((t->year%4) == 0)
+	{
+		if (t->year%100 != 0)
+			if ((i == t->year) && ((t->mon > 3) || ((t->mon ==3) && (t->mday == 29))))
+			{
+				yday += 1;
+			}
+		else if (t->year%400 == 0)
+			if ((i == t->year) && ((t->mon > 3) || ((t->mon ==3) && (t->mday == 29))))
+			{
+				yday += 1;
+			}
+	}
+
+	// add days from the current month
+	yday += t->mday;
+
+	t->yday = yday;
+}
+
+uint32_t DS3234_get_unix()
+{
+	uint32_t t_unix = 0;
+	uint8_t leapDays = 0;
+	uint16_t i;
+	struct ts t_struct;
+	DS3234_get(10,&t_struct);								// TODO: fix this. 10 is used as SS in out project, this is bad practice
+
+	// calculate number of leap days to be included
+	for (i=1970;i<t_struct.year;i++)
+	{
+		if ((i%4) == 0)
+		{
+			if (i%100 != 0)
+			{
+				leapDays++;
+			}
+			else if (i%400 == 0)
+			{
+				leapDays++;
+			}
+		}
+	}
+
+	// TODO: figure out where one leap day went
+	// for some reason 1 leap day is missing in unix time. I have looked into this and cant figure out why or where it is missing. this is a simple hack for now.
+	leapDays--;
+
+	// calculate UNIX time
+	t_unix += (uint32_t)(t_struct.year - 1970) * 31536000;											// add years
+	t_unix += (uint32_t)(t_struct.yday + leapDays) * 86400;											// add days + leap days
+	t_unix += (uint32_t)(t_struct.hour) * 3600;
+	t_unix += (uint32_t)(t_struct.min) * 60;
+	t_unix += (uint32_t)t_struct.sec;
+	return t_unix;
 }
 
 void DS3234_set_addr(const uint8_t pin, const uint8_t addr, const uint8_t val)

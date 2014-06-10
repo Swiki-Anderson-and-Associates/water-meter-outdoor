@@ -7,14 +7,16 @@
 #include "LowPower.h"
 
 // Define Constants
-#define DS3234_CREG_BYTE 0x00		// Byte to set the control register of the DS3234
-#define DS3234_SREG_BYTE 0x10		// Byte to set the SREG of the DS3234
-
-#define LOG_LINE_LENGTH		8		// number of bytes in a single line of the log file
+#define LOG_START_POS		16			// memory position where gallon log starts
+#define DEBOUNCE_MS			100			// time constant for debouncing in milliseconds
 
 // Define Pins Used for Operation
 #define RADIO_RX_PIN		0			// radio Rx pin
 #define RADIO_TX_PIN		1			// radio Tx pin
+
+#define RADIO_SLEEP_PIN     14			// (A0) pin pulled low to wake radio from sleep
+#define RADIO_RTS_PIN       15			// (A1) pin pulled high to prevent the radio from transferring data
+#define RADIO_CTS_PIN       16			// (A2) pin pulled high by radio to tell the Arduino to stop sending data
 
 #define DS3234_SS_PIN		10			// pin pulled low to allow SPI communication with DS3234 RTC
 #define SD_SS_PIN			4			// pin pulled low to allow SPI communication with SD Card
@@ -22,7 +24,7 @@
 #define MISO_PIN			12			// SPI MISO communication pin
 #define SPI_CLK_PIN			13			// SPI clock pin
 
-#define RADIO_PIN			2			// pin pulled low when Arduino is woken by the radio
+#define ALARM_PIN			2			// pin pulled low when Arduino is woken by the radio
 #define METER_PIN			3			// pin pulled low when one gallon has flowed through meter
 #define RST_PIN				6			// user reset pin, pulled low to reset
 
@@ -30,10 +32,15 @@
 #define VALVE_CONTROL_1_PIN 8			// polarity of valve control pins must be reversed to open or close valve
 #define VALVE_CONTROL_2_PIN 9			// see above
 
+// Define Enumerations
+enum interruptType {NONE, RADIO, METER};
+
 // Define Global Variables
 static char MessageBuffer[256];
-File logFile;
-uint8_t leak, SPIFunc, interruptNo;
+uint8_t leak, timerCount;
+uint32_t meterIntTime, lastMeterIntTime;
+volatile interruptType lastInt;			// any variables changed by ISRs must be declared volatile
+uint8_t SPIFunc;							// TODO: change this to an enum
 
 // Define Program Functions
 static uint8_t openLogFile()						// TODO: set this up to create new logs every month
@@ -87,18 +94,36 @@ static uint8_t useDS3234()
 	}
 }
 
+static void wakeRadio()
+{
+	uint32_t tStart = millis();
+	digitalWrite(RADIO_SLEEP_PIN,LOW);
+	while (digitalRead(RADIO_CTS_PIN))					// wait till radio wakes
+	{
+		if (millis()-tStart > 1000)
+			{
+				break;									// error connecting to radio
+			}
+	}
+}
+
+static void sleepRadio()
+{
+	digitalWrite(RADIO_SLEEP_PIN,HIGH);
+}
+
 static uint8_t printSerial()
 {
+	wakeRadio();
 	return Serial.print(MessageBuffer);
 }
 
 static void printTime()
 {
 	ts time;
-	useDS3234();
 	DS3234_get(DS3234_SS_PIN,&time);
 	sprintf(MessageBuffer,"%02u/%02u/%4d %02d:%02d:%02d\t",time.mon,time.mday,time.year,time.hour,time.min,time.sec);
-	Serial.println(MessageBuffer);
+	printSerial();
 }
 
 static void setValvePos(uint8_t pos)
@@ -119,6 +144,11 @@ static uint8_t isValveOpen()
 static uint8_t wasLeakDetected()
 {
 	return EEPROM.read(1);
+}
+
+static uint8_t getLastLogPos()
+{
+	return EEPROM.read(2);
 }
 
 static uint8_t closeValve()
@@ -152,38 +182,29 @@ static uint8_t openValve()
 
 static uint32_t readLogEntry(uint8_t logStart)
 {
-	useSD();
-	/*																	// TODO: rewrite function for EEPROM or SD card
 	uint32_t t_unix = 0;
-	t_unix += (uint32_t)DS3234_get_sram_8b(logStart)*16777216;
-	t_unix += (uint32_t)DS3234_get_sram_8b(logStart+1)*65536;
-	t_unix += (uint32_t)DS3234_get_sram_8b(logStart+2)*256;
-	t_unix += (uint32_t)DS3234_get_sram_8b(logStart+3);
+	t_unix += (uint32_t)EEPROM.read(logStart)*16777216;
+	t_unix += (uint32_t)EEPROM.read(logStart+1)*65536;
+	t_unix += (uint32_t)EEPROM.read(logStart+2)*256;
+	t_unix += (uint32_t)EEPROM.read(logStart+3);
 	return t_unix;
-	*/
 }
 
 static void writeLogEntry(uint8_t startPos, uint32_t t_unix)
 {
-	useSD();
-	logFile.seek(logFile.size());
-	logFile.write(LogBuffer);
-	logFile.flush();
-	/*																		// TODO: rewrite function for SD or EEPROM
 	// stores t_unix as 4 bytes
-	uint8 splitByte;
+	uint8_t splitByte;
 	splitByte = t_unix/16777216;
-	DS3234_set_sram_8b(startPos,splitByte);
-	t_unix -= (uint32)(splitByte)*16777216;
+	EEPROM.write(startPos,(char)splitByte);
+	t_unix -= (uint32_t)(splitByte)*16777216;
 	splitByte = t_unix/65536;
-	DS3234_set_sram_8b(startPos+1,splitByte);
-	t_unix -= (uint32)(splitByte)*65536;
+	EEPROM.write(startPos+1,(char)splitByte);
+	t_unix -= (uint32_t)(splitByte)*65536;
 	splitByte = t_unix/256;
-	DS3234_set_sram_8b(startPos+2,splitByte);
-	t_unix -= (uint32)(splitByte)*256;
+	EEPROM.write(startPos+2,(char)splitByte);
+	t_unix -= (uint32_t)(splitByte)*256;
 	splitByte = t_unix;
-	DS3234_set_sram_8b(startPos+3,t_unix);
-	*/
+	EEPROM.write(startPos+3,t_unix);
 }
 
 static uint16_t getDayGallons()
@@ -214,14 +235,20 @@ static void setConsecGallons(uint8_t gals)
 	EEPROM.write(5,gals);
 }
 
-static uint8_t clearLog()					// TODO: rewrite for multiple month logs
+static uint8_t clearLog()					// TODO: rewrite using SD card					// TODO: rewrite for multiple month logs
 {
-	useSD();
-	closeLogFile();
-	if(SD.exists("log.txt"))
+	uint8_t i;
+	if (getLastLogPos()!=LOG_START_POS-1)
 	{
-		SD.remove("log.txt");
+		for(i=LOG_START_POS; i<=251; i++)
+		{
+			EEPROM.write(i,(char)0);
+		}
+		EEPROM.write(2,(uint8_t)(LOG_START_POS-1));
 	}
+	printTime();
+	sprintf(MessageBuffer,"Log:\tCleared\n");
+	return printSerial();
 }
 
 static uint8_t resetSystem()
@@ -238,34 +265,27 @@ static uint8_t resetSystem()
 
 static void radioInterrupt()
 {
-	sleep_disable();
-	detachInterrupt(0);
-	detachInterrupt(1);
-	interruptNo = 1;
+	lastInt = RADIO;
 }
 
 static void meterInterrupt()
 {
-	sleep_disable();
-	detachInterrupt(0);
-	detachInterrupt(1);
-	interruptNo = 2;
+	lastInt = METER;
 }
 
 static void shutdown()
 {
-	interruptNo = 0;
-	sleep_enable();
+	sleep_enable();										// Dont fuck with anything below this point in this function
 	attachInterrupt(0,radioInterrupt,LOW);
-	attachInterrupt(1,meterInterrupt,FALLING);						//	TODO: cant use falling interrupt need to use level change
-	LowPower.powerDown(SLEEP_FOREVER,ADC_OFF,BOD_OFF);
+	attachInterrupt(1,meterInterrupt,CHANGE);
+	lastInt = NONE;
+	LowPower.powerDown(SLEEP_8S,ADC_OFF,BOD_OFF);
 }
 
-static uint8_t reportLog()
+static uint8_t reportLog()// TODO: rewrite using SD card
 {
-	/*																// TODO: rewrite using SD card
-	uint8 lastLog = getLastLogPos();
-	uint8 i;
+	uint8_t lastLog = getLastLogPos();
+	uint8_t i;
 	printTime();
 	sprintf(MessageBuffer,"Gallon Log:\n");
 	printSerial();
@@ -281,7 +301,7 @@ static uint8_t reportLog()
 			if(i%4 == 0)
 			{
 				printTime();
-				sprintf(MessageBuffer,"%u\t%lu\n",(i-12)/4,readLogEntry(i));
+				sprintf(MessageBuffer,"%u\t%lu\n",(i-12)/4,readLogEntry((i)));
 				printSerial();
 			}
 
@@ -290,17 +310,16 @@ static uint8_t reportLog()
 	printTime();
 	sprintf(MessageBuffer,"End Log\n");
 	return printSerial();
-	*/
 }
 
-static void logGallon()
-{/*														// TODO: rewrite using SD card
-	struct ts time;
-	uint32 t_unix = 0;
-	uint8 lastLog;
+static void logGallon()// TODO: rewrite using SD card
+{
+	ts time;
+	uint32_t t_unix = 0;
+	uint8_t lastLog;
 	t_unix = DS3234_get_unix();
 	lastLog = getLastLogPos();
-	DS3234_get(&time);
+	DS3234_get(DS3234_SS_PIN,&time);
 
 	if (lastLog>=251)
 	{
@@ -310,13 +329,11 @@ static void logGallon()
 
 	lastLog = getLastLogPos();
 	writeLogEntry(lastLog+1,t_unix);				// writes gallon to log
-	DS3234_set_sram_8b(2,lastLog+4);				// sets last log position
-	*/
+	EEPROM.write(2,lastLog+4);						// sets last log position
 }
 
-static uint8_t checkForLeaks()
+static uint8_t checkForLeaks()											//TODO: rewrite using Sd log
 {
-	/*																				//TODO: rewrite using Sd log
 	uint16_t dayGallons = getDayGallons();
 	uint32_t t_lastLog = readLogEntry(getLastLogPos()-3);
 	uint32_t t_prevLog = readLogEntry(getLastLogPos()-7);
@@ -350,7 +367,6 @@ static uint8_t checkForLeaks()
 		setConsecGallons(0);					// reset consecutive gallon counter
 	}
 	return 0;									// no leak detected
-	*/
 }
 
 static uint8_t reportLeak()
@@ -429,6 +445,8 @@ static void processRadio(uint8_t Signal)
 
 static void checkRadioCommands()
 {
+	wakeRadio();
+	delay(50);										// wait for data to be received
 	while(Serial.available())
 	{
 		processRadio(Serial.read());
@@ -445,8 +463,12 @@ void setup()
 	pinMode(SD_SS_PIN,OUTPUT);
 	pinMode(DS3234_SS_PIN,OUTPUT);
 
-	pinMode(RADIO_PIN,INPUT);
-	pinMode(METER_PIN,INPUT);
+	pinMode(ALARM_PIN,INPUT_PULLUP);
+	pinMode(METER_PIN,INPUT_PULLUP);
+
+	pinMode(RADIO_SLEEP_PIN,OUTPUT);
+	pinMode(RADIO_RTS_PIN,OUTPUT);
+	pinMode(RADIO_CTS_PIN,INPUT);
 
 	digitalWrite(VALVE_ENABLE_PIN,0);
 	digitalWrite(VALVE_CONTROL_1_PIN,0);
@@ -466,45 +488,69 @@ void setup()
 
 	// Set Global Variables
 	leak = 0;
-	interruptNo = 0;
+	timerCount = -1;			// initialize at -1 since the first loop will increment this to 0before time has run
+	meterIntTime = 0;
+	lastMeterIntTime = 0;
+	lastInt = NONE;
 }
 
 void loop()
 {
-	// TODO: fix logical control
-	if (digitalRead(RST_PIN))
+	digitalWrite(RADIO_RTS_PIN,LOW);			// tell xbee we are ready to receive data
+	leak = 0;
+	if (!digitalRead(RST_PIN))
 	{
 		// manually reset system if INPUT 1 is held
 		resetSystem();
 	}
 
-	if (digitalRead(RADIO_PIN))
+	switch (lastInt)
 	{
-		reportLog();
-		reportLeak();
-		clearLog();
-	}
-
-	else if (digitalRead(METER_PIN))
-	{
-		logGallon();
-		// check if a leak was previously detected
-		if (wasLeakDetected()==0)
+	case NONE:									// wait until a few sleeps have happened then transmit data back
+		timerCount++;
+		if (timerCount >= 10)					// 10x 8 second intervals have passed
 		{
-			// if a new leak is detected, log it, report it, and turn off the valve
-			leak = checkForLeaks();
-			if (leak!=0)
+			reportLog();
+			reportLeak();
+			clearLog();
+			timerCount = 0;
+		}
+		break;
+	case RADIO:
+											// I dont think we are going to implement radio wake yet since we are using AT mode for testing
+		break;
+	case METER:
+		//Serial.flush();											// wait 250ms before reading pin to avoid bounce
+		sleep_enable();
+		LowPower.powerDown(SLEEP_250MS,ADC_OFF,BOD_OFF);
+		sleep_disable();
+		if (digitalRead(METER_PIN) == LOW)
+		{
+			logGallon();
+			// check if a leak was previously detected
+			if (wasLeakDetected()==0)
 			{
-				setLeakCondition(leak);
-				closeValve();
-				reportLog();
-				reportLeak();
-				clearLog();
+				// if a new leak is detected, log it, report it, and turn off the valve
+				leak = checkForLeaks();
+				if (leak!=0)
+				{
+					setLeakCondition(leak);
+					closeValve();
+					reportLog();
+					reportLeak();
+					clearLog();
+				}
 			}
 		}
+		break;
 	}
 
 	checkRadioCommands();
 	Serial.flush();
-	//shutdown();
+	digitalWrite(RADIO_RTS_PIN,HIGH);	// tell xbee to stop sending data
+	sleepRadio();
+	shutdown();							// Do not add or remove any lines below this or I will murder your family
+	sleep_disable();
+	detachInterrupt(0);
+	detachInterrupt(1);
 }
