@@ -6,12 +6,7 @@
 #include "ds3234.h"
 #include "LowPower.h"
 
-// new branch test
-
 // Define Constants
-#define DS3234_CREG_BYTE 0x00			// Byte to set the control register of the DS3234
-#define DS3234_SREG_BYTE 0x10			// Byte to set the SREG of the DS3234
-
 #define LOG_START_POS		16			// memory position where gallon log starts
 #define DEBOUNCE_MS			100			// time constant for debouncing in milliseconds
 
@@ -42,7 +37,6 @@ enum interruptType {NONE, RADIO, METER};
 
 // Define Global Variables
 static char MessageBuffer[256];
-//File logFile;
 uint8_t leak, timerCount;
 uint32_t meterIntTime, lastMeterIntTime;
 volatile interruptType lastInt;			// any variables changed by ISRs must be declared volatile
@@ -50,8 +44,16 @@ volatile interruptType lastInt;			// any variables changed by ISRs must be decla
 // Define Program Functions
 static void wakeRadio()
 {
+	uint32_t tStart, cTime;
+	tStart = millis();
 	digitalWrite(RADIO_SLEEP_PIN,LOW);
-	while (digitalRead(RADIO_CTS_PIN)) {;}			// wait till radio wakes	// TODO: make this not an infinite loop
+	while (digitalRead(RADIO_CTS_PIN))					// wait till radio wakes
+	{
+		if (millis()-tStart > 1000)
+			{
+				break;									// error connecting to radio
+			}
+	}
 }
 
 static void sleepRadio()
