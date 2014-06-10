@@ -44,8 +44,7 @@ volatile interruptType lastInt;			// any variables changed by ISRs must be decla
 // Define Program Functions
 static void wakeRadio()
 {
-	uint32_t tStart, cTime;
-	tStart = millis();
+	uint32_t tStart = millis();
 	digitalWrite(RADIO_SLEEP_PIN,LOW);
 	while (digitalRead(RADIO_CTS_PIN))					// wait till radio wakes
 	{
