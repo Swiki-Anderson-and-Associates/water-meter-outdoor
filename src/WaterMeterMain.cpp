@@ -34,13 +34,15 @@
 
 // Define Enumerations
 enum interruptType {NONE, RADIO, METER};
+enum SPIType {RTC, SDCard};
 
 // Define Global Variables
+File logFile;
 static char MessageBuffer[256];
 uint8_t leak, timerCount;
 uint32_t meterIntTime, lastMeterIntTime;
 volatile interruptType lastInt;			// any variables changed by ISRs must be declared volatile
-uint8_t SPIFunc;							// TODO: change this to an enum
+SPIType SPIFunc;
 
 // Define Program Functions
 static uint8_t openLogFile()						// TODO: set this up to create new logs every month
@@ -65,30 +67,30 @@ static void closeLogFile()
 	logFile.close();
 }
 
-static uint8_t useSD()
+static uint8_t useSDCard()
 {
-	if(SPIFunc)
+	if(SPIFunc == SDCard)
 	{
 		return 0;
 	}
 	else
 	{
 		DS3234_end();
-		SPIFunc = 1;
+		SPIFunc = SDCard;
 		return openLogFile();
 	}
 }
 
 static uint8_t useDS3234()
 {
-	if(!SPIFunc)
+	if(SPIFunc == RTC)
 	{
 		return 0;
 	}
 	else
 	{
 		closeLogFile();
-		SPIFunc = 0;
+		SPIFunc = RTC;
 		DS3234_init(DS3234_SS_PIN);;
 		return 0;
 	}
@@ -480,7 +482,7 @@ void setup()
 
 	// Initialize SPI Communication
 	DS3234_init(DS3234_SS_PIN);
-	SPIFunc = 0;
+	SPIFunc = RTC;
 
 	// Initialize Radio Communication
 	Serial.begin(9600,SERIAL_8N1);
