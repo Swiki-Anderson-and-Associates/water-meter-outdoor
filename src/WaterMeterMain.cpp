@@ -81,7 +81,7 @@ static uint8_t useSDCard()
 	}
 }
 
-static uint8_t useDS3234()
+static uint8_t useRTC()
 {
 	if(SPIFunc == RTC)
 	{
@@ -122,6 +122,7 @@ static uint8_t printSerial()
 
 static void printTime()
 {
+	useRTC();
 	ts time;
 	DS3234_get(DS3234_SS_PIN,&time);
 	sprintf(MessageBuffer,"%02u/%02u/%4d %02d:%02d:%02d\t",time.mon,time.mday,time.year,time.hour,time.min,time.sec);
@@ -237,8 +238,8 @@ static void setConsecGallons(uint8_t gals)
 	EEPROM.write(5,gals);
 }
 
-static uint8_t clearLog()					// TODO: rewrite using SD card					// TODO: rewrite for multiple month logs
-{
+static uint8_t clearLog()					// TODO: rewrite using SD card
+{											// TODO: rewrite for multiple month logs
 	uint8_t i;
 	if (getLastLogPos()!=LOG_START_POS-1)
 	{
@@ -319,6 +320,7 @@ static void logGallon()// TODO: rewrite using SD card
 	ts time;
 	uint32_t t_unix = 0;
 	uint8_t lastLog;
+	useRTC();
 	t_unix = DS3234_get_unix();
 	lastLog = getLastLogPos();
 	DS3234_get(DS3234_SS_PIN,&time);
@@ -454,6 +456,7 @@ static void checkRadioCommands()
 		processRadio(Serial.read());
 	}
 }
+
 
 // Runtime functions
 void setup()
