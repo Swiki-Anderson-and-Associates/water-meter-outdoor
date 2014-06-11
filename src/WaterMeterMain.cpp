@@ -40,6 +40,7 @@ static char MessageBuffer[256];
 uint8_t leak, timerCount;
 uint32_t meterIntTime, lastMeterIntTime;
 volatile interruptType lastInt;			// any variables changed by ISRs must be declared volatile
+bool isBounce;
 
 // Define Program Functions
 static void wakeRadio()
@@ -53,6 +54,7 @@ static void wakeRadio()
 				break;									// error connecting to radio
 			}
 	}
+	delay(1);
 }
 
 static void sleepRadio()
@@ -457,6 +459,7 @@ void setup()
 	meterIntTime = 0;
 	lastMeterIntTime = 0;
 	lastInt = NONE;
+	isBounce = false;
 }
 
 void loop()
@@ -468,52 +471,64 @@ void loop()
 		// manually reset system if INPUT 1 is held
 		resetSystem();
 	}
-
-	switch (lastInt)
+	else
 	{
-	case NONE:									// wait until a few sleeps have happened then transmit data back
-		timerCount++;
-		if (timerCount >= 10)					// 10x 8 second intervals have passed
+		switch (lastInt)
 		{
-			reportLog();
-			reportLeak();
-			clearLog();
-			timerCount = 0;
-		}
-		break;
-	case RADIO:
-											// I dont think we are going to implement radio wake yet since we are using AT mode for testing
-		break;
-	case METER:
-		flushSerial();										// wait 250ms before reading pin to avoid bounce
-		sleep_enable();
-		LowPower.powerDown(SLEEP_250MS,ADC_OFF,BOD_OFF);
-		sleep_disable();
-		if (digitalRead(METER_PIN) == LOW)
-		{
-			logGallon();
-			// check if a leak was previously detected
-			if (wasLeakDetected()==0)
+		case NONE:
+			isBounce = false;						// wait until a few sleeps have happened then transmit data back
+			timerCount++;
+			if (timerCount >= 10)					// 10x 8 second intervals have passed
 			{
-				// if a new leak is detected, log it, report it, and turn off the valve
-				leak = checkForLeaks();
-				if (leak!=0)
+				reportLog();
+				reportLeak();
+				clearLog();
+				timerCount = 0;
+			}
+			break;
+		case RADIO:
+												// I dont think we are going to implement radio wake yet since we are using AT mode for testing
+			break;
+		case METER:
+			sleep_enable();
+			LowPower.powerDown(SLEEP_250MS,ADC_OFF,BOD_OFF);		// wait 250ms before reading pin to avoid bounce
+			sleep_disable();
+			if (digitalRead(METER_PIN) == LOW)
+			{
+				isBounce = false;
+				logGallon();
+				// check if a leak was previously detected
+				if (wasLeakDetected()==0)
 				{
-					setLeakCondition(leak);
-					closeValve();
-					reportLog();
-					reportLeak();
-					clearLog();
+					// if a new leak is detected, log it, report it, and turn off the valve
+					leak = checkForLeaks();
+					if (leak!=0)
+					{
+						setLeakCondition(leak);
+						closeValve();
+						reportLog();
+						reportLeak();
+						clearLog();
+					}
 				}
 			}
+			else
+			{
+				isBounce = true;
+			}
+			break;
 		}
-		break;
+
+		if (!isBounce)
+		{
+			cycleRadio();
+			checkRadioCommands();
+			flushSerial();
+			digitalWrite(RADIO_RTS_PIN,HIGH);	// tell xbee to stop sending data
+			sleepRadio();
+		}
 	}
-	cycleRadio();
-	checkRadioCommands();
-	flushSerial();
-	digitalWrite(RADIO_RTS_PIN,HIGH);	// tell xbee to stop sending data
-	sleepRadio();
+
 	shutdown();							// Do not add or remove any lines below this or I will murder your family
 	sleep_disable();
 	detachInterrupt(0);
