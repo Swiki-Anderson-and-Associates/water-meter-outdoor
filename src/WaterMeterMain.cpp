@@ -43,6 +43,7 @@ uint8_t leak, timerCount;
 uint32_t meterIntTime, lastMeterIntTime;
 volatile interruptType lastInt;			// any variables changed by ISRs must be declared volatile
 SPIType SPIFunc;
+bool isBounce;
 
 // Define Program Functions
 static uint8_t openLogFile()						// TODO: set this up to create new logs every month
@@ -107,6 +108,7 @@ static void wakeRadio()
 				break;									// error connecting to radio
 			}
 	}
+	delay(1);
 }
 
 static void sleepRadio()
@@ -114,9 +116,19 @@ static void sleepRadio()
 	digitalWrite(RADIO_SLEEP_PIN,HIGH);
 }
 
+static void cycleRadio()
+{
+	sleepRadio();
+	delay(1);
+	wakeRadio();
+}
+
 static uint8_t printSerial()
 {
-	wakeRadio();
+	if (digitalRead(RADIO_CTS_PIN))
+	{
+		cycleRadio();
+	}
 	return Serial.print(MessageBuffer);
 }
 
@@ -127,6 +139,15 @@ static void printTime()
 	DS3234_get(DS3234_SS_PIN,&time);
 	sprintf(MessageBuffer,"%02u/%02u/%4d %02d:%02d:%02d\t",time.mon,time.mday,time.year,time.hour,time.min,time.sec);
 	printSerial();
+}
+
+static void flushSerial()
+{
+	if (digitalRead(RADIO_CTS_PIN))
+	{
+		cycleRadio();
+	}
+	Serial.flush();
 }
 
 static void setValvePos(uint8_t pos)
@@ -325,7 +346,7 @@ static void logGallon()// TODO: rewrite using SD card
 	lastLog = getLastLogPos();
 	DS3234_get(DS3234_SS_PIN,&time);
 
-	if (lastLog>=251)
+	if (lastLog>=95)
 	{
 		reportLog();
 		clearLog();
@@ -449,9 +470,8 @@ static void processRadio(uint8_t Signal)
 
 static void checkRadioCommands()
 {
-	wakeRadio();
-	delay(50);										// wait for data to be received
-	while(Serial.available())
+	delay(10);										// wait for data to be received
+	while(Serial.available()>0)
 	{
 		processRadio(Serial.read());
 	}
@@ -497,63 +517,76 @@ void setup()
 	meterIntTime = 0;
 	lastMeterIntTime = 0;
 	lastInt = NONE;
+	isBounce = false;
 }
 
 void loop()
 {
-	digitalWrite(RADIO_RTS_PIN,LOW);			// tell xbee we are ready to receive data
+	digitalWrite(RADIO_RTS_PIN,LOW);			// tell xBee we are available to receive data
 	leak = 0;
 	if (!digitalRead(RST_PIN))
 	{
 		// manually reset system if INPUT 1 is held
 		resetSystem();
 	}
-
-	switch (lastInt)
+	else
 	{
-	case NONE:									// wait until a few sleeps have happened then transmit data back
-		timerCount++;
-		if (timerCount >= 10)					// 10x 8 second intervals have passed
+		switch (lastInt)
 		{
-			reportLog();
-			reportLeak();
-			clearLog();
-			timerCount = 0;
-		}
-		break;
-	case RADIO:
-											// I dont think we are going to implement radio wake yet since we are using AT mode for testing
-		break;
-	case METER:
-		//Serial.flush();											// wait 250ms before reading pin to avoid bounce
-		sleep_enable();
-		LowPower.powerDown(SLEEP_250MS,ADC_OFF,BOD_OFF);
-		sleep_disable();
-		if (digitalRead(METER_PIN) == LOW)
-		{
-			logGallon();
-			// check if a leak was previously detected
-			if (wasLeakDetected()==0)
+		case NONE:
+			isBounce = false;						// wait until a few sleeps have happened then transmit data back
+			timerCount++;
+			if (timerCount >= 10)					// 10x 8 second intervals have passed
 			{
-				// if a new leak is detected, log it, report it, and turn off the valve
-				leak = checkForLeaks();
-				if (leak!=0)
+				reportLog();
+				reportLeak();
+				clearLog();
+				timerCount = 0;
+			}
+			break;
+		case RADIO:
+												// I dont think we are going to implement radio wake yet since we are using AT mode for testing
+			break;
+		case METER:
+			sleep_enable();
+			LowPower.powerDown(SLEEP_250MS,ADC_OFF,BOD_OFF);		// wait 250ms before reading pin to avoid bounce
+			sleep_disable();
+			if (digitalRead(METER_PIN) == LOW)
+			{
+				isBounce = false;
+				logGallon();
+				// check if a leak was previously detected
+				if (wasLeakDetected()==0)
 				{
-					setLeakCondition(leak);
-					closeValve();
-					reportLog();
-					reportLeak();
-					clearLog();
+					// if a new leak is detected, log it, report it, and turn off the valve
+					leak = checkForLeaks();
+					if (leak!=0)
+					{
+						setLeakCondition(leak);
+						closeValve();
+						reportLog();
+						reportLeak();
+						clearLog();
+					}
 				}
 			}
+			else
+			{
+				isBounce = true;
+			}
+			break;
 		}
-		break;
+
+		if (!isBounce)
+		{
+			cycleRadio();
+			checkRadioCommands();
+			flushSerial();
+			digitalWrite(RADIO_RTS_PIN,HIGH);	// tell xbee to stop sending data
+			sleepRadio();
+		}
 	}
 
-	checkRadioCommands();
-	Serial.flush();
-	digitalWrite(RADIO_RTS_PIN,HIGH);	// tell xbee to stop sending data
-	sleepRadio();
 	shutdown();							// Do not add or remove any lines below this or I will murder your family
 	sleep_disable();
 	detachInterrupt(0);
