@@ -45,7 +45,7 @@ volatile interruptType lastInt;			// any variables changed by ISRs must be decla
 SPIType SPIFunc;
 bool isBounce;
 
-// Define Program Functions
+// Define Program Function
 static uint8_t openLogFile()						// TODO: set this up to create new logs every month
 {
 	if(!SD.begin(4))
