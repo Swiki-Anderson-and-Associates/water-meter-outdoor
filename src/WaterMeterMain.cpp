@@ -60,9 +60,24 @@ static void sleepRadio()
 	digitalWrite(RADIO_SLEEP_PIN,HIGH);
 }
 
+static void cycleRadio()
+{
+	sleepRadio();
+	delay(1);
+	wakeRadio();
+}
+
 static uint8_t printSerial()
 {
-	wakeRadio();
+	if (digitalRead(RADIO_CTS_PIN))
+	{
+		delay(10);
+	}
+	if (digitalRead(RADIO_CTS_PIN))
+	{
+		cycleRadio();
+	}
+	delay(5);
 	return Serial.print(MessageBuffer);
 }
 
@@ -269,7 +284,7 @@ static void logGallon()
 	lastLog = getLastLogPos();
 	DS3234_get(DS3234_SS_PIN,&time);
 
-	if (lastLog>=251)
+	if (lastLog>=95)
 	{
 		reportLog();
 		clearLog();
@@ -393,9 +408,8 @@ static void processRadio(uint8_t Signal)
 
 static void checkRadioCommands()
 {
-	wakeRadio();
-	delay(50);										// wait for data to be received
-	while(Serial.available())
+	delay(10);										// wait for data to be received
+	while(Serial.available()>0)
 	{
 		processRadio(Serial.read());
 	}
@@ -443,7 +457,7 @@ void setup()
 
 void loop()
 {
-	digitalWrite(RADIO_RTS_PIN,LOW);			// tell xbee we are ready to receive data
+	digitalWrite(RADIO_RTS_PIN,LOW);			// tell xBee we are available to receive data
 	leak = 0;
 	if (!digitalRead(RST_PIN))
 	{
@@ -491,10 +505,12 @@ void loop()
 		}
 		break;
 	}
-
+	cycleRadio();
 	checkRadioCommands();
+	cycleRadio();
 	Serial.flush();
 	digitalWrite(RADIO_RTS_PIN,HIGH);	// tell xbee to stop sending data
+	delay(50);
 	sleepRadio();
 	shutdown();							// Do not add or remove any lines below this or I will murder your family
 	sleep_disable();
