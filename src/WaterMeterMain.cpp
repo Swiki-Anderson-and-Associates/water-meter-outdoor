@@ -71,13 +71,8 @@ static uint8_t printSerial()
 {
 	if (digitalRead(RADIO_CTS_PIN))
 	{
-		delay(10);
-	}
-	if (digitalRead(RADIO_CTS_PIN))
-	{
 		cycleRadio();
 	}
-	delay(5);
 	return Serial.print(MessageBuffer);
 }
 
@@ -87,6 +82,15 @@ static void printTime()
 	DS3234_get(DS3234_SS_PIN,&time);
 	sprintf(MessageBuffer,"%02u/%02u/%4d %02d:%02d:%02d\t",time.mon,time.mday,time.year,time.hour,time.min,time.sec);
 	printSerial();
+}
+
+static void flushSerial()
+{
+	if (digitalRead(RADIO_CTS_PIN))
+	{
+		cycleRadio();
+	}
+	Serial.flush();
 }
 
 static void setValvePos(uint8_t pos)
@@ -481,7 +485,7 @@ void loop()
 											// I dont think we are going to implement radio wake yet since we are using AT mode for testing
 		break;
 	case METER:
-		//Serial.flush();											// wait 250ms before reading pin to avoid bounce
+		flushSerial();										// wait 250ms before reading pin to avoid bounce
 		sleep_enable();
 		LowPower.powerDown(SLEEP_250MS,ADC_OFF,BOD_OFF);
 		sleep_disable();
@@ -507,10 +511,8 @@ void loop()
 	}
 	cycleRadio();
 	checkRadioCommands();
-	cycleRadio();
-	Serial.flush();
+	flushSerial();
 	digitalWrite(RADIO_RTS_PIN,HIGH);	// tell xbee to stop sending data
-	delay(50);
 	sleepRadio();
 	shutdown();							// Do not add or remove any lines below this or I will murder your family
 	sleep_disable();
