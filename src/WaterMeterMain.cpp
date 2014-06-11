@@ -5,7 +5,7 @@
 #include <EEPROM.h>
 #include "ds3234.h"
 #include "LowPower.h"
-// add new include
+#include "XbeePro.h"
 
 // Define Constants
 #define LOG_START_POS		16			// memory position where gallon log starts
@@ -45,6 +45,7 @@ uint32_t meterIntTime, lastMeterIntTime;
 volatile interruptType lastInt;			// any variables changed by ISRs must be declared volatile
 SPIType SPIFunc;
 bool isBounce;
+uint8_t XB_payload[66];		// This method requires sending the entire array every time, may change soon.
 
 // Define Program Function
 static uint8_t openLogFile()						// TODO: set this up to create new logs every month
@@ -478,6 +479,22 @@ static void checkRadioCommands()
 	}
 }
 
+static void TX_API_message()
+{
+	// Payload written in other functions (XB_payload).
+	// XbeePro instance
+	XbeePro xbee;
+
+	// SH + SL Address of receiving XBee
+	XBeeAddress64 addr64 = XBeeAddress64(0x00000000, 0x00000000);
+	ZBTxRequest zbTx = ZBTxRequest(addr64, XB_payload, sizeof(XB_payload));
+	ZBTxStatusResponse txStatus = ZBTxStatusResponse();
+
+	// Message transmit
+	xbee.send(zbTx);
+
+	// Make sure that the xbee instance is destructed when this function ends.
+}
 
 // Runtime functions
 void setup()
