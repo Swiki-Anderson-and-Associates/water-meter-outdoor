@@ -5,6 +5,7 @@
 #include <EEPROM.h>
 #include "ds3234.h"
 #include "LowPower.h"
+// add new include
 
 // Define Constants
 #define LOG_START_POS		16			// memory position where gallon log starts
