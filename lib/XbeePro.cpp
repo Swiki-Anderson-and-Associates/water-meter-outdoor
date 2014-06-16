@@ -13,7 +13,6 @@ XbeePro::~XbeePro() {
 
 XbeePro::XbeePro() {
 	// TODO Auto-generated constructor stub
-
 }
 
 void XbeePro::BootloaderBypass()
@@ -40,5 +39,31 @@ void XbeePro::BootloaderBypass()
 	Serial.print("B");
 
 	// The radio should then be ready to receive API frames
-	// sfakljskljfdsalkjfdasljf;a
+}
+
+void XbeePro::PayloadCreator(uint8_t DataByte, uint8_t Option);
+{
+	if (Option == 1)
+	{
+		// Write to payload and increment size
+		Payload[PayloadSize] = DataByte;
+		PayloadSize++;
+	}
+	else	// Just input option as 2
+	{
+		// Payload array does not need to be rewritten, because that will happen as this function
+		//	is used and extra crap at the end will be ignored on the next transmission.
+		PayloadSize = 0;
+	}
+}
+
+void XbeePro::ApiTxRequest
+{
+	// SH + SL Address of receiving XBee
+	XBeeAddress64 addr64 = XBeeAddress64(0x00000000, 0x00000000);
+	ZBTxRequest zbTx = ZBTxRequest(addr64, Payload, PayloadSize);
+	ZBTxStatusResponse txStatus = ZBTxStatusResponse();
+
+	// Message transmit
+	send(zbTx);
 }
