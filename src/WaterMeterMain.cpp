@@ -190,8 +190,10 @@ static uint8_t closeValve()
 	printTime();
 	// sprintf(MessageBuffer,"Valve:\tClosed\n");
 	xbee.PayloadCreator(0x12,1);
-	// Add unix time to payload
-	return printSerial();
+	RadioTime();
+	xbee.ApiTxRequest();
+	// return printSerial();
+
 }
 
 static uint8_t openValve()
@@ -206,8 +208,9 @@ static uint8_t openValve()
 	printTime();
 	// sprintf(MessageBuffer,"Valve:\tOpened\n");
 	xbee.PayloadCreator(0x11,1);
-	// unix time
-	return printSerial();
+	RadioTime();
+	xbee.ApiTxRequest();
+	// return printSerial();
 }
 
 static uint32_t readLogEntry(uint8_t logStart)
@@ -279,8 +282,9 @@ static uint8_t clearLog()					// TODO: rewrite using SD card
 	printTime();
 	// sprintf(MessageBuffer,"Log:\tCleared\n");
 	xbee.PayloadCreator(0x05,1);
-	// unix time
-	return printSerial();
+	RadioTime();
+	xbee.ApiTxRequest();
+	// return printSerial();
 }
 
 static uint8_t resetSystem()
@@ -293,8 +297,9 @@ static uint8_t resetSystem()
 	printTime();
 	// sprintf(MessageBuffer,"System Reset\n");
 	xbee.PayloadCreator(0x51,1);
-	// unix time
-	return printSerial();
+	RadioTime();
+	xbee.ApiTxRequest();
+	// return printSerial();
 }
 
 static void radioInterrupt()
@@ -323,13 +328,13 @@ static uint8_t reportLog()// TODO: rewrite using SD card
 	printTime();
 	// sprintf(MessageBuffer,"Gallon Log:\n");
 	xbee.PayloadCreator(0x01,1);
-	printSerial();
+	// printSerial();
 	if (lastLog == LOG_START_POS-1)
 	{
 		// sprintf(MessageBuffer,"Empty\n");
 		xbee.PayloadCreator(0x03,1);
-		// unix time
-		printSerial();
+		RadioTime();
+		// printSerial();
 	}
 	else
 	{
@@ -348,18 +353,16 @@ static uint8_t reportLog()// TODO: rewrite using SD card
 	printTime();
 	// sprintf(MessageBuffer,"End Log\n");
 	xbee.PayloadCreator(0x02,1);
-	return printSerial();
+	xbee.ApiTxRequest();
+	// return printSerial();
 }
 
 static void logGallon()// TODO: rewrite using SD card
 {
-	ts time;
-	uint32_t t_unix = 0;
-	uint8_t lastLog;
 	useRTC();
-	t_unix = DS3234_get_unix();
+	uint32_t t_unix = DS3234_get_unix();
+	uint8_t lastLog;
 	lastLog = getLastLogPos();
-	DS3234_get(DS3234_SS_PIN,&time);
 
 	if (lastLog>=95)
 	{
@@ -417,20 +420,23 @@ static uint8_t reportLeak()
 		case 0:
 			// sprintf(MessageBuffer,"Leak:\tNo leaks detected.\n");
 			xbee.PayloadCreator(0x21,1);
-			// unix time
+			RadioTime();
 			break;
 		case 1:
 			// sprintf(MessageBuffer,"Leak:\tPossible leak detected: More than 1000 gallons used in a 24 hour period.\n");
 			xbee.PayloadCreator(0x23,1);
-			// unix time and leak condition
+			RadioTime();
+			xbee.PayloadCreator(0x00,1);	// Still no format for leak conditions
 			break;
 		case 2:
 			// sprintf(MessageBuffer,"Leak:\tPossible leak detected: Flow rate >=1 GMP for 120 consecutive minutes.\n");
 			xbee.PayloadCreator(0x23,1);
-			// unix time and leak condition
+			RadioTime();
+			xbee.PayloadCreator(0x00,1);	// See leak condition message format
 			break;
 	}
-	return printSerial();
+	// return printSerial();
+	xbee.ApiTxRequest();	// Function type fixing after this?
 }
 
 static uint8_t clearLeak()
@@ -439,8 +445,9 @@ static uint8_t clearLeak()
 	printTime();
 	// sprintf(MessageBuffer,"Leak:\tCleared\n");
 	xbee.PayloadCreator(0x22,1);
-	// unix time
-	return printSerial();
+	RadioTime();
+	xbee.ApiTxRequest();
+	// return printSerial();
 }
 
 static uint8_t reportValve()
@@ -451,15 +458,18 @@ static uint8_t reportValve()
 	case 0:
 		// sprintf(MessageBuffer,"Valve:\tClosed\n");
 		xbee.PayloadCreator(0x12,1);
-		// unix time
+		RadioTime();
+		xbee.ApiTxRequest();
 		break;
 	case 1:
 		// sprintf(MessageBuffer,"Valve:\tOpen\n");
 		xbee.PayloadCreator(0x11,1);
-		// unix time
+		RadioTime();
+		xbee.ApiTxRequest();
 		break;
 	}
-	return printSerial();
+	// return printSerial();
+	xbee.ApiTxRequest();
 }
 
 static void processRadio(uint8_t Signal)
@@ -502,6 +512,26 @@ static void checkRadioCommands()
 	{
 		processRadio(Serial.read());
 	}
+}
+
+void RadioTime()
+{
+	useRTC();
+	uint32_t t_unix = DS3234_get_unix();
+
+	// Writes t_unix as 4 bytes to the radio buffer
+	uint8_t splitByte;
+	splitByte = t_unix/16777216;
+	xbee.PayloadCreator(splitByte,1);
+	t_unix -= (uint32_t)(splitByte)*16777216;
+	splitByte = t_unix/65536;
+	xbee.PayloadCreator(splitByte,1);
+	t_unix -= (uint32_t)(splitByte)*65536;
+	splitByte = t_unix/256;
+	xbee.PayloadCreator(splitByte,1);
+	t_unix -= (uint32_t)(splitByte)*256;
+	splitByte = t_unix;
+	xbee.PayloadCreator(splitByte,1);
 }
 
 // Runtime functions
