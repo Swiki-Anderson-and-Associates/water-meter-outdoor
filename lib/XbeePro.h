@@ -15,32 +15,11 @@ public:
 	virtual ~XbeePro();
 	XbeePro();
 	void BootloaderBypass();
-	void PayloadCreator();
+	void PayloadCreator(uint8_t,uint8_t);
 	void ApiTxRequest();
 private:
 	uint8_t Payload[66];
 	uint8_t PayloadSize;
 };
-
-XbeePro::~XbeePro() {
-	// TODO Auto-generated destructor stub
-}
-
-XbeePro::XbeePro() {
-	// TODO Auto-generated constructor stub
-	PayloadSize = 0;
-}
-
-void XbeePro::BootloaderBypass() {
-
-}
-
-void XbeePro::PayloadCreator() {
-
-}
-
-void XbeePro::TxRequest() {
-
-}
 
 #endif /* XBEEPRO_H_ */

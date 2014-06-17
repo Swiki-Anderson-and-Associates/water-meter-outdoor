@@ -45,6 +45,7 @@ uint32_t meterIntTime, lastMeterIntTime;
 volatile interruptType lastInt;			// any variables changed by ISRs must be declared volatile
 SPIType SPIFunc;
 bool isBounce;
+XbeePro xbee;
 
 // Define Program Function
 static uint8_t openLogFile()						// TODO: set this up to create new logs every month
@@ -135,6 +136,7 @@ static uint8_t printSerial()
 
 static void printTime()
 {
+	// Is this function even needed in the next version?
 	useRTC();
 	ts time;
 	DS3234_get(DS3234_SS_PIN,&time);
@@ -186,7 +188,9 @@ static uint8_t closeValve()
 	digitalWrite(VALVE_ENABLE_PIN,0);
 	digitalWrite(VALVE_CONTROL_2_PIN,0);
 	printTime();
-	sprintf(MessageBuffer,"Valve:\tClosed\n");
+	// sprintf(MessageBuffer,"Valve:\tClosed\n");
+	xbee.PayloadCreator(0x12,1);
+	// Add unix time to payload
 	return printSerial();
 }
 
@@ -200,10 +204,11 @@ static uint8_t openValve()
 	digitalWrite(VALVE_ENABLE_PIN,0);
 	digitalWrite(VALVE_CONTROL_1_PIN,0);
 	printTime();
-	sprintf(MessageBuffer,"Valve:\tOpened\n");
+	// sprintf(MessageBuffer,"Valve:\tOpened\n");
+	xbee.PayloadCreator(0x11,1);
+	// unix time
 	return printSerial();
 }
-
 
 static uint32_t readLogEntry(uint8_t logStart)
 {
@@ -272,7 +277,9 @@ static uint8_t clearLog()					// TODO: rewrite using SD card
 		EEPROM.write(2,(uint8_t)(LOG_START_POS-1));
 	}
 	printTime();
-	sprintf(MessageBuffer,"Log:\tCleared\n");
+	// sprintf(MessageBuffer,"Log:\tCleared\n");
+	xbee.PayloadCreator(0x05,1);
+	// unix time
 	return printSerial();
 }
 
@@ -284,7 +291,9 @@ static uint8_t resetSystem()
 	setDayGallons(0);
 	setConsecGallons(0);
 	printTime();
-	sprintf(MessageBuffer,"System Reset\n");
+	// sprintf(MessageBuffer,"System Reset\n");
+	xbee.PayloadCreator(0x51,1);
+	// unix time
 	return printSerial();
 }
 
@@ -312,11 +321,14 @@ static uint8_t reportLog()// TODO: rewrite using SD card
 	uint8_t lastLog = getLastLogPos();
 	uint8_t i;
 	printTime();
-	sprintf(MessageBuffer,"Gallon Log:\n");
+	// sprintf(MessageBuffer,"Gallon Log:\n");
+	xbee.PayloadCreator(0x01,1);
 	printSerial();
 	if (lastLog == LOG_START_POS-1)
 	{
-		sprintf(MessageBuffer,"Empty\n");
+		// sprintf(MessageBuffer,"Empty\n");
+		xbee.PayloadCreator(0x03,1);
+		// unix time
 		printSerial();
 	}
 	else
@@ -326,6 +338,7 @@ static uint8_t reportLog()// TODO: rewrite using SD card
 			if(i%4 == 0)
 			{
 				printTime();
+				// What format is the log in?
 				sprintf(MessageBuffer,"%u\t%lu\n",(i-12)/4,readLogEntry((i)));
 				printSerial();
 			}
@@ -333,7 +346,8 @@ static uint8_t reportLog()// TODO: rewrite using SD card
 		}
 	}
 	printTime();
-	sprintf(MessageBuffer,"End Log\n");
+	// sprintf(MessageBuffer,"End Log\n");
+	xbee.PayloadCreator(0x02,1);
 	return printSerial();
 }
 
@@ -401,13 +415,19 @@ static uint8_t reportLeak()
 	switch (wasLeakDetected())
 	{
 		case 0:
-			sprintf(MessageBuffer,"Leak:\tNo leaks detected.\n");
+			// sprintf(MessageBuffer,"Leak:\tNo leaks detected.\n");
+			xbee.PayloadCreator(0x21,1);
+			// unix time
 			break;
 		case 1:
-			sprintf(MessageBuffer,"Leak:\tPossible leak detected: More than 1000 gallons used in a 24 hour period.\n");
+			// sprintf(MessageBuffer,"Leak:\tPossible leak detected: More than 1000 gallons used in a 24 hour period.\n");
+			xbee.PayloadCreator(0x23,1);
+			// unix time and leak condition
 			break;
 		case 2:
-			sprintf(MessageBuffer,"Leak:\tPossible leak detected: Flow rate >=1 GMP for 120 consecutive minutes.\n");
+			// sprintf(MessageBuffer,"Leak:\tPossible leak detected: Flow rate >=1 GMP for 120 consecutive minutes.\n");
+			xbee.PayloadCreator(0x23,1);
+			// unix time and leak condition
 			break;
 	}
 	return printSerial();
@@ -417,7 +437,9 @@ static uint8_t clearLeak()
 {
 	setLeakCondition(0);
 	printTime();
-	sprintf(MessageBuffer,"Leak:\tCleared\n");
+	// sprintf(MessageBuffer,"Leak:\tCleared\n");
+	xbee.PayloadCreator(0x22,1);
+	// unix time
 	return printSerial();
 }
 
@@ -427,10 +449,14 @@ static uint8_t reportValve()
 	switch (isValveOpen())
 	{
 	case 0:
-		sprintf(MessageBuffer,"Valve:\tClosed\n");
+		// sprintf(MessageBuffer,"Valve:\tClosed\n");
+		xbee.PayloadCreator(0x12,1);
+		// unix time
 		break;
 	case 1:
-		sprintf(MessageBuffer,"Valve:\tOpen\n");
+		// sprintf(MessageBuffer,"Valve:\tOpen\n");
+		xbee.PayloadCreator(0x11,1);
+		// unix time
 		break;
 	}
 	return printSerial();
