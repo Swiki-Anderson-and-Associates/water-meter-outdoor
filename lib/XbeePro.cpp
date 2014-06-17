@@ -66,4 +66,6 @@ void XbeePro::ApiTxRequest
 
 	// Message transmit
 	send(zbTx);
+	// Clear buffer & size
+	PayloadSize = 0;
 }

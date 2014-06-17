@@ -16,7 +16,7 @@ public:
 	XbeePro();
 	void BootloaderBypass();
 	void PayloadCreator();
-	void ApiTxRequest;
+	void ApiTxRequest();
 private:
 	uint8_t Payload[66];
 	uint8_t PayloadSize;
