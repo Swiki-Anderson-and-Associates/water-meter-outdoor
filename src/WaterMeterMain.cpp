@@ -5,6 +5,7 @@
 #include <EEPROM.h>
 #include "DS1306.h"
 #include "LowPower.h"
+#include "XbeePro.h"
 
 // Define Constants
 #define LOG_START_POS		16			// memory position where gallon log starts
@@ -45,6 +46,7 @@ volatile interruptType lastInt;			// any variables changed by ISRs must be decla
 SPIType SPIFunc;
 bool isBounce;
 DS1306 rtc;
+XbeePro xbee;
 
 // Define Program Function
 static uint8_t openLogFile()						// TODO: set this up to create new logs every month
@@ -134,6 +136,7 @@ static uint8_t printSerial()
 
 static void printTime()
 {
+	// Is this function even needed in the next version?
 	useRTC();
 	ds1306time time;
 	rtc.getTime(&time);
@@ -175,7 +178,7 @@ static uint8_t getLastLogPos()
 	return EEPROM.read(2);
 }
 
-static uint8_t closeValve()
+static void closeValve()
 {
 	digitalWrite(VALVE_ENABLE_PIN,1);
 	digitalWrite(VALVE_CONTROL_1_PIN,0);
@@ -185,11 +188,15 @@ static uint8_t closeValve()
 	digitalWrite(VALVE_ENABLE_PIN,0);
 	digitalWrite(VALVE_CONTROL_2_PIN,0);
 	printTime();
-	sprintf(MessageBuffer,"Valve:\tClosed\n");
-	return printSerial();
+	// sprintf(MessageBuffer,"Valve:\tClosed\n");
+	xbee.PayloadCreator(0x12,1);
+	RadioTime();
+	xbee.ApiTxRequest();
+	// return printSerial();
+
 }
 
-static uint8_t openValve()
+static void openValve()
 {
 	digitalWrite(VALVE_ENABLE_PIN,1);
 	digitalWrite(VALVE_CONTROL_1_PIN,1);
@@ -199,10 +206,12 @@ static uint8_t openValve()
 	digitalWrite(VALVE_ENABLE_PIN,0);
 	digitalWrite(VALVE_CONTROL_1_PIN,0);
 	printTime();
-	sprintf(MessageBuffer,"Valve:\tOpened\n");
-	return printSerial();
+	// sprintf(MessageBuffer,"Valve:\tOpened\n");
+	xbee.PayloadCreator(0x11,1);
+	RadioTime();
+	xbee.ApiTxRequest();
+	// return printSerial();
 }
-
 
 static uint32_t readLogEntry(uint8_t logStart)
 {
@@ -259,7 +268,7 @@ static void setConsecGallons(uint8_t gals)
 	EEPROM.write(5,gals);
 }
 
-static uint8_t clearLog()					// TODO: rewrite using SD card
+static void clearLog()					// TODO: rewrite using SD card
 {											// TODO: rewrite for multiple month logs
 	uint8_t i;
 	if (getLastLogPos()!=LOG_START_POS-1)
@@ -271,11 +280,14 @@ static uint8_t clearLog()					// TODO: rewrite using SD card
 		EEPROM.write(2,(uint8_t)(LOG_START_POS-1));
 	}
 	printTime();
-	sprintf(MessageBuffer,"Log:\tCleared\n");
-	return printSerial();
+	// sprintf(MessageBuffer,"Log:\tCleared\n");
+	xbee.PayloadCreator(0x05,1);
+	RadioTime();
+	xbee.ApiTxRequest();
+	// return printSerial();
 }
 
-static uint8_t resetSystem()
+static void resetSystem()
 {
 	openValve();
 	clearLog();
@@ -283,8 +295,11 @@ static uint8_t resetSystem()
 	setDayGallons(0);
 	setConsecGallons(0);
 	printTime();
-	sprintf(MessageBuffer,"System Reset\n");
-	return printSerial();
+	// sprintf(MessageBuffer,"System Reset\n");
+	xbee.PayloadCreator(0x51,1);
+	RadioTime();
+	xbee.ApiTxRequest();
+	// return printSerial();
 }
 
 static void radioInterrupt()
@@ -306,17 +321,20 @@ static void shutdown()
 	LowPower.powerDown(SLEEP_8S,ADC_OFF,BOD_OFF);
 }
 
-static uint8_t reportLog()// TODO: rewrite using SD card
+static void reportLog()// TODO: rewrite using SD card
 {
 	uint8_t lastLog = getLastLogPos();
 	uint8_t i;
 	printTime();
-	sprintf(MessageBuffer,"Gallon Log:\n");
-	printSerial();
+	// sprintf(MessageBuffer,"Gallon Log:\n");
+	xbee.PayloadCreator(0x01,1);
+	// printSerial();
 	if (lastLog == LOG_START_POS-1)
 	{
-		sprintf(MessageBuffer,"Empty\n");
-		printSerial();
+		// sprintf(MessageBuffer,"Empty\n");
+		xbee.PayloadCreator(0x03,1);
+		RadioTime();
+		// printSerial();
 	}
 	else
 	{
@@ -325,6 +343,7 @@ static uint8_t reportLog()// TODO: rewrite using SD card
 			if(i%4 == 0)
 			{
 				printTime();
+				// What format is the log in?
 				sprintf(MessageBuffer,"%u\t%lu\n",(i-12)/4,readLogEntry((i)));
 				printSerial();
 			}
@@ -332,8 +351,10 @@ static uint8_t reportLog()// TODO: rewrite using SD card
 		}
 	}
 	printTime();
-	sprintf(MessageBuffer,"End Log\n");
-	return printSerial();
+	// sprintf(MessageBuffer,"End Log\n");
+	xbee.PayloadCreator(0x02,1);
+	xbee.ApiTxRequest();
+	// return printSerial();
 }
 
 static void logGallon()// TODO: rewrite using SD card
@@ -392,45 +413,64 @@ static uint8_t checkForLeaks()											//TODO: rewrite using Sd log
 	return 0;									// no leak detected
 }
 
-static uint8_t reportLeak()
+static void reportLeak()
 {
 	printTime();
 	switch (wasLeakDetected())
 	{
 		case 0:
-			sprintf(MessageBuffer,"Leak:\tNo leaks detected.\n");
+			// sprintf(MessageBuffer,"Leak:\tNo leaks detected.\n");
+			xbee.PayloadCreator(0x21,1);
+			RadioTime();
 			break;
 		case 1:
-			sprintf(MessageBuffer,"Leak:\tPossible leak detected: More than 1000 gallons used in a 24 hour period.\n");
+			// sprintf(MessageBuffer,"Leak:\tPossible leak detected: More than 1000 gallons used in a 24 hour period.\n");
+			xbee.PayloadCreator(0x23,1);
+			RadioTime();
+			xbee.PayloadCreator(0x00,1);	// Still no format for leak conditions
 			break;
 		case 2:
-			sprintf(MessageBuffer,"Leak:\tPossible leak detected: Flow rate >=1 GMP for 120 consecutive minutes.\n");
+			// sprintf(MessageBuffer,"Leak:\tPossible leak detected: Flow rate >=1 GMP for 120 consecutive minutes.\n");
+			xbee.PayloadCreator(0x23,1);
+			RadioTime();
+			xbee.PayloadCreator(0x00,1);	// See leak condition message format
 			break;
 	}
-	return printSerial();
+	// return printSerial();
+	xbee.ApiTxRequest();	// Function type fixing after this?
 }
 
-static uint8_t clearLeak()
+static void clearLeak()
 {
 	setLeakCondition(0);
 	printTime();
-	sprintf(MessageBuffer,"Leak:\tCleared\n");
-	return printSerial();
+	// sprintf(MessageBuffer,"Leak:\tCleared\n");
+	xbee.PayloadCreator(0x22,1);
+	RadioTime();
+	xbee.ApiTxRequest();
+	// return printSerial();
 }
 
-static uint8_t reportValve()
+static void reportValve()
 {
 	printTime();
 	switch (isValveOpen())
 	{
 	case 0:
-		sprintf(MessageBuffer,"Valve:\tClosed\n");
+		// sprintf(MessageBuffer,"Valve:\tClosed\n");
+		xbee.PayloadCreator(0x12,1);
+		RadioTime();
+		xbee.ApiTxRequest();
 		break;
 	case 1:
-		sprintf(MessageBuffer,"Valve:\tOpen\n");
+		// sprintf(MessageBuffer,"Valve:\tOpen\n");
+		xbee.PayloadCreator(0x11,1);
+		RadioTime();
+		xbee.ApiTxRequest();
 		break;
 	}
-	return printSerial();
+	// return printSerial();
+	xbee.ApiTxRequest();
 }
 
 static void processRadio(uint8_t Signal)
@@ -475,6 +515,25 @@ static void checkRadioCommands()
 	}
 }
 
+void RadioTime()
+{
+	useRTC();
+	uint32_t t_unix = rtc.getTimeUnix();
+
+	// Writes t_unix as 4 bytes to the radio buffer
+	uint8_t splitByte;
+	splitByte = t_unix/16777216;
+	xbee.PayloadCreator(splitByte,1);
+	t_unix -= (uint32_t)(splitByte)*16777216;
+	splitByte = t_unix/65536;
+	xbee.PayloadCreator(splitByte,1);
+	t_unix -= (uint32_t)(splitByte)*65536;
+	splitByte = t_unix/256;
+	xbee.PayloadCreator(splitByte,1);
+	t_unix -= (uint32_t)(splitByte)*256;
+	splitByte = t_unix;
+	xbee.PayloadCreator(splitByte,1);
+}
 
 // Runtime functions
 void setup()
