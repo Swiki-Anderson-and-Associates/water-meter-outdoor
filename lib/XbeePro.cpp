@@ -42,7 +42,7 @@ void XbeePro::BootloaderBypass()
 	// The radio should then be ready to receive API frames
 }
 
-void XbeePro::PayloadCreator(uint8_t DataByte, uint8_t Option);
+void XbeePro::PayloadCreator(uint8_t DataByte, uint8_t Option)
 {
 	if (Option == 1)
 	{
@@ -58,7 +58,7 @@ void XbeePro::PayloadCreator(uint8_t DataByte, uint8_t Option);
 	}
 }
 
-void XbeePro::ApiTxRequest();
+void XbeePro::ApiTxRequest()
 {
 	// SH + SL Address of receiving XBee
 	XBeeAddress64 addr64 = XBeeAddress64(0x00000000, 0x00000000);

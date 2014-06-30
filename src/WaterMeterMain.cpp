@@ -178,7 +178,7 @@ static uint8_t getLastLogPos()
 	return EEPROM.read(2);
 }
 
-static uint8_t closeValve()
+static void closeValve()
 {
 	digitalWrite(VALVE_ENABLE_PIN,1);
 	digitalWrite(VALVE_CONTROL_1_PIN,0);
@@ -196,7 +196,7 @@ static uint8_t closeValve()
 
 }
 
-static uint8_t openValve()
+static void openValve()
 {
 	digitalWrite(VALVE_ENABLE_PIN,1);
 	digitalWrite(VALVE_CONTROL_1_PIN,1);
@@ -268,7 +268,7 @@ static void setConsecGallons(uint8_t gals)
 	EEPROM.write(5,gals);
 }
 
-static uint8_t clearLog()					// TODO: rewrite using SD card
+static void clearLog()					// TODO: rewrite using SD card
 {											// TODO: rewrite for multiple month logs
 	uint8_t i;
 	if (getLastLogPos()!=LOG_START_POS-1)
@@ -287,7 +287,7 @@ static uint8_t clearLog()					// TODO: rewrite using SD card
 	// return printSerial();
 }
 
-static uint8_t resetSystem()
+static void resetSystem()
 {
 	openValve();
 	clearLog();
@@ -321,7 +321,7 @@ static void shutdown()
 	LowPower.powerDown(SLEEP_8S,ADC_OFF,BOD_OFF);
 }
 
-static uint8_t reportLog()// TODO: rewrite using SD card
+static void reportLog()// TODO: rewrite using SD card
 {
 	uint8_t lastLog = getLastLogPos();
 	uint8_t i;
@@ -412,7 +412,7 @@ static uint8_t checkForLeaks()											//TODO: rewrite using Sd log
 	return 0;									// no leak detected
 }
 
-static uint8_t reportLeak()
+static void reportLeak()
 {
 	printTime();
 	switch (wasLeakDetected())
@@ -439,7 +439,7 @@ static uint8_t reportLeak()
 	xbee.ApiTxRequest();	// Function type fixing after this?
 }
 
-static uint8_t clearLeak()
+static void clearLeak()
 {
 	setLeakCondition(0);
 	printTime();
@@ -450,7 +450,7 @@ static uint8_t clearLeak()
 	// return printSerial();
 }
 
-static uint8_t reportValve()
+static void reportValve()
 {
 	printTime();
 	switch (isValveOpen())
