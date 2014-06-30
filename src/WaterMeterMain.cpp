@@ -50,6 +50,7 @@ SPIType SPIFunc;
 bool isBounce;
 DS1306 rtc;
 XbeePro xbee;
+// TODO: Check unix time calculation in DS1306.cpp
 
 // Define Program Function
 static uint8_t openLogFile()						// TODO: set this up to create new logs every month
@@ -137,18 +138,17 @@ static uint8_t printSerial()
 	}
 	return Serial.print(MessageBuffer);
 }
-
+*/
 
 static void printTime()
 {
-	// Is this function even needed in the next version?
+	// Will we need non-log times?
 	useRTC();
 	ds1306time time;
 	rtc.getTime(&time);
-	sprintf(MessageBuffer,"%02u/%02u/%4d %02d:%02d:%02d\t",time.month,time.day,time.year,time.hours,time.minutes,time.seconds);
-	printSerial();
+	// sprintf(MessageBuffer,"%02u/%02u/%4d %02d:%02d:%02d\t",time.month,time.day,time.year,time.hours,time.minutes,time.seconds);
+	// printSerial();
 }
-*/
 
 static void flushSerial()
 {
@@ -193,13 +193,12 @@ static void closeValve()
 	setValvePos(0);
 	digitalWrite(VALVE_ENABLE_PIN,0);
 	digitalWrite(VALVE_CONTROL_2_PIN,0);
-	printTime();
+	// printTime();
 	// sprintf(MessageBuffer,"Valve:\tClosed\n");
 	xbee.PayloadCreator(0x12,ADD_BYTE);
 	RadioTime();
 	xbee.ApiTxRequest();
 	// return printSerial();
-	//niggers
 }
 
 static void openValve()
@@ -211,7 +210,7 @@ static void openValve()
 	setValvePos(1);
 	digitalWrite(VALVE_ENABLE_PIN,0);
 	digitalWrite(VALVE_CONTROL_1_PIN,0);
-	printTime();
+	// printTime();
 	// sprintf(MessageBuffer,"Valve:\tOpened\n");
 	xbee.PayloadCreator(0x11,ADD_BYTE);
 	RadioTime();
@@ -274,8 +273,9 @@ static void setConsecGallons(uint8_t gals)
 	EEPROM.write(5,gals);
 }
 
-static void clearLog()					// TODO: rewrite using SD card
+static void clearLog()						// TODO: rewrite using SD card
 {											// TODO: rewrite for multiple month logs
+											// TODO: rewrite for API format
 	uint8_t i;
 	if (getLastLogPos()!=LOG_START_POS-1)
 	{
@@ -285,7 +285,7 @@ static void clearLog()					// TODO: rewrite using SD card
 		}
 		EEPROM.write(2,(uint8_t)(LOG_START_POS-1));
 	}
-	printTime();
+	// printTime();
 	// sprintf(MessageBuffer,"Log:\tCleared\n");
 	xbee.PayloadCreator(0x05,ADD_BYTE);
 	RadioTime();
@@ -300,7 +300,7 @@ static void resetSystem()
 	setLeakCondition(0);
 	setDayGallons(0);
 	setConsecGallons(0);
-	printTime();
+	// printTime();
 	// sprintf(MessageBuffer,"System Reset\n");
 	xbee.PayloadCreator(0x51,ADD_BYTE);
 	RadioTime();
@@ -327,11 +327,13 @@ static void shutdown()
 	LowPower.powerDown(SLEEP_8S,ADC_OFF,BOD_OFF);
 }
 
-static void reportLog()// TODO: rewrite using SD card
+static void reportLog()
 {
+	// TODO: rewrite using SD card
+	// TODO: rewrite for API format
 	uint8_t lastLog = getLastLogPos();
 	uint8_t i;
-	printTime();
+	// printTime();
 	// sprintf(MessageBuffer,"Gallon Log:\n");
 	xbee.PayloadCreator(0x01,ADD_BYTE);
 	// printSerial();
@@ -348,23 +350,23 @@ static void reportLog()// TODO: rewrite using SD card
 		{
 			if(i%4 == 0)
 			{
-				printTime();
+				// printTime();
 				// What format is the log in?
+				RadioTime();
 				sprintf(MessageBuffer,"%u\t%lu\n",(i-12)/4,readLogEntry((i)));
 				printSerial();
 			}
-
 		}
 	}
-	printTime();
+	// printTime();
 	// sprintf(MessageBuffer,"End Log\n");
 	xbee.PayloadCreator(0x02,ADD_BYTE);
 	xbee.ApiTxRequest();
 	// return printSerial();
 }
 
-static void logGallon()// TODO: rewrite using SD card
-{
+static void logGallon()		// TODO: rewrite using SD card
+{							// TODO: rewrite for API format
 	uint32_t t_unix = 0;
 	uint8_t lastLog;
 	useRTC();
@@ -421,7 +423,7 @@ static uint8_t checkForLeaks()											//TODO: rewrite using Sd log
 
 static void reportLeak()
 {
-	printTime();
+	// printTime();
 	switch (wasLeakDetected())
 	{
 		case 0:
@@ -449,7 +451,7 @@ static void reportLeak()
 static void clearLeak()
 {
 	setLeakCondition(0);
-	printTime();
+	// printTime();
 	// sprintf(MessageBuffer,"Leak:\tCleared\n");
 	xbee.PayloadCreator(0x22,ADD_BYTE);
 	RadioTime();
@@ -459,7 +461,7 @@ static void clearLeak()
 
 static void reportValve()
 {
-	printTime();
+	// printTime();
 	switch (isValveOpen())
 	{
 	case 0:
@@ -567,7 +569,7 @@ void setup()
 	pinMode(RST_PIN,INPUT_PULLUP);
 
 	// Initialize SPI Communication
-	rtc.init(RTC_SS_PIN);
+	rtc.init(RTC_SS_PIN);			// TODO: when we get the RTC program it with Unix time, no trickle charge, no alarms. This only needs to be done once.
 	SPIFunc = RTC;
 
 	// Initialize Radio Communication
