@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <SD.h>
 #include <EEPROM.h>
-#include "ds3234.h"
+#include "DS1306.h"
 #include "LowPower.h"
 
 // Define Constants
@@ -18,7 +18,7 @@
 #define RADIO_RTS_PIN       15			// (A1) pin pulled high to prevent the radio from transferring data
 #define RADIO_CTS_PIN       16			// (A2) pin pulled high by radio to tell the Arduino to stop sending data
 
-#define DS3234_SS_PIN		10			// pin pulled low to allow SPI communication with DS3234 RTC
+#define RTC_SS_PIN			10			// pin pulled low to allow SPI communication with DS3234 RTC
 #define SD_SS_PIN			4			// pin pulled low to allow SPI communication with SD Card
 #define MOSI_PIN			11			// SPI MOSI communication pin
 #define MISO_PIN			12			// SPI MISO communication pin
@@ -44,6 +44,7 @@ uint32_t meterIntTime, lastMeterIntTime;
 volatile interruptType lastInt;			// any variables changed by ISRs must be declared volatile
 SPIType SPIFunc;
 bool isBounce;
+DS1306 rtc;
 
 // Define Program Function
 static uint8_t openLogFile()						// TODO: set this up to create new logs every month
@@ -76,7 +77,6 @@ static uint8_t useSDCard()
 	}
 	else
 	{
-		DS3234_end();
 		SPIFunc = SDCard;
 		return openLogFile();
 	}
@@ -92,7 +92,7 @@ static uint8_t useRTC()
 	{
 		closeLogFile();
 		SPIFunc = RTC;
-		DS3234_init(DS3234_SS_PIN);;
+		rtc.init(RTC_SS_PIN);
 		return 0;
 	}
 }
@@ -135,9 +135,9 @@ static uint8_t printSerial()
 static void printTime()
 {
 	useRTC();
-	ts time;
-	DS3234_get(DS3234_SS_PIN,&time);
-	sprintf(MessageBuffer,"%02u/%02u/%4d %02d:%02d:%02d\t",time.mon,time.mday,time.year,time.hour,time.min,time.sec);
+	ds1306time time;
+	rtc.getTime(&time);
+	sprintf(MessageBuffer,"%02u/%02u/%4d %02d:%02d:%02d\t",time.month,time.day,time.year,time.hours,time.minutes,time.seconds);
 	printSerial();
 }
 
@@ -338,13 +338,11 @@ static uint8_t reportLog()// TODO: rewrite using SD card
 
 static void logGallon()// TODO: rewrite using SD card
 {
-	ts time;
 	uint32_t t_unix = 0;
 	uint8_t lastLog;
 	useRTC();
-	t_unix = DS3234_get_unix();
+	t_unix = rtc.getTimeUnix();
 	lastLog = getLastLogPos();
-	DS3234_get(DS3234_SS_PIN,&time);
 
 	if (lastLog>=95)
 	{
@@ -486,7 +484,7 @@ void setup()
 	pinMode(VALVE_CONTROL_1_PIN,OUTPUT);
 	pinMode(VALVE_CONTROL_2_PIN,OUTPUT);
 	pinMode(SD_SS_PIN,OUTPUT);
-	pinMode(DS3234_SS_PIN,OUTPUT);
+	pinMode(RTC_SS_PIN,OUTPUT);
 
 	pinMode(ALARM_PIN,INPUT_PULLUP);
 	pinMode(METER_PIN,INPUT_PULLUP);
@@ -499,12 +497,12 @@ void setup()
 	digitalWrite(VALVE_CONTROL_1_PIN,0);
 	digitalWrite(VALVE_CONTROL_2_PIN,0);
 	digitalWrite(SD_SS_PIN,1);
-	digitalWrite(DS3234_SS_PIN,1);
+	digitalWrite(RTC_SS_PIN,1);
 
 	pinMode(RST_PIN,INPUT_PULLUP);
 
 	// Initialize SPI Communication
-	DS3234_init(DS3234_SS_PIN);
+	rtc.init(RTC_SS_PIN);
 	SPIFunc = RTC;
 
 	// Initialize Radio Communication
