@@ -76,7 +76,7 @@ uint32_t DS1306::getTimeUnix()
 	getTime(&t_struct);
 
 	// calculate number of leap days to be included
-	for (i=1970;i<t_struct.year;i++)
+	for (i=1970;i<(2000 + t_struct.year);i++)
 	{
 		if ((i%4) == 0)
 		{
@@ -122,15 +122,15 @@ uint32_t DS1306::getTimeUnix()
     }
 
     // Determine whether a leap day has occurred this year and add it if needed
-	if ((t_struct.year%4) == 0)
+	if (((2000 + t_struct.year)%4) == 0)
 	{
-		if (t_struct.year%100 != 0)
-			if ((i == t_struct.year) && ((t_struct.month > 3) || ((t_struct.month ==3) && (t_struct.day == 29))))
+		if ((2000 + t_struct.year)%100 != 0)
+			if ((i == t_struct.year) && ((t_struct.month > 3) || ((t_struct.month ==2) && (t_struct.day == 29))))
 			{
 				yday += 1;
 			}
-		else if (t_struct.year%400 == 0)
-			if ((i == t_struct.year) && ((t_struct.month > 3) || ((t_struct.month ==3) && (t_struct.day == 29))))
+		else if ((2000 + t_struct.year)%400 == 0)
+			if ((i == t_struct.year) && ((t_struct.month > 3) || ((t_struct.month ==2) && (t_struct.day == 29))))
 			{
 				yday += 1;
 			}
@@ -140,7 +140,7 @@ uint32_t DS1306::getTimeUnix()
 	yday += t_struct.day;
 
 	// calculate UNIX time
-	t_unix += (uint32_t)(t_struct.year - 1970) * 31536000;											// add years
+	t_unix += (2000 + (uint32_t)(t_struct.year) - 1970) * 31536000;											// add years
 	t_unix += (uint32_t)(yday + leapDays) * 86400;											// add days + leap days
 	t_unix += (uint32_t)(t_struct.hours) * 3600;
 	t_unix += (uint32_t)(t_struct.minutes) * 60;

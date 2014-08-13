@@ -36,9 +36,13 @@
 #define ADD_BYTE			1			// Second parameter for PayloadCreator, adds the byte
 #define CLEAR_PAY			2			// Second parameter for PayloadCreator, clears the payload
 
+#define LOG_WRITING			true		// Parameter for openLogFile function
+#define LOG_READING			false		// Parameter for openLogFile function
+
 // Define Enumerations
 enum interruptType {NONE, RADIO, METER};
 enum SPIType {RTC, SDCard};
+enum CardFile {Writing, Reading, Closed};
 
 // Define Global Variables
 File logFile;
@@ -47,44 +51,68 @@ uint8_t leak, timerCount;
 uint32_t meterIntTime, lastMeterIntTime;
 volatile interruptType lastInt;			// any variables changed by ISRs must be declared volatile
 SPIType SPIFunc;
+CardFile FileIs;
 bool isBounce;
 DS1306 rtc;
 XbeePro xbee;
-// TODO: Check unix time calculation in DS1306.cpp
 
 // Define Program Function
-static uint8_t openLogFile()						// TODO: set this up to create new logs every month
+static uint8_t openLogFile(bool choice)			// TODO: OpenLogFile - set this up to create new logs every month
 {
-	if(!SD.begin(4))
+	if((choice == LOG_WRITING && FileIs == Writing) || (choice == LOG_READING && FileIs == Reading))
 	{
-		return 1;		// SD card error
-	}
-	logFile = SD.open("log.txt",FILE_WRITE);
-	if(logFile)
-	{
-		return 0;
+		return 3;	// Indicator that nothing was done
 	}
 	else
 	{
-		return 2;		// file open error
+		// SD card error check
+		if(!SD.begin(4))
+		{
+			return 1;
+		}
+
+		// SD card file open commands
+		if(choice)
+		{
+			if(FileIs == Reading){closeLogFile();}
+			logFile = SD.open("log.bmp",FILE_WRITE);
+			FileIs = Writing;
+		}
+		else
+		{
+			if(FileIs == Writing){closeLogFile();}
+			logFile = SD.open("log.bmp",FILE_READ);
+			FileIs = Reading;
+		}
+
+		// File open error checks
+		if(logFile)
+		{
+			return 0;
+		}
+		else
+		{
+			return 2;
+		}
 	}
 }
 
 static void closeLogFile()
 {
 	logFile.close();
+	FileIs = Closed;
 }
 
-static uint8_t useSDCard()
+static uint8_t useSDCard(bool choice)
 {
 	if(SPIFunc == SDCard)
 	{
-		return 0;
+		return openLogFile(choice);		// TODO: UseSDCard - no longer needs to return openLogFile here
 	}
 	else
 	{
 		SPIFunc = SDCard;
-		return openLogFile();
+		return openLogFile(choice);
 	}
 }
 
@@ -129,7 +157,7 @@ static void cycleRadio()
 	wakeRadio();
 }
 
-/*
+/*	Function replaced inside of XbeePro class
 static uint8_t printSerial()
 {
 	if (digitalRead(RADIO_CTS_PIN))
@@ -140,6 +168,7 @@ static uint8_t printSerial()
 }
 */
 
+/*	Function replaced with the RadioTime() function
 static void printTime()
 {
 	// Will we need non-log times?
@@ -149,6 +178,8 @@ static void printTime()
 	// sprintf(MessageBuffer,"%02u/%02u/%4d %02d:%02d:%02d\t",time.month,time.day,time.year,time.hours,time.minutes,time.seconds);
 	// printSerial();
 }
+*/
+
 
 static void flushSerial()
 {
@@ -179,13 +210,34 @@ static uint8_t wasLeakDetected()
 	return EEPROM.read(1);
 }
 
-static uint8_t getLastLogPos()
+static uint16_t getLastLogPos()
 {
 	return EEPROM.read(2);
 }
 
+static void RadioTime()
+{
+	useRTC();
+	uint32_t t_unix = rtc.getTimeUnix();
+
+	// Writes t_unix as 4 bytes to the radio buffer
+	uint8_t splitByte;
+	splitByte = t_unix/16777216;
+	xbee.PayloadCreator(splitByte,ADD_BYTE);
+	t_unix -= (uint32_t)(splitByte)*16777216;
+	splitByte = t_unix/65536;
+	xbee.PayloadCreator(splitByte,ADD_BYTE);
+	t_unix -= (uint32_t)(splitByte)*65536;
+	splitByte = t_unix/256;
+	xbee.PayloadCreator(splitByte,ADD_BYTE);
+	t_unix -= (uint32_t)(splitByte)*256;
+	splitByte = t_unix;
+	xbee.PayloadCreator(splitByte,ADD_BYTE);
+}
+
 static void closeValve()
 {
+	uint8_t Header = 0x12;
 	digitalWrite(VALVE_ENABLE_PIN,1);
 	digitalWrite(VALVE_CONTROL_1_PIN,0);
 	digitalWrite(VALVE_CONTROL_2_PIN,1);
@@ -193,16 +245,25 @@ static void closeValve()
 	setValvePos(0);
 	digitalWrite(VALVE_ENABLE_PIN,0);
 	digitalWrite(VALVE_CONTROL_2_PIN,0);
+
+	// Report event over radio
 	// printTime();
 	// sprintf(MessageBuffer,"Valve:\tClosed\n");
-	xbee.PayloadCreator(0x12,ADD_BYTE);
+	xbee.PayloadCreator(Header,ADD_BYTE);
 	RadioTime();
 	xbee.ApiTxRequest();
 	// return printSerial();
+
+	// log event
+	uint32_t t_unix = 0;
+	useRTC();
+	t_unix = rtc.getTimeUnix();
+	writeLogEntry(Header,t_unix);
 }
 
 static void openValve()
 {
+	uint8_t Header = 0x11;
 	digitalWrite(VALVE_ENABLE_PIN,1);
 	digitalWrite(VALVE_CONTROL_1_PIN,1);
 	digitalWrite(VALVE_CONTROL_2_PIN,0);
@@ -210,39 +271,81 @@ static void openValve()
 	setValvePos(1);
 	digitalWrite(VALVE_ENABLE_PIN,0);
 	digitalWrite(VALVE_CONTROL_1_PIN,0);
+
+	// Report event over radio
 	// printTime();
 	// sprintf(MessageBuffer,"Valve:\tOpened\n");
-	xbee.PayloadCreator(0x11,ADD_BYTE);
+	xbee.PayloadCreator(Header,ADD_BYTE);
 	RadioTime();
 	xbee.ApiTxRequest();
 	// return printSerial();
+
+	// log event
+	uint32_t t_unix = 0;
+	useRTC();
+	t_unix = rtc.getTimeUnix();
+	writeLogEntry(Header,t_unix);
 }
 
-static uint32_t readLogEntry(uint8_t logStart)
+static uint32_t readLogEntry(uint16_t logStart, bool Certainty)
 {
+	if(!Certainty)		// Certainty refers to if you already know that the log is open and in the reading format.
+	{
+		closeLogFile();
+		useSDCard(LOG_READING);
+	}
+
+	// Sets the read function to read the desired byte
+	for(uint8_t i=0; i <= logStart; i++)
+	{
+		uint8_t junk= logFile.read();	// TODO: ReadLogEntry - system that doesn't require a junk variable.
+	}
+
+	// API Header portion of the entry
+	uint8_t Header = logFile.read();
+
+	// Unix time portion of the entry
 	uint32_t t_unix = 0;
-	t_unix += (uint32_t)EEPROM.read(logStart)*16777216;
-	t_unix += (uint32_t)EEPROM.read(logStart+1)*65536;
-	t_unix += (uint32_t)EEPROM.read(logStart+2)*256;
-	t_unix += (uint32_t)EEPROM.read(logStart+3);
+	t_unix += (uint32_t)logFile.read()*16777216;
+	t_unix += (uint32_t)logFile.read()*65536;
+	t_unix += (uint32_t)logFile.read()*256;
+	t_unix += (uint32_t)logFile.read();
 	return t_unix;
 }
 
-static void writeLogEntry(uint8_t startPos, uint32_t t_unix)
+static void writeLogEntry(uint8_t Header, uint32_t t_unix)
 {
-	// stores t_unix as 4 bytes
+	useSDCard(LOG_WRITING);
+	logFile.write(Header);
+
+	if(Header == 0x04)
+	{
+		EEPROM.write(7,EEPROM.read(11));
+		EEPROM.write(8,EEPROM.read(12));
+		EEPROM.write(9,EEPROM.read(13));
+		EEPROM.write(10,EEPROM.read(14));
+	}
+
+	// stores t_unix as 4 bytes in log (and EEPROM if it is a gallon log)
 	uint8_t splitByte;
 	splitByte = t_unix/16777216;
-	EEPROM.write(startPos,(char)splitByte);
+	logFile.write(splitByte);
+	if(Header == 0x04){EEPROM.write(10,splitByte);}
+
 	t_unix -= (uint32_t)(splitByte)*16777216;
 	splitByte = t_unix/65536;
-	EEPROM.write(startPos+1,(char)splitByte);
+	logFile.write(splitByte);
+	if(Header == 0x04){EEPROM.write(11,splitByte);}
+
 	t_unix -= (uint32_t)(splitByte)*65536;
 	splitByte = t_unix/256;
-	EEPROM.write(startPos+2,(char)splitByte);
+	logFile.write(splitByte);
+	if(Header == 0x04){EEPROM.write(12,splitByte);}
+
 	t_unix -= (uint32_t)(splitByte)*256;
 	splitByte = t_unix;
-	EEPROM.write(startPos+3,t_unix);
+	logFile.write(splitByte);
+	if(Header == 0x04){EEPROM.write(13,splitByte);}
 }
 
 static uint16_t getDayGallons()
@@ -273,9 +376,10 @@ static void setConsecGallons(uint8_t gals)
 	EEPROM.write(5,gals);
 }
 
-static void clearLog()						// TODO: rewrite using SD card
+// Needed on SD system? We will need to switch to the SDFat library to be able to delete files.
+/*
+static void clearLog()						// TODO: ClearLog - rewrite using SD card and API format
 {											// TODO: rewrite for multiple month logs
-											// TODO: rewrite for API format
 	uint8_t i;
 	if (getLastLogPos()!=LOG_START_POS-1)
 	{
@@ -292,6 +396,7 @@ static void clearLog()						// TODO: rewrite using SD card
 	xbee.ApiTxRequest();
 	// return printSerial();
 }
+*/
 
 static void resetSystem()
 {
@@ -305,6 +410,9 @@ static void resetSystem()
 	xbee.PayloadCreator(0x51,ADD_BYTE);
 	RadioTime();
 	xbee.ApiTxRequest();
+	useRTC();
+	uint32_t t_unix= rtc.getTimeUnix();
+	writeLogEntry(0x51,t_unix);
 	// return printSerial();
 }
 
@@ -320,7 +428,7 @@ static void meterInterrupt()
 
 static void shutdown()
 {
-	sleep_enable();										// Dont fuck with anything below this point in this function
+	sleep_enable();										// Don't fuck with anything below this point in this function
 	attachInterrupt(0,radioInterrupt,LOW);
 	attachInterrupt(1,meterInterrupt,CHANGE);
 	lastInt = NONE;
@@ -329,20 +437,19 @@ static void shutdown()
 
 static void reportLog()
 {
-	// TODO: rewrite using SD card
-	// TODO: rewrite for API format
-	uint8_t lastLog = getLastLogPos();
+	uint16_t logStart = getLastLogPos();
 	uint8_t i;
-	// printTime();
-	// sprintf(MessageBuffer,"Gallon Log:\n");
-	xbee.PayloadCreator(0x01,ADD_BYTE);
-	// printSerial();
+	/* Old version
+	printTime();
+	sprintf(MessageBuffer,"Gallon Log:\n");
+	printSerial();
+	API header and time for a log report
 	if (lastLog == LOG_START_POS-1)
 	{
-		// sprintf(MessageBuffer,"Empty\n");
+		sprintf(MessageBuffer,"Empty\n");
 		xbee.PayloadCreator(0x03,ADD_BYTE);
 		RadioTime();
-		// printSerial();
+		printSerial();
 	}
 	else
 	{
@@ -350,51 +457,77 @@ static void reportLog()
 		{
 			if(i%4 == 0)
 			{
-				// printTime();
-				// What format is the log in?
-				RadioTime();
-				sprintf(MessageBuffer,"%u\t%lu\n",(i-12)/4,readLogEntry((i)));
+				printTime();
+				sprintf(MessageBuffer,"%u\t%lu\n",(i-12)/4,readLogEntry((i,true)));
 				printSerial();
 			}
 		}
 	}
-	// printTime();
-	// sprintf(MessageBuffer,"End Log\n");
+	printTime();
+	sprintf(MessageBuffer,"End Log\n");
+	*/
+	closeLogFile();
+	useSDCard(LOG_READING);
+
+	// Sets the read function to read the desired byte
+	for(uint8_t i=0; i < logStart; i++)
+	{
+		uint8_t Worthless_Shit_Hole = logFile.read();	// TODO: ReportLog - System that doesn't require a junk variable.
+	}
+
+	// Add log bytes to the radio payload
+	int counter = 0;
+	while(logFile.peek() != -1)
+	{
+		xbee.PayloadCreator(logFile.read(),ADD_BYTE);
+		counter++;
+		if(counter == 66)		// Keeps the log from overloading the xbee api frame.
+		{
+			xbee.ApiTxRequest();
+			logStart = logStart + counter;
+			counter = 0;
+		}
+	}
+	EEPROM.write(2,logStart+counter);
+
 	xbee.PayloadCreator(0x02,ADD_BYTE);
 	xbee.ApiTxRequest();
 	// return printSerial();
 }
 
-static void logGallon()		// TODO: rewrite using SD card
-{							// TODO: rewrite for API format
+static void logGallon()
+{
+	uint8_t Header = 0x04;
 	uint32_t t_unix = 0;
-	uint8_t lastLog;
 	useRTC();
 	t_unix = rtc.getTimeUnix();
-	lastLog = getLastLogPos();
-
-	if (lastLog>=95)
-	{
-		reportLog();
-		clearLog();
-	}
-
-	lastLog = getLastLogPos();
-	writeLogEntry(lastLog+1,t_unix);				// writes gallon to log
-	EEPROM.write(2,lastLog+4);						// sets last log position
+	writeLogEntry(Header,t_unix);
 }
 
-static uint8_t checkForLeaks()											//TODO: rewrite using Sd log
+static uint32_t readEEGallon(uint8_t start)
 {
+	uint32_t t_unix = 0;
+	t_unix += (uint32_t)EEPROM.read(start)*16777216;
+	t_unix += (uint32_t)EEPROM.read(start+1)*65536;
+	t_unix += (uint32_t)EEPROM.read(start+2)*256;
+	t_unix += (uint32_t)EEPROM.read(start+3);
+	return t_unix;
+}
+
+static uint8_t checkForLeaks()
+{
+	useRTC();
+	ds1306time t;
+	rtc.getTime(&t);
 	uint16_t dayGallons = getDayGallons();
-	uint32_t t_lastLog = readLogEntry(getLastLogPos()-3);
-	uint32_t t_prevLog = readLogEntry(getLastLogPos()-7);
-	uint32_t t_dayStart = readLogEntry(8);
+	uint32_t t_lastLog = readEEGallon(11);
+	uint32_t t_prevLog = readEEGallon(7);
+	uint8_t dayNumber = EEPROM.read(6);
 	uint8_t prevConsMins = getConsecGallons();
 
-	if (t_lastLog - t_dayStart >= 86400)		// full day has passed
+	if (t.day != dayNumber)						// full day has passed
 	{
-		writeLogEntry(8,t_lastLog);				// reset day start time
+		EEPROM.write(6,t.day);					// reset day in EEPROM
 		setDayGallons(0);						// reset day counter
 	}
 	else
@@ -445,7 +578,7 @@ static void reportLeak()
 			break;
 	}
 	// return printSerial();
-	xbee.ApiTxRequest();	// Function type fixing after this?
+	xbee.ApiTxRequest();
 }
 
 static void clearLeak()
@@ -481,67 +614,79 @@ static void reportValve()
 	xbee.ApiTxRequest();
 }
 
-static void processRadio(uint8_t Signal)
+static void processRadio(uint8_t Signal[], uint8_t size)
 {
-	switch (Signal)
+	for(uint8_t i=0; i<=size; i++)
 	{
-		case 'r':
-			resetSystem();
-			break;
-		case 'c':
-			closeValve();
-			break;
-		case 'o':
-			openValve();
-			break;
-		case 'l':
-			reportLeak();
-			break;
-		case 'v':
-			reportValve();
-			break;
-		case 'h':
-			reportLog();
-			break;
-		case 'q':
-			clearLog();
-			break;
-		case 'k':
-			clearLeak();
-			break;
-		default:
-			break;
+		switch (Signal[i])
+		{
+			case 0x51:
+				resetSystem();
+				break;
+			case 0x12:
+				closeValve();
+				break;
+			case 0x11:
+				openValve();
+				break;
+			case 0x21:
+				reportLeak();
+				break;
+			case 0x13:
+				reportValve();
+				break;
+			case 0x01:
+				reportLog();
+				break;
+			case 0x02:
+				clearLog();
+				break;
+			case 0x22:
+				clearLeak();
+				break;
+			default:
+				break;
+		}
 	}
 }
 
 static void checkRadioCommands()
 {
-	delay(10);										// wait for data to be received
-	while(Serial.available()>0)
+	uint8_t Frame_Type, Receive_Options, Checksum;			// Can add functionality to do with these later
+	uint8_t Addr_64[8], Addr_16[2], Length[2];
+
+	delay(10);												// wait for data to be received
+	if(Serial.available()>0)
 	{
-		processRadio(Serial.read());
+		if(Serial.read() == 0x7E)
+		{
+			Length[0] = Serial.read();
+			Length[1] = Serial.read();
+			uint8_t Data_array[Length[1] - 12];				// Assuming that the length will never go over one byte.
+
+			Frame_Type = Serial.read();
+
+			for(uint8_t i=0; i<=7; i++)
+			{
+				Addr_64[i] = Serial.read();
+			}
+
+			Addr_16[0] = Serial.read();
+			Addr_16[1] = Serial.read();
+
+			Receive_Options = Serial.read();
+
+			for(uint8_t i=0; i <= (Length[1] - 13); i++)
+			{
+				Data_array[i] = Serial.read();
+			}
+
+			processRadio(Data_array, Length[1]-12);
+		}
 	}
 }
 
-void RadioTime()
-{
-	useRTC();
-	uint32_t t_unix = rtc.getTimeUnix();
 
-	// Writes t_unix as 4 bytes to the radio buffer
-	uint8_t splitByte;
-	splitByte = t_unix/16777216;
-	xbee.PayloadCreator(splitByte,ADD_BYTE);
-	t_unix -= (uint32_t)(splitByte)*16777216;
-	splitByte = t_unix/65536;
-	xbee.PayloadCreator(splitByte,ADD_BYTE);
-	t_unix -= (uint32_t)(splitByte)*65536;
-	splitByte = t_unix/256;
-	xbee.PayloadCreator(splitByte,ADD_BYTE);
-	t_unix -= (uint32_t)(splitByte)*256;
-	splitByte = t_unix;
-	xbee.PayloadCreator(splitByte,ADD_BYTE);
-}
 
 // Runtime functions
 void setup()
@@ -569,7 +714,7 @@ void setup()
 	pinMode(RST_PIN,INPUT_PULLUP);
 
 	// Initialize SPI Communication
-	rtc.init(RTC_SS_PIN);			// TODO: when we get the RTC program it with Unix time, no trickle charge, no alarms. This only needs to be done once.
+	rtc.init(RTC_SS_PIN);
 	SPIFunc = RTC;
 
 	// Initialize Radio Communication
@@ -583,6 +728,7 @@ void setup()
 	lastMeterIntTime = 0;
 	lastInt = NONE;
 	isBounce = false;
+	FileIs = Closed;
 }
 
 void loop()
@@ -610,7 +756,7 @@ void loop()
 			}
 			break;
 		case RADIO:
-												// I dont think we are going to implement radio wake yet since we are using AT mode for testing
+												// I don't think we are going to implement radio wake yet since we are using AT mode for testing
 			break;
 		case METER:
 			sleep_enable();
@@ -657,3 +803,5 @@ void loop()
 	detachInterrupt(0);
 	detachInterrupt(1);
 }
+// TODO: Rearrange functions to remove dependency errors.
+// TODO: EEPROM rotation will require using 1 or 2 more EEPROM addresses.
