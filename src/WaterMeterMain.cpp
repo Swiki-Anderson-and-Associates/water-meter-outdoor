@@ -57,6 +57,12 @@ DS1306 rtc;
 XbeePro xbee;
 
 // Define Program Function
+static void closeLogFile()
+{
+	logFile.close();
+	FileIs = Closed;
+}
+
 static uint8_t openLogFile(bool choice)			// TODO: OpenLogFile - set this up to create new logs every month
 {
 	if((choice == LOG_WRITING && FileIs == Writing) || (choice == LOG_READING && FileIs == Reading))
@@ -95,12 +101,6 @@ static uint8_t openLogFile(bool choice)			// TODO: OpenLogFile - set this up to 
 			return 2;
 		}
 	}
-}
-
-static void closeLogFile()
-{
-	logFile.close();
-	FileIs = Closed;
 }
 
 static uint8_t useSDCard(bool choice)
@@ -235,6 +235,41 @@ static void RadioTime()
 	xbee.PayloadCreator(splitByte,ADD_BYTE);
 }
 
+static void writeLogEntry(uint8_t Header, uint32_t t_unix)
+{
+	useSDCard(LOG_WRITING);
+	logFile.write(Header);
+
+	if(Header == 0x04)
+	{
+		EEPROM.write(7,EEPROM.read(11));
+		EEPROM.write(8,EEPROM.read(12));
+		EEPROM.write(9,EEPROM.read(13));
+		EEPROM.write(10,EEPROM.read(14));
+	}
+
+	// stores t_unix as 4 bytes in log (and EEPROM if it is a gallon log)
+	uint8_t splitByte;
+	splitByte = t_unix/16777216;
+	logFile.write(splitByte);
+	if(Header == 0x04){EEPROM.write(10,splitByte);}
+
+	t_unix -= (uint32_t)(splitByte)*16777216;
+	splitByte = t_unix/65536;
+	logFile.write(splitByte);
+	if(Header == 0x04){EEPROM.write(11,splitByte);}
+
+	t_unix -= (uint32_t)(splitByte)*65536;
+	splitByte = t_unix/256;
+	logFile.write(splitByte);
+	if(Header == 0x04){EEPROM.write(12,splitByte);}
+
+	t_unix -= (uint32_t)(splitByte)*256;
+	splitByte = t_unix;
+	logFile.write(splitByte);
+	if(Header == 0x04){EEPROM.write(13,splitByte);}
+}
+
 static void closeValve()
 {
 	uint8_t Header = 0x12;
@@ -311,41 +346,6 @@ static uint32_t readLogEntry(uint16_t logStart, bool Certainty)
 	t_unix += (uint32_t)logFile.read()*256;
 	t_unix += (uint32_t)logFile.read();
 	return t_unix;
-}
-
-static void writeLogEntry(uint8_t Header, uint32_t t_unix)
-{
-	useSDCard(LOG_WRITING);
-	logFile.write(Header);
-
-	if(Header == 0x04)
-	{
-		EEPROM.write(7,EEPROM.read(11));
-		EEPROM.write(8,EEPROM.read(12));
-		EEPROM.write(9,EEPROM.read(13));
-		EEPROM.write(10,EEPROM.read(14));
-	}
-
-	// stores t_unix as 4 bytes in log (and EEPROM if it is a gallon log)
-	uint8_t splitByte;
-	splitByte = t_unix/16777216;
-	logFile.write(splitByte);
-	if(Header == 0x04){EEPROM.write(10,splitByte);}
-
-	t_unix -= (uint32_t)(splitByte)*16777216;
-	splitByte = t_unix/65536;
-	logFile.write(splitByte);
-	if(Header == 0x04){EEPROM.write(11,splitByte);}
-
-	t_unix -= (uint32_t)(splitByte)*65536;
-	splitByte = t_unix/256;
-	logFile.write(splitByte);
-	if(Header == 0x04){EEPROM.write(12,splitByte);}
-
-	t_unix -= (uint32_t)(splitByte)*256;
-	splitByte = t_unix;
-	logFile.write(splitByte);
-	if(Header == 0x04){EEPROM.write(13,splitByte);}
 }
 
 static uint16_t getDayGallons()
