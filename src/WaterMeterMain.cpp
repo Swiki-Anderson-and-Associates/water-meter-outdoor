@@ -43,15 +43,19 @@
 enum interruptType {NONE, RADIO, METER};
 enum SPIType {RTC, SDCard};
 enum CardFile {Writing, Reading, Closed};
+enum LogFileRep {ItsNew, Reported};
 
 // Define Global Variables
 File logFile;
-static char MessageBuffer[256];
+static char logName[13];
+static char lastReportedLogName[13];
+static char EEPROM_rot;
 uint8_t leak, timerCount;
 uint32_t meterIntTime, lastMeterIntTime;
 volatile interruptType lastInt;			// any variables changed by ISRs must be declared volatile
 SPIType SPIFunc;
 CardFile FileIs;
+LogFileRep Lfile;
 bool isBounce;
 DS1306 rtc;
 XbeePro xbee;
@@ -63,7 +67,7 @@ static void closeLogFile()
 	FileIs = Closed;
 }
 
-static uint8_t openLogFile(bool choice)			// TODO: OpenLogFile - set this up to create new logs every month
+static uint8_t openLogFile(bool choice, uint8_t month, uint8_t year)
 {
 	if((choice == LOG_WRITING && FileIs == Writing) || (choice == LOG_READING && FileIs == Reading))
 	{
@@ -78,16 +82,31 @@ static uint8_t openLogFile(bool choice)			// TODO: OpenLogFile - set this up to 
 		}
 
 		// SD card file open commands
-		if(choice)
+		if(choice == LOG_WRITING)
 		{
+			// Generates new log name
+			sprintf(logName, "log_%02u_%02u.bmp",month,year);
+
+			// Checks if it is new
+			if(!SD.exists(logName)){Lfile = ItsNew;}
+
+			// Closes if open for reading
 			if(FileIs == Reading){closeLogFile();}
-			logFile = SD.open("log.bmp",FILE_WRITE);
+
+			// Opens for writing
+			logFile = SD.open(logName,FILE_WRITE);
 			FileIs = Writing;
 		}
 		else
 		{
 			if(FileIs == Writing){closeLogFile();}
-			logFile = SD.open("log.bmp",FILE_READ);
+
+			// Check if current log name is new, and open one
+			if(Lfile == ItsNew)
+				logFile = SD.open(lastReportedLogName, FILE_READ);
+			else
+				logFile = SD.open(logName,FILE_READ);
+
 			FileIs = Reading;
 		}
 
@@ -103,16 +122,16 @@ static uint8_t openLogFile(bool choice)			// TODO: OpenLogFile - set this up to 
 	}
 }
 
-static uint8_t useSDCard(bool choice)
+static uint8_t useSDCard(bool choice, uint8_t month, uint8_t year)
 {
 	if(SPIFunc == SDCard)
 	{
-		return openLogFile(choice);		// TODO: UseSDCard - no longer needs to return openLogFile here
+		return 0;
 	}
 	else
 	{
 		SPIFunc = SDCard;
-		return openLogFile(choice);
+		return openLogFile(choice, month, year);
 	}
 }
 
@@ -168,19 +187,6 @@ static uint8_t printSerial()
 }
 */
 
-/*	Function replaced with the RadioTime() function
-static void printTime()
-{
-	// Will we need non-log times?
-	useRTC();
-	ds1306time time;
-	rtc.getTime(&time);
-	// sprintf(MessageBuffer,"%02u/%02u/%4d %02d:%02d:%02d\t",time.month,time.day,time.year,time.hours,time.minutes,time.seconds);
-	// printSerial();
-}
-*/
-
-
 static void flushSerial()
 {
 	if (digitalRead(RADIO_CTS_PIN))
@@ -190,24 +196,36 @@ static void flushSerial()
 	Serial.flush();
 }
 
+static uint8_t getEEPROMmod()
+{
+	uint8_t mod = 0;
+
+	if(EEPROM_rot > 0x10)
+		mod = 15*(EEPROM_rot - 0x11) + 76;
+	else
+		mod = 15*(EEPROM_rot - 1);
+
+	return mod;
+}
+
 static void setValvePos(uint8_t pos)
 {
-	EEPROM.write(0,pos);
+	EEPROM.write(0 + getEEPROMmod(), pos);
 }
 
 static void setLeakCondition(uint8_t cond)
 {
-	EEPROM.write(1,cond);
+	EEPROM.write(1 + getEEPROMmod(), cond);
 }
 
 static uint8_t isValveOpen()
 {
-	return EEPROM.read(0);
+	return EEPROM.read(0 + getEEPROMmod());
 }
 
 static uint8_t wasLeakDetected()
 {
-	return EEPROM.read(1);
+	return EEPROM.read(1 + getEEPROMmod());
 }
 
 static uint16_t getLastLogPos()
@@ -237,7 +255,11 @@ static void RadioTime()
 
 static void writeLogEntry(uint8_t Header, uint32_t t_unix)
 {
-	useSDCard(LOG_WRITING);
+	useRTC();
+	ds1306time time;
+	rtc.getTime(&time);
+
+	useSDCard(LOG_WRITING,time.month,time.year);
 	logFile.write(Header);
 
 	if(Header == 0x04)
@@ -282,12 +304,9 @@ static void closeValve()
 	digitalWrite(VALVE_CONTROL_2_PIN,0);
 
 	// Report event over radio
-	// printTime();
-	// sprintf(MessageBuffer,"Valve:\tClosed\n");
 	xbee.PayloadCreator(Header,ADD_BYTE);
 	RadioTime();
 	xbee.ApiTxRequest();
-	// return printSerial();
 
 	// log event
 	uint32_t t_unix = 0;
@@ -308,12 +327,9 @@ static void openValve()
 	digitalWrite(VALVE_CONTROL_1_PIN,0);
 
 	// Report event over radio
-	// printTime();
-	// sprintf(MessageBuffer,"Valve:\tOpened\n");
 	xbee.PayloadCreator(Header,ADD_BYTE);
 	RadioTime();
 	xbee.ApiTxRequest();
-	// return printSerial();
 
 	// log event
 	uint32_t t_unix = 0;
@@ -322,19 +338,16 @@ static void openValve()
 	writeLogEntry(Header,t_unix);
 }
 
-static uint32_t readLogEntry(uint16_t logStart, bool Certainty)
+static uint32_t readLogEntry(uint16_t logStart, bool Certainty)		//TODO: ReadLogEntry - rewrite for monthly log entries
 {
 	if(!Certainty)		// Certainty refers to if you already know that the log is open and in the reading format.
 	{
 		closeLogFile();
-		useSDCard(LOG_READING);
+		useSDCard(LOG_READING,0,0);
 	}
 
 	// Sets the read function to read the desired byte
-	for(uint8_t i=0; i <= logStart; i++)
-	{
-		uint8_t junk= logFile.read();	// TODO: ReadLogEntry - system that doesn't require a junk variable.
-	}
+	logFile.seek(logStart);
 
 	// API Header portion of the entry
 	uint8_t Header = logFile.read();
@@ -376,27 +389,18 @@ static void setConsecGallons(uint8_t gals)
 	EEPROM.write(5,gals);
 }
 
-// Needed on SD system? We will need to switch to the SDFat library to be able to delete files.
-/*
-static void clearLog()						// TODO: ClearLog - rewrite using SD card and API format
-{											// TODO: rewrite for multiple month logs
-	uint8_t i;
-	if (getLastLogPos()!=LOG_START_POS-1)
-	{
-		for(i=LOG_START_POS; i<=251; i++)
-		{
-			EEPROM.write(i,(char)0);
-		}
-		EEPROM.write(2,(uint8_t)(LOG_START_POS-1));
-	}
-	// printTime();
-	// sprintf(MessageBuffer,"Log:\tCleared\n");
+// Needed on SD system?
+static void clearLog()
+{											// TODO: ClearLog - rewrite for multiple month logs
+	// Clearing log file
+	closeLogFile();
+	SD.remove("log.bmp");
+
+	// Transmit event
 	xbee.PayloadCreator(0x05,ADD_BYTE);
 	RadioTime();
 	xbee.ApiTxRequest();
-	// return printSerial();
 }
-*/
 
 static void resetSystem()
 {
@@ -405,15 +409,14 @@ static void resetSystem()
 	setLeakCondition(0);
 	setDayGallons(0);
 	setConsecGallons(0);
-	// printTime();
-	// sprintf(MessageBuffer,"System Reset\n");
+
 	xbee.PayloadCreator(0x51,ADD_BYTE);
 	RadioTime();
 	xbee.ApiTxRequest();
+
 	useRTC();
 	uint32_t t_unix= rtc.getTimeUnix();
 	writeLogEntry(0x51,t_unix);
-	// return printSerial();
 }
 
 static void radioInterrupt()
@@ -439,60 +442,56 @@ static void reportLog()
 {
 	uint16_t logStart = getLastLogPos();
 	uint8_t i;
-	/* Old version
-	printTime();
-	sprintf(MessageBuffer,"Gallon Log:\n");
-	printSerial();
-	API header and time for a log report
-	if (lastLog == LOG_START_POS-1)
+
+	for(int i=0; i<=1; i++)
 	{
-		sprintf(MessageBuffer,"Empty\n");
-		xbee.PayloadCreator(0x03,ADD_BYTE);
-		RadioTime();
-		printSerial();
-	}
-	else
-	{
-		for (i=LOG_START_POS;i<lastLog;i++)
+		closeLogFile();
+		useSDCard(LOG_READING,0,0);
+
+		// Sets the read function to read the desired byte
+		logFile.seek(logStart);
+
+		// If there is no new data
+		if(logFile.peek() == -1)
 		{
-			if(i%4 == 0)
+			xbee.PayloadCreator(0x03,ADD_BYTE);
+			RadioTime();
+		}
+
+		// Add log bytes to the radio payload
+		int counter = 0;
+		while(logFile.peek() != -1)
+		{
+			xbee.PayloadCreator(logFile.read(),ADD_BYTE);
+			counter++;
+
+			// Keeps the log from overloading the xbee api frame.
+			if(counter == 66)
 			{
-				printTime();
-				sprintf(MessageBuffer,"%u\t%lu\n",(i-12)/4,readLogEntry((i,true)));
-				printSerial();
+				xbee.ApiTxRequest();
+				logStart = logStart + counter;
+				counter = 0;
 			}
 		}
-	}
-	printTime();
-	sprintf(MessageBuffer,"End Log\n");
-	*/
-	closeLogFile();
-	useSDCard(LOG_READING);
+		EEPROM.write(2,logStart+counter);
 
-	// Sets the read function to read the desired byte
-	for(uint8_t i=0; i < logStart; i++)
-	{
-		uint8_t Worthless_Shit_Hole = logFile.read();	// TODO: ReportLog - System that doesn't require a junk variable.
-	}
-
-	// Add log bytes to the radio payload
-	int counter = 0;
-	while(logFile.peek() != -1)
-	{
-		xbee.PayloadCreator(logFile.read(),ADD_BYTE);
-		counter++;
-		if(counter == 66)		// Keeps the log from overloading the xbee api frame.
+		if(counter != 0)
 		{
-			xbee.ApiTxRequest();
-			logStart = logStart + counter;
-			counter = 0;
+			xbee.PayloadCreator(0x02,ADD_BYTE);
 		}
-	}
-	EEPROM.write(2,logStart+counter);
 
-	xbee.PayloadCreator(0x02,ADD_BYTE);
-	xbee.ApiTxRequest();
-	// return printSerial();
+		xbee.ApiTxRequest();
+
+		if(Lfile != ItsNew)
+			break;
+		else
+		{
+			Lfile = Reported;
+			for(int i=0; i<=12; i++)
+				lastReportedLogName[i] = logName[i];
+		}
+
+	}
 }
 
 static void logGallon()
@@ -556,7 +555,6 @@ static uint8_t checkForLeaks()
 
 static void reportLeak()
 {
-	// printTime();
 	switch (wasLeakDetected())
 	{
 		case 0:
@@ -577,24 +575,20 @@ static void reportLeak()
 			xbee.PayloadCreator(0x00,ADD_BYTE);	// See leak condition message format
 			break;
 	}
-	// return printSerial();
 	xbee.ApiTxRequest();
 }
 
 static void clearLeak()
 {
 	setLeakCondition(0);
-	// printTime();
 	// sprintf(MessageBuffer,"Leak:\tCleared\n");
 	xbee.PayloadCreator(0x22,ADD_BYTE);
 	RadioTime();
 	xbee.ApiTxRequest();
-	// return printSerial();
 }
 
 static void reportValve()
 {
-	// printTime();
 	switch (isValveOpen())
 	{
 	case 0:
@@ -610,48 +604,65 @@ static void reportValve()
 		xbee.ApiTxRequest();
 		break;
 	}
-	// return printSerial();
 	xbee.ApiTxRequest();
 }
 
-static void processRadio(uint8_t Signal[], uint8_t size)
+static void processRadio(uint8_t Signal)
 {
-	for(uint8_t i=0; i<=size; i++)
+	switch (Signal)
 	{
-		switch (Signal[i])
-		{
-			case 0x51:
-				resetSystem();
-				break;
-			case 0x12:
-				closeValve();
-				break;
-			case 0x11:
-				openValve();
-				break;
-			case 0x21:
-				reportLeak();
-				break;
-			case 0x13:
-				reportValve();
-				break;
-			case 0x01:
-				reportLog();
-				break;
-			case 0x02:
-				clearLog();
-				break;
-			case 0x22:
-				clearLeak();
-				break;
-			default:
-				break;
-		}
+		case 0x51:
+			resetSystem();
+			break;
+		case 0x12:
+			closeValve();
+			break;
+		case 0x11:
+			openValve();
+			break;
+		case 0x21:
+			reportLeak();
+			break;
+		case 0x13:
+			reportValve();
+			break;
+		case 0x01:
+			reportLog();
+			break;
+		case 0x02:
+			clearLog();
+			break;
+		case 0x22:
+			clearLeak();
+			break;
+		default:
+			break;
 	}
 }
 
-static void checkRadioCommands()
-{
+static void checkRadioCommands()		// TODO: Rewrite using xbee library
+{	// Check for example, it's called Series2_Rx
+	XBeeResponse response = XBeeResponse();
+	ZBRxResponse rx = ZBRxResponse();
+	ModemStatusResponse msr = ModemStatusResponse();
+
+	xbee.readPacket();
+	if(xbee.getResponse().isAvailable())
+	{
+		if(xbee.getResponse().getApiId() == ZB_RX_RESPONSE)
+		{
+			// Got a zb rx packet, now put it in the zb rx class
+			xbee.getResponse().getZBRxResponse(rx);
+
+			for(int i=0; i<(rx.getDataLength()-1) ; i++)
+				processRadio(rx.getData(i));
+		}
+		else if(xbee.getResponse().getApiId() == MODEM_STATUS_RESPONSE)
+		{
+			xbee.getResponse().getModemStatusResponse(msr);
+		}
+	}
+	/*
 	uint8_t Frame_Type, Receive_Options, Checksum;			// Can add functionality to do with these later
 	uint8_t Addr_64[8], Addr_16[2], Length[2];
 
@@ -684,9 +695,26 @@ static void checkRadioCommands()
 			processRadio(Data_array, Length[1]-12);
 		}
 	}
+	*/
 }
 
+static void rotateEEPROM(uint8_t month, uint8_t year)
+{
+	uint8_t temp_EEPROM[15];
 
+	for(int i=0; i<=14; i++)
+		temp_EEPROM[i] = EEPROM.read(i + getEEPROMmod());
+
+	EEPROM_rot = 0;
+	if((year%2) == 0)
+	{
+		EEPROM_rot = 0x10;
+	}
+	EEPROM_rot = EEPROM_rot + month;
+
+	for(int i=0; i<=14; i++)
+		EEPROM.write(i + getEEPROMmod(), temp_EEPROM[i]);
+}
 
 // Runtime functions
 void setup()
@@ -716,6 +744,8 @@ void setup()
 	// Initialize SPI Communication
 	rtc.init(RTC_SS_PIN);
 	SPIFunc = RTC;
+	ds1306time t;
+	rtc.getTime(&t);
 
 	// Initialize Radio Communication
 	Serial.begin(9600,SERIAL_8N1);
@@ -729,10 +759,22 @@ void setup()
 	lastInt = NONE;
 	isBounce = false;
 	FileIs = Closed;
+
+	if((t.year%2) == 0)
+		EEPROM_rot = t.month;
+	else
+		EEPROM_rot = 0x10 + t.month;
 }
 
 void loop()
 {
+	// Check EEPROM rotation
+	useRTC();
+	ds1306time t;
+	rtc.getTime(&t);
+	if((t.month != EEPROM_rot) && (t.month != (EEPROM_rot - 0x10)))
+		rotateEEPROM(t.month, t.year);
+
 	digitalWrite(RADIO_RTS_PIN,LOW);			// tell xBee we are available to receive data
 	leak = 0;
 	if (!digitalRead(RST_PIN))
@@ -771,7 +813,7 @@ void loop()
 				{
 					// if a new leak is detected, log it, report it, and turn off the valve
 					leak = checkForLeaks();
-					if (leak!=0)
+					if (leak!=0)	// TODO: Implement valve over-ride mode
 					{
 						setLeakCondition(leak);
 						closeValve();
@@ -804,4 +846,3 @@ void loop()
 	detachInterrupt(1);
 }
 // TODO: Rearrange functions to remove dependency errors.
-// TODO: EEPROM rotation will require using 1 or 2 more EEPROM addresses.
